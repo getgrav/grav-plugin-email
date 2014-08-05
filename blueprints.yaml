@@ -1,0 +1,71 @@
+name: Emailing Plugin
+version: 1.0.0
+description: Enables emailing.
+validation: strict
+
+form:
+  fields:
+    enabled:
+      type: toggle
+      label: Plugin status
+      highlight: 1
+      default: 0
+      options:
+        1: Enabled
+        0: Disabled
+      validate:
+        type: bool
+
+    mailer.default:
+      type: select
+      label: Mailer
+      options:
+        none: Disabled
+        smtp: SMTP
+        sendmail: Sendmail
+        mail: PHP Mail
+
+    from:
+      type: text
+      label: Email from
+      placeholder: "Default email from address"
+
+    to:
+      type: text
+      label: Email to
+      placeholder: "Default email to address (can also be comma separated list)"
+
+    mailer.smtp.server:
+      type: text
+      label: SMTP server
+      placeholder: "e.g. smtp.google.com"
+
+    mailer.smtp.port:
+      type: text
+      label: SMTP port
+      placeholder: "Defaults to 25 (plaintext) / 587 (encrypted)"
+      validate:
+        type: number
+        min: 1
+        max: 65535
+
+    mailer.smtp.encryption:
+      type: text
+      label: SMTP encryption
+      options:
+        none: None
+        ssl: SSL
+        ttl: TTL
+
+    mailer.smtp.user:
+      type: text
+      label: SMTP login name
+
+    mailer.smtp.password:
+      type: text
+      label: SMTP password
+
+    mailer.sendmail.bin:
+      type: text
+      label: Path to sendmail
+      placeholder: "/usr/sbin/sendmail"
