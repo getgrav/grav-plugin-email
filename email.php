@@ -2,7 +2,6 @@
 namespace Grav\Plugin;
 
 use \Grav\Common\Plugin;
-use \Grav\Common\Registry;
 use \Grav\Common\Twig;
 
 
@@ -14,9 +13,19 @@ class EmailPlugin extends Plugin
     protected $email;
 
     /**
+     * @return array
+     */
+    public static function getSubscribedEvents() {
+        return [
+            'onPluginsInitialized' => ['onPluginsInitialized', 0],
+            'onFormProcessed' => ['onFormProcessed', 0]
+        ];
+    }
+
+    /**
      * Initialize emailing.
      */
-    public function onAfterInitPlugins()
+    public function onPluginsInitialized()
     {
         require_once __DIR__ . '/classes/email.php';
         require_once __DIR__ . '/vendor/autoload.php';
@@ -24,8 +33,7 @@ class EmailPlugin extends Plugin
         $this->email = new Email();
 
         if ($this->email->enabled()) {
-            $registry = Registry::instance();
-            $registry->store('Email', $this->email);
+            $this->grav['Email'] = $this->email;
         }
     }
 
@@ -36,7 +44,7 @@ class EmailPlugin extends Plugin
      * @param string $task
      * @param array $params
      */
-    public function onProcessForm(Form $form, $task, $params)
+    public function onFormProcessed(Form $form, $task, $params)
     {
         if (!$this->email->enabled()) {
             return;
@@ -45,7 +53,7 @@ class EmailPlugin extends Plugin
         switch ($task) {
             case 'email':
                 /** @var Twig $twig */
-                $twig = Registry::get('Twig');
+                $twig = $this->grav['twig'];
                 $vars = array(
                     'form' => $form
                 );
