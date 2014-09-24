@@ -1,6 +1,13 @@
-name: Emailing Plugin
+name: Email
 version: 1.0.0
-description: Enables emailing.
+description: Enables the emailing system
+icon: envelope
+author:
+  name: Team Grav
+  email: devs@getgrav.org
+  url: http://getgrav.org
+keywords: plugin, email, sender
+
 validation: strict
 
 form:
