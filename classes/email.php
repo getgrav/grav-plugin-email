@@ -1,7 +1,8 @@
 <?php
 namespace Grav\Plugin;
 
-use \Grav\Common\GravTrait;
+use Grav\Common\Config\Config;
+use Grav\Common\GravTrait;
 
 class Email
 {
@@ -99,6 +100,7 @@ class Email
         }
 
         if (!$this->mailer) {
+            /** @var Config $config */
             $config = self::$grav['config'];
             $mailer = $config->get('plugins.email.mailer.default');
 

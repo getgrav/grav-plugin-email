@@ -1,9 +1,8 @@
 <?php
 namespace Grav\Plugin;
 
-use \Grav\Common\Plugin;
-use \Grav\Common\Twig;
-
+use Grav\Common\Plugin;
+use Grav\Common\Twig;
 
 class EmailPlugin extends Plugin
 {
