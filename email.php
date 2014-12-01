@@ -14,7 +14,8 @@ class EmailPlugin extends Plugin
     /**
      * @return array
      */
-    public static function getSubscribedEvents() {
+    public static function getSubscribedEvents()
+    {
         return [
             'onPluginsInitialized' => ['onPluginsInitialized', 0],
             'onFormProcessed' => ['onFormProcessed', 0]
