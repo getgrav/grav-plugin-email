@@ -20,7 +20,7 @@ class Email
      */
     public function enabled()
     {
-        return self::$grav['config']->get('plugins.email.mailer.default') != 'none';
+        return self::getGrav()['config']->get('plugins.email.mailer.default') != 'none';
     }
 
     /**
@@ -101,7 +101,7 @@ class Email
 
         if (!$this->mailer) {
             /** @var Config $config */
-            $config = self::$grav['config'];
+            $config = self::getGrav()['config'];
             $mailer = $config->get('plugins.email.mailer.default');
 
             // Create the Transport and initialize it.
