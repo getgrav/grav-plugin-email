@@ -20,7 +20,7 @@ class Email
      */
     public function enabled()
     {
-        return self::getGrav()['config']->get('plugins.email.mailer.default') != 'none';
+        return self::getGrav()['config']->get('plugins.email.mailer.engine') != 'none';
     }
 
     /**
