@@ -15,16 +15,21 @@ form:
       type: toggle
       label: Plugin status
       highlight: 1
-      default: 0
+      default: 1
       options:
         1: Enabled
         0: Disabled
       validate:
         type: bool
 
+    mailer.engine:
+      label: Mail Engine
+      type: hidden
+
     mailer.default:
       type: select
       label: Mailer
+      size: medium
       options:
         none: Disabled
         smtp: SMTP
@@ -33,21 +38,25 @@ form:
 
     from:
       type: text
+      size: medium
       label: Email from
       placeholder: "Default email from address"
 
     to:
       type: text
+      size: medium
       label: Email to
       placeholder: "Default email to address (can also be comma separated list)"
 
     mailer.smtp.server:
       type: text
+      size: medium
       label: SMTP server
       placeholder: "e.g. smtp.google.com"
 
     mailer.smtp.port:
       type: text
+      size: small
       label: SMTP port
       placeholder: "Defaults to 25 (plaintext) / 587 (encrypted)"
       validate:
@@ -56,7 +65,8 @@ form:
         max: 65535
 
     mailer.smtp.encryption:
-      type: text
+      type: select
+      size: medium
       label: SMTP encryption
       options:
         none: None
@@ -65,13 +75,16 @@ form:
 
     mailer.smtp.user:
       type: text
+      size: medium
       label: SMTP login name
 
     mailer.smtp.password:
       type: text
+      size: medium
       label: SMTP password
 
     mailer.sendmail.bin:
       type: text
+      size: medium
       label: Path to sendmail
       placeholder: "/usr/sbin/sendmail"
