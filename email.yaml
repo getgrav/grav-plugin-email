@@ -1,8 +1,8 @@
-enabled: false
+enabled: true
 from: ''
 to: ''
 mailer:
-  default: mail
+  engine: mail
   smtp:
     server: localhost
     port: 25

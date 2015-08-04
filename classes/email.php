@@ -1,10 +1,13 @@
 <?php
 namespace Grav\Plugin;
 
-use \Grav\Common\Registry;
+use Grav\Common\Config\Config;
+use Grav\Common\GravTrait;
 
 class Email
 {
+    use GravTrait;
+
     /**
      * @var \Swift_Transport
      */
@@ -17,7 +20,7 @@ class Email
      */
     public function enabled()
     {
-        return Registry::get('Config')->get('plugins.email.mailer.default') != 'none';
+        return self::getGrav()['config']->get('plugins.email.mailer.engine') != 'none';
     }
 
     /**
@@ -97,7 +100,8 @@ class Email
         }
 
         if (!$this->mailer) {
-            $config = Registry::get('Config');
+            /** @var Config $config */
+            $config = self::getGrav()['config'];
             $mailer = $config->get('plugins.email.mailer.default');
 
             // Create the Transport and initialize it.
