@@ -1,12 +1,15 @@
 name: Email
-version: 1.0.0
-description: Enables the emailing system
+version: 0.1.0
+description: Enables the emailing system for Grav
 icon: envelope
 author:
   name: Team Grav
   email: devs@getgrav.org
   url: http://getgrav.org
 keywords: plugin, email, sender
+homepage: https://github.com/getgrav/grav-plugin-email
+bugs: https://github.com/getgrav/grav-plugin-email/issues
+license: MIT
 
 form:
   validation: strict
