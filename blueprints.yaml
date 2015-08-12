@@ -1,5 +1,5 @@
 name: Email
-version: 0.1.0
+version: 0.2.0
 description: Enables the emailing system for Grav
 icon: envelope
 author:
@@ -15,7 +15,7 @@ form:
   validation: strict
   fields:
     enabled:
-      type: toggle
+      type: hidden
       label: Plugin status
       highlight: 1
       default: 1
