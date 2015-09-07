@@ -3,6 +3,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Plugin;
 use Grav\Common\Twig;
+use RocketTheme\Toolbox\Event\Event;
 
 class EmailPlugin extends Plugin
 {
@@ -40,17 +41,19 @@ class EmailPlugin extends Plugin
     /**
      * Send email when processing the form data.
      *
-     * @param Form $form
-     * @param string $task
-     * @param array $params
+     * @param Event $event
      */
-    public function onFormProcessed(Form $form, $task, $params)
+    public function onFormProcessed(Event $event)
     {
+        $form = $event['form'];
+        $action = $event['action'];
+        $params = $event['params'];
+
         if (!$this->email->enabled()) {
             return;
         }
 
-        switch ($task) {
+        switch ($action) {
             case 'email':
                 /** @var Twig $twig */
                 $twig = $this->grav['twig'];
