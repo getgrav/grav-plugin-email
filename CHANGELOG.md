@@ -1,3 +1,9 @@
+# v0.2.1
+## 09/11/2015
+
+1. [](#bugfix)
+    * Fix onFormProcessed event
+
 # v0.2.0
 ## 08/11/2015
 
