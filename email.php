@@ -88,7 +88,14 @@ class EmailPlugin extends Plugin
                 $body = !empty($params['body']) ?
                     $twig->processString($params['body'], $vars) : '{% include "forms/data.html.twig" %}';
 
-                $message = $this->email->message($subject, $body)
+                if (!empty($params['format'])) {
+                    $format = $twig->processString($params['format'], $vars);
+                } else {
+                    $format = $this->config->get('plugins.email.format');
+                }
+                $bodyType = ($format == 'html' ? 'text/html' : 'text/plain');
+
+                $message = $this->email->message($subject, $body, $bodyType)
                     ->setFrom($from)
                     ->setTo($to);
                 if (!empty($replyTo)) {

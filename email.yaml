@@ -1,6 +1,7 @@
 enabled: true
 from: ''
 to: ''
+format: html
 mailer:
   engine: mail
   smtp:
