@@ -75,14 +75,25 @@ class EmailPlugin extends Plugin
                 } else {
                     $to = (array) $this->config->get('plugins.email.to');
                 }
+
+                if (!empty($params['reply_to'])) {
+                    $replyTo = $twig->processString($params['reply_to'], $vars);
+                } else {
+                    $replyTo = $this->config->get('plugins.email.reply_to');
+                }
+
                 $subject = !empty($params['subject']) ?
                     $twig->processString($params['subject'], $vars) : $form->page()->title();
+
                 $body = !empty($params['body']) ?
                     $twig->processString($params['body'], $vars) : '{% include "forms/data.html.twig" %}';
 
                 $message = $this->email->message($subject, $body)
                     ->setFrom($from)
                     ->setTo($to);
+                if (!empty($replyTo)) {
+                    $message->setReplyTo($replyTo);
+                }
 
                 $this->email->send($message);
 
