@@ -40,16 +40,22 @@ form:
         mail: PHP Mail
 
     from:
-      type: text
+      type: email
       size: medium
       label: Email from
       placeholder: "Default email from address"
+      validate:
+        required: true
+        type: email
 
     to:
-      type: text
+      type: email
       size: medium
       label: Email to
       placeholder: "Default email to address (can also be comma separated list)"
+      validate:
+        required: true
+        type: email
 
     mailer.smtp.server:
       type: text

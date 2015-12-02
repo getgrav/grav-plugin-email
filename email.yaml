@@ -1,6 +1,6 @@
 enabled: true
-from: ''
-to: ''
+from:
+to:
 mailer:
   engine: mail
   smtp:
