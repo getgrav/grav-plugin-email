@@ -55,37 +55,67 @@ class EmailPlugin extends Plugin
 
         switch ($action) {
             case 'email':
-                /** @var Twig $twig */
-                $twig = $this->grav['twig'];
+                // Prepare Twig variables
                 $vars = array(
                     'form' => $form
                 );
 
-                if (!empty($params['from'])) {
-                    $from = $twig->processString($params['from'], $vars);
-                } else {
-                    $from = $this->config->get('plugins.email.from');
-                }
+                // Build message
+                $message = $this->buildMessage($params, $vars);
 
-                if (!empty($params['to'])) {
-                    $to = (array) $params['to'];
-                    foreach ($to as &$address) {
-                        $address = $twig->processString($address, $vars);
-                    }
-                } else {
-                    $to = (array) $this->config->get('plugins.email.to');
-                }
-                $subject = !empty($params['subject']) ?
-                    $twig->processString($params['subject'], $vars) : $form->page()->title();
-                $body = $twig->processString(!empty($params['body']) ? $params['body'] : '{% include "forms/data.html.twig" %}', $vars);
-
-                $message = $this->email->message($subject, $body)
-                    ->setFrom($from)
-                    ->setTo($to);
-
+                // Send e-mail
                 $this->email->send($message);
-
                 break;
         }
+    }
+
+    /**
+     * Build e-mail message.
+     *
+     * @param array $params
+     * @param array $vars
+     * @return \Swift_Message
+     */
+    protected function buildMessage(array $params, array $vars = array())
+    {
+        /** @var Twig $twig */
+        $twig = $this->grav['twig'];
+
+        // Extend parameters with defaults.
+        $params += array(
+            'body' => '{% include "forms/data.html.twig" %}',
+            'from' => $this->config->get('plugins.email.from'),
+            'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
+            'to' => (array) $this->config->get('plugins.email.to'),
+        );
+
+        // Create message object.
+        $message = $this->email->message();
+
+        // Process parameters.
+        foreach ($params as $key => $value) {
+            switch ($key) {
+                case 'body':
+                    $message->setBody($twig->processString($value, $vars));
+                    break;
+
+                case 'from':
+                    $message->setFrom($twig->processString($value, $vars));
+                    break;
+
+                case 'subject':
+                    $message->setSubject($twig->processString($value, $vars));
+                    break;
+
+                case 'to':
+                    $value = (array) $value;
+                    foreach ($value as &$address) {
+                        $message->addTo($twig->processString($address, $vars));
+                    }
+                    break;
+            }
+        }
+
+        return $message;
     }
 }
