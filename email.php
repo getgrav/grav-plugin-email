@@ -85,6 +85,7 @@ class EmailPlugin extends Plugin
         $params += array(
             'body' => '{% include "forms/data.html.twig" %}',
             'from' => $this->config->get('plugins.email.from'),
+            'from_name' => $this->config->get('plugins.email.from_name'),
             'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
             'to' => (array) $this->config->get('plugins.email.to'),
         );
@@ -100,7 +101,8 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'from':
-                    $message->setFrom($twig->processString($value, $vars));
+                    $from_name = !empty($params['from_name']) ? $twig->processString($params['from_name'], $vars) : null;
+                    $message->setFrom($twig->processString($value, $vars), $from_name);
                     break;
 
                 case 'subject':

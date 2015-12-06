@@ -48,6 +48,12 @@ form:
         required: true
         type: email
 
+    from_name:
+      type: text
+      size: medium
+      label: Email from name
+      placeholder: "Default email from name"
+
     to:
       type: email
       size: medium
