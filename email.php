@@ -87,6 +87,7 @@ class EmailPlugin extends Plugin
             'from' => $this->config->get('plugins.email.from'),
             'from_name' => $this->config->get('plugins.email.from_name'),
             'content_type' => null,
+            'reply_to' => array(),
             'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
             'to' => (array) $this->config->get('plugins.email.to'),
         );
@@ -110,6 +111,13 @@ class EmailPlugin extends Plugin
                 case 'from':
                     $from_name = !empty($params['from_name']) ? $twig->processString($params['from_name'], $vars) : null;
                     $message->setFrom($twig->processString($value, $vars), $from_name);
+                    break;
+
+                case 'reply_to':
+                    $value = (array) $value;
+                    foreach ($value as $address) {
+                        $message->addReplyTo($twig->processString($address, $vars));
+                    }
                     break;
 
                 case 'subject':
