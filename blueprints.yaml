@@ -58,7 +58,7 @@ form:
       type: email
       size: medium
       label: Email to
-      placeholder: "Default email to address (can also be comma separated list)"
+      placeholder: "Default email to address"
       validate:
         required: true
         type: email
