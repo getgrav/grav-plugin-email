@@ -54,7 +54,7 @@ form:
       label: Email from name
       placeholder: "Default email from name"
 
-    to:
+    to.mail:
       type: email
       size: medium
       label: Email to
@@ -62,6 +62,12 @@ form:
       validate:
         required: true
         type: email
+
+    to.name:
+      type: text
+      size: medium
+      label: Email to name
+      placeholder: "Default email to name"
 
     mailer.smtp.server:
       type: text
