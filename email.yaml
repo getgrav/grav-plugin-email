@@ -3,6 +3,8 @@ from:
   mail:
   name:
 to:
+  mail:
+  name:
 mailer:
   engine: mail
   smtp:
