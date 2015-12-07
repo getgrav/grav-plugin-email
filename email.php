@@ -85,11 +85,10 @@ class EmailPlugin extends Plugin
         $params += array(
             'body' => '{% include "forms/data.html.twig" %}',
             'from' => $this->config->get('plugins.email.from'),
-            'from_name' => $this->config->get('plugins.email.from_name'),
             'content_type' => null,
             'reply_to' => array(),
             'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
-            'to' => (array) $this->config->get('plugins.email.to'),
+            'to' => $this->config->get('plugins.email.to'),
         );
 
         // Create message object.
@@ -109,14 +108,14 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'from':
-                    $from_name = !empty($params['from_name']) ? $twig->processString($params['from_name'], $vars) : null;
-                    $message->setFrom($twig->processString($value, $vars), $from_name);
+                    foreach ($this->parseAddressValue($value, $vars) as $address) {
+                        $message->addFrom($address->mail, $address->name);
+                    }
                     break;
 
                 case 'reply_to':
-                    $value = (array) $value;
-                    foreach ($value as $address) {
-                        $message->addReplyTo($twig->processString($address, $vars));
+                    foreach ($this->parseAddressValue($value, $vars) as $address) {
+                        $message->addReplyTo($address->mail, $address->name);
                     }
                     break;
 
@@ -125,14 +124,62 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'to':
-                    $value = (array) $value;
-                    foreach ($value as &$address) {
-                        $message->addTo($twig->processString($address, $vars));
+                    foreach ($this->parseAddressValue($value, $vars) as $address) {
+                        $message->addTo($address->mail, $address->name);
                     }
                     break;
             }
         }
 
         return $message;
+    }
+
+    /**
+     * Return parsed e-mail address value.
+     *
+     * @param $value
+     * @param array $vars
+     * @return array
+     */
+    protected function parseAddressValue($value, array $vars = array())
+    {
+        $parsed = array();
+
+        /** @var Twig $twig */
+        $twig = $this->grav['twig'];
+
+        // Single e-mail address string
+        if (is_string($value)) {
+            $parsed[] = (object) array(
+                'mail' => $twig->processString($value, $vars),
+                'name' => null,
+            );
+        }
+
+        else {
+            // Cast value as array
+            $value = (array) $value;
+
+            // Single e-mail address array
+            if (!empty($value['mail'])) {
+                $parsed[] = (object) array(
+                  'mail' => $twig->processString($value['mail'], $vars),
+                  'name' => !empty($value['name']) ? $twig->processString($value['name'], $vars) : NULL,
+                );
+            }
+
+            // Multiple addresses (either as strings or arrays)
+            elseif (!(empty($value['mail']) && !empty($value['name']))) {
+                foreach ($value as $y => $itemx) {
+                    $addresses = $this->parseAddressValue($itemx, $vars);
+
+                    if (($address = reset($addresses))) {
+                        $parsed[] = $address;
+                    }
+                }
+            }
+        }
+
+        return $parsed;
     }
 }
