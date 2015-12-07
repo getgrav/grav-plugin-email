@@ -39,6 +39,14 @@ form:
         sendmail: Sendmail
         mail: PHP Mail
 
+    content_type:
+      type: select
+      label: Content type
+      size: medium
+      options:
+        'text/plain': Plain text
+        'text/html': HTML
+
     from.mail:
       type: email
       size: medium
