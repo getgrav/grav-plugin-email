@@ -97,8 +97,20 @@ class EmailPlugin extends Plugin
         // Process parameters.
         foreach ($params as $key => $value) {
             switch ($key) {
+                case 'bcc':
+                    foreach ($this->parseAddressValue($value, $vars) as $address) {
+                        $message->addBcc($address->mail, $address->name);
+                    }
+                    break;
+
                 case 'body':
                     $message->setBody($twig->processString($value, $vars));
+                    break;
+
+                case 'cc':
+                    foreach ($this->parseAddressValue($value, $vars) as $address) {
+                        $message->addCc($address->mail, $address->name);
+                    }
                     break;
 
                 case 'content_type':
