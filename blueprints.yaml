@@ -39,7 +39,7 @@ form:
         sendmail: Sendmail
         mail: PHP Mail
 
-    from:
+    from.mail:
       type: email
       size: medium
       label: Email from
@@ -48,7 +48,7 @@ form:
         required: true
         type: email
 
-    from_name:
+    from.name:
       type: text
       size: medium
       label: Email from name
