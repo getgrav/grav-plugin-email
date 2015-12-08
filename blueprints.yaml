@@ -43,6 +43,7 @@ form:
       type: select
       label: Content type
       size: medium
+      default: 'text/html'
       options:
         'text/plain': Plain text
         'text/html': HTML
