@@ -99,7 +99,9 @@ class EmailPlugin extends Plugin
         foreach ($params as $key => $value) {
             switch ($key) {
                 case 'body':
-                    $message->setBody($twig->processString($value, $vars));
+                    $body = $twig->processString($value, $vars);      
+                    $message->setBody(strip_tags($body), 'text/plain');
+                    $message->addPart($body, 'text/html');
                     break;
 
                 case 'content_type':
