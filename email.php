@@ -85,10 +85,12 @@ class EmailPlugin extends Plugin
         $params += array(
             'body' => '{% include "forms/data.html.twig" %}',
             'from' => $this->config->get('plugins.email.from'),
+            'from_name' => $this->config->get('plugins.email.from_name'),
             'content_type' => $this->config->get('plugins.email.content_type', 'text/html'),
             'reply_to' => array(),
             'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
             'to' => $this->config->get('plugins.email.to'),
+            'to_name' => $this->config->get('plugins.email.to_name'),
         );
 
         // Create message object.
@@ -120,6 +122,13 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'from':
+                    if (is_string($value) && !empty($params['from_name'])) {
+                        $value = array(
+                            'mail' => $twig->processString($value, $vars),
+                            'name' => $twig->processString($params['from_name'], $vars),
+                        );
+                    }
+
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
                         $message->addFrom($address->mail, $address->name);
                     }
@@ -136,6 +145,13 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'to':
+                    if (is_string($value) && !empty($params['to_name'])) {
+                        $value = array(
+                          'mail' => $twig->processString($value, $vars),
+                          'name' => $twig->processString($params['to_name'], $vars),
+                        );
+                    }
+
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
                         $message->addTo($address->mail, $address->name);
                     }

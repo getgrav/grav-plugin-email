@@ -48,7 +48,7 @@ form:
         'text/plain': Plain text
         'text/html': HTML
 
-    from.mail:
+    from:
       type: email
       size: medium
       label: Email from
@@ -57,13 +57,13 @@ form:
         required: true
         type: email
 
-    from.name:
+    from_name:
       type: text
       size: medium
       label: Email from name
       placeholder: "Default email from name"
 
-    to.mail:
+    to:
       type: email
       size: medium
       label: Email to
@@ -72,7 +72,7 @@ form:
         required: true
         type: email
 
-    to.name:
+    to_name:
       type: text
       size: medium
       label: Email to name
