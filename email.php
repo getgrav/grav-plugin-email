@@ -86,7 +86,7 @@ class EmailPlugin extends Plugin
             'body' => '{% include "forms/data.html.twig" %}',
             'from' => $this->config->get('plugins.email.from'),
             'from_name' => $this->config->get('plugins.email.from_name'),
-            'content_type' => null,
+            'content_type' => 'text/html',
             'reply_to' => array(),
             'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
             'to' => (array) $this->config->get('plugins.email.to'),
