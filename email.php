@@ -84,6 +84,7 @@ class EmailPlugin extends Plugin
         // Extend parameters with defaults.
         $params += array(
             'body' => '{% include "forms/data.html.twig" %}',
+            'charset' => 'utf-8',
             'from' => $this->config->get('plugins.email.from'),
             'from_name' => $this->config->get('plugins.email.from_name'),
             'content_type' => $this->config->get('plugins.email.content_type', 'text/html'),
@@ -106,18 +107,32 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'body':
-                    $message->setBody($twig->processString($value, $vars));
+                    if (is_string($value)) {
+                        $body = $twig->processString($value, $vars);
+                        $content_type = !empty($params['content_type']) ? $twig->processString($params['content_type'], $vars) : null;
+                        $charset = !empty($params['charset']) ? $twig->processString($params['charset'], $vars) : null;
+
+                        $message->setBody($body, $content_type, $charset);
+                    }
+                    elseif (is_array($value)) {
+                        foreach ($value as $body_part) {
+                            $body = !empty($body_part['body']) ? $twig->processString($body_part['body'], $vars) : null;
+                            $content_type = !empty($body_part['content_type']) ? $twig->processString($body_part['content_type'], $vars) : null;
+                            $charset = !empty($body_part['charset']) ? $twig->processString($body_part['charset'], $vars) : null;
+
+                            if (!$message->getBody()) {
+                                $message->setBody($body, $content_type, $charset);
+                            }
+                            else {
+                                $message->addPart($body, $content_type, $charset);
+                            }
+                        }
+                    }
                     break;
 
                 case 'cc':
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
                         $message->addCc($address->mail, $address->name);
-                    }
-                    break;
-
-                case 'content_type':
-                    if (!empty($value)) {
-                        $message->setContentType($twig->processString($value, $vars));
                     }
                     break;
 
