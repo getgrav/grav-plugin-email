@@ -26,12 +26,8 @@ form:
         type: bool
 
     mailer.engine:
-      label: Mail Engine
-      type: hidden
-
-    mailer.default:
       type: select
-      label: Mailer
+      label: Mail Engine
       size: medium
       options:
         none: Disabled
