@@ -12,7 +12,7 @@ bugs: https://github.com/getgrav/grav-plugin-email/issues
 license: MIT
 
 form:
-  validation: strict
+  validation: loose
   fields:
     enabled:
       type: hidden
