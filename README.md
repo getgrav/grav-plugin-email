@@ -57,6 +57,25 @@ That service will intercept emails and show them on their web-based interface in
 
 You can try and fine tune the emails there when testing.
 
+# Programmatically send emails 
+
+Add this code in your plugins:
+
+```php
+
+        $to = 'email@test.com';
+        $from = 'email@test.com';
+
+        $subject = 'Test';
+        $content = 'Test';
+
+        $message = $this->grav['Email']->message($subject, $content, 'text/html')
+            ->setFrom($from)
+            ->setTo($to);
+
+        $sent = $this->grav['Email']->send($message);
+```
+
 # Email actions
 
 When executing email actions (e.g. during form processing), all action parameters are inherited from the global configuration but may also be overridden on a per action basis.
