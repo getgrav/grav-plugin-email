@@ -34,7 +34,28 @@ mailer:
   sendmail:
     bin: '/usr/sbin/sendmail'
 content_type: text/html
-```  
+```
+
+# Testing emails
+
+A good way to test emails is to setup a fake SMTP server, for example using [https://mailtrap.io](https://mailtrap.io)
+
+Setup the Email plugin to use that SMTP server with the fake inbox data. For example:
+
+```
+mailer:
+  engine: smtp
+  smtp:
+    server: mailtrap.io
+    port: 2525
+    encryption: none
+    user: YOUR_MAILTRAP_INBOX_USER
+    password: YOUR_MAILTRAP_INBOX_PASSWORD
+```
+
+That service will intercept emails and show them on their web-based interface instead of sending them for real.
+
+You can try and fine tune the emails there when testing.
 
 # Email actions
 
