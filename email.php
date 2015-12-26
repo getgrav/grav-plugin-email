@@ -99,6 +99,13 @@ class EmailPlugin extends Plugin
         // Create message object.
         $message = $this->email->message();
 
+        if (!$params['to']) {
+            throw new \RuntimeException($this->grav['language']->translate('PLUGIN_EMAIL.PLEASE_CONFIGURE_A_TO_ADDRESS'));
+        }
+        if (!$params['from']) {
+            throw new \RuntimeException($this->grav['language']->translate('PLUGIN_EMAIL.PLEASE_CONFIGURE_A_FROM_ADDRESS'));
+        }
+
         // Process parameters.
         foreach ($params as $key => $value) {
             switch ($key) {
