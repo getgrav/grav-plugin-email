@@ -1,3 +1,9 @@
+# v2.2.0
+## 01/06/2016
+
+1. [](#improved)
+    * Throw an exception when trying to send emails without a 'from' or 'to' parameters setup, to intercept less meaningful errors and provide a better description on how to fix the problem 
+
 # v2.1.0
 ## 12/18/2015
 
