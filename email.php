@@ -63,6 +63,15 @@ class EmailPlugin extends Plugin
                 // Build message
                 $message = $this->buildMessage($params, $vars);
 
+                if (isset($params['attachments'])) {
+                    $filesToAttach = (array)$params['attachments'];
+                    if ($filesToAttach) foreach ($filesToAttach as $fileToAttach) {
+                        $output = $form->value($fileToAttach);
+                        $filename = reset($output)['file'];
+                        $message->attach(\Swift_Attachment::fromPath($filename));
+                    }
+                }
+
                 // Send e-mail
                 $this->email->send($message);
                 break;
