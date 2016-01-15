@@ -98,7 +98,7 @@ form:
         content_type: 'text/plain'
 ```
 
-## Sending Attachments
+## Sending Attachments (not yet released)
 
 You can add file inputs to your form, and send those files via Email.
 Just add an `attachments` field and list the file input fields names. You can have multiple file fields, and this will send all the files as attachments. Example:
