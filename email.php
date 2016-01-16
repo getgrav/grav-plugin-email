@@ -66,9 +66,12 @@ class EmailPlugin extends Plugin
                 if (isset($params['attachments'])) {
                     $filesToAttach = (array)$params['attachments'];
                     if ($filesToAttach) foreach ($filesToAttach as $fileToAttach) {
-                        $output = $form->value($fileToAttach);
-                        $filename = reset($output)['file'];
-                        $message->attach(\Swift_Attachment::fromPath($filename));
+                        $filesValues = $form->value($fileToAttach);
+                        if ($filesValues) foreach($filesValues as $fileValues) {
+                            $filename = $fileValues['file'];
+                            // dump($filename);
+                            $message->attach(\Swift_Attachment::fromPath($filename));
+                        }
                     }
                 }
 
