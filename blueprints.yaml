@@ -105,7 +105,7 @@ form:
       label: SMTP login name
 
     mailer.smtp.password:
-      type: text
+      type: password
       size: medium
       label: SMTP password
 
