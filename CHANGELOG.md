@@ -1,5 +1,5 @@
 # v2.2.0
-## 02/XX/2016
+## 02/05/2016
 
 1. [](#new)
     * Allow to send attachments in forms
