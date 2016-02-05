@@ -1,5 +1,5 @@
 name: Email
-version: 2.1.1
+version: 2.2.0
 description: Enables the emailing system for Grav
 icon: envelope
 author:
@@ -16,12 +16,12 @@ form:
   fields:
     enabled:
       type: hidden
-      label: Plugin status
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
       highlight: 1
       default: 1
       options:
-        1: Enabled
-        0: Disabled
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
       validate:
         type: bool
 
@@ -105,7 +105,7 @@ form:
       label: SMTP login name
 
     mailer.smtp.password:
-      type: text
+      type: password
       size: medium
       label: SMTP password
 

@@ -1,8 +1,12 @@
-# v2.1.1
-## 01/06/2016
+# v2.2.0
+## 02/05/2016
 
+1. [](#new)
+    * Allow to send attachments in forms
+    * Added French translation
 1. [](#improved)
-    * Throw an exception when trying to send emails without a 'from' or 'to' parameters setup, to intercept less meaningful errors and provide a better description on how to fix the problem 
+    * Throw an exception when trying to send emails without a `from` or `to` parameters setup, to intercept less meaningful errors and provide a better description on how to fix the problem 
+    * Changed SMTP password in admin to use a password field instead of plain text
 
 # v2.1.0
 ## 12/18/2015

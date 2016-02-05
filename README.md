@@ -54,7 +54,7 @@ That service will intercept emails and show them on their web-based interface in
 
 You can try and fine tune the emails there when testing.
 
-# Programmatically send emails 
+# Programmatically send emails
 
 Add this code in your plugins:
 
@@ -73,9 +73,9 @@ Add this code in your plugins:
         $sent = $this->grav['Email']->send($message);
 ```
 
-# Email actions
+# Emails sent with Forms
 
-When executing email actions (e.g. during form processing), all action parameters are inherited from the global configuration but may also be overridden on a per action basis.
+When executing email actions during form processing, action parameters are inherited from the global configuration but may also be overridden on a per-action basis.
 
 ```
 title: Custom form
@@ -98,18 +98,48 @@ form:
         content_type: 'text/plain'
 ```
 
+## Sending Attachments (not yet released)
+
+You can add file inputs to your form, and send those files via Email.
+Just add an `attachments` field and list the file input fields names. You can have multiple file fields, and this will send all the files as attachments. Example:
+
+```
+form:
+  name: custom_form
+  fields:
+
+    -
+      name: my-file
+      label: 'Add a file'
+      type: file
+      multiple: false
+      destination: user/data/files
+      accept:
+        - application/pdf
+        - application/x-pdf
+        - image/png
+        - text/plain
+
+  process:
+    -
+      email:
+        body: '{% include "forms/data.html.twig" %}'
+        attachments:
+          - 'my-file'
+```
+
 ## Additional action parameters
 
 To have more control over your generated email, you may also use the following additional parameters:
 
-* ```reply_to```: Set one or more addresses that should be used to reply to the message.
-* ```cc``` _(Carbon copy)_: Add one or more addresses to the delivery list. Many email clients will mark email in one's inbox differently depending on whether they are in the ```To:``` or ```Cc:``` list.
-* ```bcc``` _(Blind carbon copy)_: Add one or more addresses to the delivery list that should (usually) not be listed in the message data, remaining invisible to other recipients.
-* ```charset```: Explicitly set a charset for the generated email body (only takes effect if ```body``` parameter is a string, defaults to ```utf-8```)
+* `reply_to`: Set one or more addresses that should be used to reply to the message.
+* `cc` _(Carbon copy)_: Add one or more addresses to the delivery list. Many email clients will mark email in one's inbox differently depending on whether they are in the `To:` or `Cc:` list.
+* `bcc` _(Blind carbon copy)_: Add one or more addresses to the delivery list that should (usually) not be listed in the message data, remaining invisible to other recipients.
+* `charset`: Explicitly set a charset for the generated email body (only takes effect if `body` parameter is a string, defaults to `utf-8`)
 
 ### Specifying email addresses
 
-Email-related parameters (```from```, ```to```, ```reply_to```, ```cc```and ```bcc```) allow different notations for single / multiple values:
+Email-related parameters (`from`, `to`, `reply_to`, `cc`and `bcc`) allow different notations for single / multiple values:
 
 #### Single email address string
 
@@ -150,9 +180,9 @@ to:
     mail+4@example.com
 ```
 
-## Mutil-part MIME messages
+## Multi-part MIME messages
 
-Apart from a simple string, an email body may contain different MIME parts (e.g. HTML body with plain text fallback). You may even specify a different charset for each part (default to ```utf-8```):
+Apart from a simple string, an email body may contain different MIME parts (e.g. HTML body with plain text fallback). You may even specify a different charset for each part (default to `utf-8`):
 
 ```
 body:
