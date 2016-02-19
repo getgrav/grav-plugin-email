@@ -97,7 +97,7 @@ form:
       options:
         none: None
         ssl: SSL
-        tls: TTS
+        tls: TLS
 
     mailer.smtp.user:
       type: text
