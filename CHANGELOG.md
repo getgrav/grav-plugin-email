@@ -1,3 +1,9 @@
+# v2.3.0
+## 02/27/2016
+
+1. [](#improved)
+    * Added debug option to enable logging on SwiftMailer.
+
 # v2.2.0
 ## 02/05/2016
 

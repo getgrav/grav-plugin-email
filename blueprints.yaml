@@ -114,3 +114,14 @@ form:
       size: medium
       label: Path to sendmail
       placeholder: "/usr/sbin/sendmail"
+
+    debug:
+      type: toggle
+      label: Debug
+      highlight: 1
+      default: 0
+      options:
+        true: PLUGIN_ADMIN.ENABLED
+        false: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool

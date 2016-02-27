@@ -14,6 +14,11 @@ class Email
     protected $mailer;
 
     /**
+     * @var \Swift_Plugins_LoggerPlugin
+     */
+    protected $logger;
+
+    /**
      * Returns true if emails have been enabled in the system.
      *
      * @return bool
@@ -21,6 +26,16 @@ class Email
     public function enabled()
     {
         return self::getGrav()['config']->get('plugins.email.mailer.engine') != 'none';
+    }
+
+    /**
+     * Returns true if debugging on emails has been enabled.
+     *
+     * @return bool
+     */
+    public function debug()
+    {
+        return self::getGrav()['config']->get('plugins.email.debug') == 'true';
     }
 
     /**
@@ -86,7 +101,30 @@ class Email
     {
         $mailer = $this->getMailer();
 
-        return $mailer ? $mailer->send($message) : 0;
+        $result = $mailer ? $mailer->send($message) : 0;
+
+        // Check if emails and debugging are both enabled.
+        if ($mailer && $this->debug()) {
+            // Get an instance of the logging service.
+            $log = self::getGrav()['log'];
+            // Append the SwiftMailer log to the log.
+            $log->addDebug("Email Log: " . $this->getLogs());
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return debugging logs if enabled
+     *
+     * @return string
+     */
+    public function getLogs()
+    {
+        if ($this->debug()) {
+            return $this->logger->dump();
+        }
+        return '';
     }
 
     /**
@@ -138,6 +176,12 @@ class Email
 
             // Create the Mailer using your created Transport
             $this->mailer = \Swift_Mailer::newInstance($transport);
+
+            // Register the logger if we're debugging.
+            if ($this->debug()) {
+                $this->logger = new \Swift_Plugins_Loggers_ArrayLogger();
+                $this->mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($this->logger));
+            }
         }
 
         return $this->mailer;
