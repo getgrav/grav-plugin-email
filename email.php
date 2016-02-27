@@ -182,8 +182,8 @@ class EmailPlugin extends Plugin
                 case 'to':
                     if (is_string($value) && !empty($params['to_name'])) {
                         $value = array(
-                          'mail' => $twig->processString($value, $vars),
-                          'name' => $twig->processString($params['to_name'], $vars),
+                            'mail' => $twig->processString($value, $vars),
+                            'name' => $twig->processString($params['to_name'], $vars),
                         );
                     }
 
@@ -226,8 +226,8 @@ class EmailPlugin extends Plugin
             // Single e-mail address array
             if (!empty($value['mail'])) {
                 $parsed[] = (object) array(
-                  'mail' => $twig->processString($value['mail'], $vars),
-                  'name' => !empty($value['name']) ? $twig->processString($value['name'], $vars) : NULL,
+                    'mail' => $twig->processString($value['mail'], $vars),
+                    'name' => !empty($value['name']) ? $twig->processString($value['name'], $vars) : NULL,
                 );
             }
 
