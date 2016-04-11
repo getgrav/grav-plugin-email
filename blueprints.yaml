@@ -98,6 +98,7 @@ form:
         none: None
         ssl: SSL
         tls: TLS
+        starttls: STARTTLS
 
     mailer.smtp.user:
       type: text
