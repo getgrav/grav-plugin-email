@@ -1,8 +1,12 @@
 # v2.3.0
-## 02/27/2016
+## xx/xx/2016
 
 1. [](#improved)
     * Added debug option to enable logging on SwiftMailer.
+    * Updated SwiftMailer from v5.1.0 to v5.4.1.
+    * Added an option in the Admin settings to enable `starttls`
+1. [](#bugfix)
+    * Correctly name TLS in the Admin settings, the label was `TTS` (but the value was correctly named `tls`)
 
 # v2.2.0
 ## 02/05/2016
@@ -11,7 +15,7 @@
     * Allow to send attachments in forms
     * Added French translation
 1. [](#improved)
-    * Throw an exception when trying to send emails without a `from` or `to` parameters setup, to intercept less meaningful errors and provide a better description on how to fix the problem 
+    * Throw an exception when trying to send emails without a `from` or `to` parameters setup, to intercept less meaningful errors and provide a better description on how to fix the problem
     * Changed SMTP password in admin to use a password field instead of plain text
 
 # v2.1.0
@@ -53,7 +57,7 @@
 
 1. [](#improved)
     * Disable `enable` in admin
-    
+
 # v0.1.0
 ## 08/04/2015
 
