@@ -12,32 +12,21 @@ $ bin/gpm install email
 
 # Configuration
 
-Simply copy the `user/plugins/email/email.yaml` into `user/config/plugins/email.yaml` and make your modifications.
+By default, the plugin uses PHP Mail as the mail engine. 
 
-```
-enabled: true
-from:
-from_name:
-to:
-to_name:
-mailer:
-  engine: mail
-  smtp:
-    server: localhost
-    port: 25
-    encryption: none
-    user: ''
-    password: ''
-  sendmail:
-    bin: '/usr/sbin/sendmail'
-content_type: text/html
-```
+You can configure the Email plugin by using the Admin plugin, navigating to the Plugins list and choosing `Email`.
+
+That's the easiest route. Or you can also alter the Plugin configuration by copying the `user/plugins/email/email.yaml` file into `user/config/plugins/email.yaml` and make your modifications there.
+
+The first setting you'd likely change is your `Email from` / `Email to` names and emails.
+
+Also, you'd likely want to setup a SMTP server instead of using PHP Mail, as the latter is not 100% reliable and you might experience problems with emails.
 
 # Testing emails
 
-A good way to test emails is to setup a fake SMTP server, for example using [https://mailtrap.io](https://mailtrap.io)
+A good way to test emails is to use a SMTP server service that's built for testing emails, for example [https://mailtrap.io](https://mailtrap.io)
 
-Setup the Email plugin to use that SMTP server with the fake inbox data. For example:
+Setup the Email plugin to use that SMTP server with the fake inbox data. For example enter this configuration in `user/config/plugins/email.yaml` or through the Admin panel:
 
 ```
 mailer:
@@ -52,7 +41,7 @@ mailer:
 
 That service will intercept emails and show them on their web-based interface instead of sending them for real.
 
-You can try and fine tune the emails there when testing.
+You can try and fine tune the emails there while testing.
 
 # Programmatically send emails
 
@@ -98,7 +87,7 @@ form:
         content_type: 'text/plain'
 ```
 
-## Sending Attachments (not yet released)
+## Sending Attachments
 
 You can add file inputs to your form, and send those files via Email.
 Just add an `attachments` field and list the file input fields names. You can have multiple file fields, and this will send all the files as attachments. Example:
@@ -194,3 +183,11 @@ body:
     body: "{% include 'forms/default/data.txt.twig' %}"
     charset: 'iso-8859-1'
 ```
+
+# Troubleshooting
+
+## Emails are not sent
+
+As explained above in the Configuration section, if you're using the default settings, set the Plugin configuration to use a SMTP server. It can be [Gmail](https://www.digitalocean.com/community/tutorials/how-to-use-google-s-smtp-server) or another SMTP server you have at your disposal. 
+
+This is the first thing to check. The reason is that PHP Mail, the default system used by the Plugin, is not 100% reliable and emails might not arrive.
