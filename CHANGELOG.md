@@ -1,3 +1,11 @@
+# v2.4.0
+## 05/11/2016
+
+1. [](#improved)
+    * Now includes Swiftmailer v5.4.2 which introduces a number of bug fixes and improvements
+1. [](#bugfix)
+    * Correct `starttls` implementation, bundled in TLS
+
 # v2.3.0
 ## 04/20/2016
 
