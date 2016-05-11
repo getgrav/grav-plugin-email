@@ -1,3 +1,9 @@
+# v2.4.0
+## 05/11/2016
+
+1. [](#bugfix)
+    * Correct `starttls` implementation, bundled in TLS
+
 # v2.3.0
 ## 04/20/2016
 
