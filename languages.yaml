@@ -26,3 +26,8 @@ it:
     PLUGIN_EMAIL:
         PLEASE_CONFIGURE_A_TO_ADDRESS: "Per favore, configura l'indirizzo di destinazione ('to') nella configurazione del Plugin Email, oppure direttamente nella form."
         PLEASE_CONFIGURE_A_FROM_ADDRESS: "Per favore, configura l'indirizzo di provenienza ('from') nella configurazione del Plugin Email, oppure direttamente nella form"
+
+da:
+    PLUGIN_EMAIL:
+        PLEASE_CONFIGURE_A_TO_ADDRESS: "Konfigurere venligst en 'til' email adresse i Email Plugin indstillingerne eller her i formularen"
+        PLEASE_CONFIGURE_A_FROM_ADDRESS: "Konfigurere venligst en 'fra' email adresse i Email Plugin indstillingerne eller her i formularen"
