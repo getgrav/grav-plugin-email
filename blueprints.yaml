@@ -64,6 +64,7 @@ form:
       size: medium
       label: Email to
       placeholder: "Default email to address"
+      multiple: true
       validate:
         required: true
         type: email
