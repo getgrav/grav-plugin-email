@@ -1,3 +1,10 @@
+# v2.4.1
+## 07/14/2016
+
+1. [](#improved)
+    * Allow multiple email recipients (comma separated) [#31](https://github.com/getgrav/grav-plugin-email/issues/31)
+    * Added Danish and Spanish translations
+
 # v2.4.0
 ## 05/11/2016
 
