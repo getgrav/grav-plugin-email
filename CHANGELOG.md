@@ -1,3 +1,9 @@
+# v2.x.x
+## 08/xx/2016
+
+1. [](#improved)
+    * Added Croatian translation
+
 # v2.4.1
 ## 07/14/2016
 
@@ -47,11 +53,11 @@
 ## 12/11/2015
 
 1. [](#new)
-	* Added support for from/sender name (Thomas Keitel)
-	* Added support for message content type (Thomas Keitel)
-	* Added support for reply addresses (Thomas Keitel)
-	* Added support for CC/BCC (Thomas Keitel)
-	* Added support for multiple body parts (Thomas Keitel)
+    * Added support for from/sender name (Thomas Keitel)
+    * Added support for message content type (Thomas Keitel)
+    * Added support for reply addresses (Thomas Keitel)
+    * Added support for CC/BCC (Thomas Keitel)
+    * Added support for multiple body parts (Thomas Keitel)
 1. [](#bugfix)
     * Fix email engine selection (z38)
 
