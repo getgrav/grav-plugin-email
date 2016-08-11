@@ -1,5 +1,5 @@
-# v2.x.x
-## 08/xx/2016
+# v2.4.2
+## 08/10/2016
 
 1. [](#improved)
     * Added Croatian translation
