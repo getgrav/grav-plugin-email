@@ -1,3 +1,9 @@
+# v2.4.x
+## 08/xx/2016
+
+1. [](#improved)
+    * Added Russian translation
+
 # v2.4.2
 ## 08/10/2016
 
