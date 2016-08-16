@@ -1,8 +1,9 @@
-# v2.4.x
-## 08/xx/2016
+# v2.4.3
+## 08/16/2016
 
 1. [](#improved)
     * Added Russian translation
+    * Updated Swiftmailer to 5.4.3 [#37](https://github.com/getgrav/grav-plugin-email/issues/37)
 
 # v2.4.2
 ## 08/10/2016
