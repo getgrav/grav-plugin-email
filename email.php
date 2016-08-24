@@ -136,6 +136,11 @@ class EmailPlugin extends Plugin
                     }
                     elseif (is_array($value)) {
                         foreach ($value as $body_part) {
+                            $body_part += array(
+                                'charset' => $params['charset'],
+                                'content_type' => $params['content_type'],
+                            );
+
                             $body = !empty($body_part['body']) ? $twig->processString($body_part['body'], $vars) : null;
                             $content_type = !empty($body_part['content_type']) ? $twig->processString($body_part['content_type'], $vars) : null;
                             $charset = !empty($body_part['charset']) ? $twig->processString($body_part['charset'], $vars) : null;
