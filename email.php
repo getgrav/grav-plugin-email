@@ -97,11 +97,13 @@ class EmailPlugin extends Plugin
             'bcc' => $this->config->get('plugins.email.bcc', array()),
             'body' => $this->config->get('plugins.email.body', '{% include "forms/data.html.twig" %}'),
             'cc' => $this->config->get('plugins.email.cc', array()),
+            'cc_name' => $this->config->get('plugins.email.cc_name'),
             'charset' =>  $this->config->get('plugins.email.charset', 'utf-8'),
             'from' => $this->config->get('plugins.email.from'),
             'from_name' => $this->config->get('plugins.email.from_name'),
             'content_type' => $this->config->get('plugins.email.content_type', 'text/html'),
             'reply_to' => $this->config->get('plugins.email.reply_to', array()),
+            'reply_to_name' => $this->config->get('plugins.email.reply_to_name'),
             'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
             'to' => $this->config->get('plugins.email.to'),
             'to_name' => $this->config->get('plugins.email.to_name'),
@@ -156,6 +158,13 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'cc':
+                    if (is_string($value) && !empty($params['cc_name'])) {
+                        $value = array(
+                            'mail' => $twig->processString($value, $vars),
+                            'name' => $twig->processString($params['cc_name'], $vars),
+                        );
+                    }
+
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
                         $message->addCc($address->mail, $address->name);
                     }
@@ -175,6 +184,13 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'reply_to':
+                    if (is_string($value) && !empty($params['reply_to_name'])) {
+                        $value = array(
+                            'mail' => $twig->processString($value, $vars),
+                            'name' => $twig->processString($params['reply_to_name'], $vars),
+                        );
+                    }
+
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
                         $message->addReplyTo($address->mail, $address->name);
                     }
