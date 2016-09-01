@@ -43,6 +43,22 @@ That service will intercept emails and show them on their web-based interface in
 
 You can try and fine tune the emails there while testing.
 
+## Testing with CLI Command
+
+You can test your email configuration with the following CLI Command:
+
+```
+$ bin/plugin email test-email -t steve@apple.com
+```
+
+You can also pass in a configuration environment:
+
+```
+$ bin/plugin email test-email -t steve@apple.com -e mysite.com
+```
+
+This will use the email configuration you have located in `user/mysite.com/config/plugins/email.yaml`. Read the docs to find out more about environment-based configuration: https://learn.getgrav.org/advanced/environment-config
+
 # Programmatically send emails
 
 Add this code in your plugins:
