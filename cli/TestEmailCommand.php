@@ -93,7 +93,7 @@ class TestEmailCommand extends ConsoleCommand
         }
 
         if (!$body) {
-            $body = '<div style="font-family:helvetica;arial;"><p>This is an email that is intended to test the validity of the email plugin settings.</p>The fact that you are reading this indicates that email settings were good!</p><p><strong>Well done!</strong></p></div>';
+            $body = '<div style="font-family:helvetica;arial;"><p>This email is intended to test the validity of the email plugin settings.</p>The fact that you are reading this indicates that email settings are good!</p><p><strong>Well done!</strong></p></div>';
         }
 
         if ($email) {
@@ -106,7 +106,7 @@ class TestEmailCommand extends ConsoleCommand
 
             $email->send($message);
 
-            $this->output->writeln("<green>Message sent sucessfully!</green>");
+            $this->output->writeln("<green>Message sent successfully!</green>");
         } else {
             $this->output->writeln("<red>Email object not found, probably not enabled.</red>");
         }
