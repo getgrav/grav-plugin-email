@@ -1,3 +1,12 @@
+# v2.5.0
+## xx/xx/2016
+
+1. [](#new)
+    * Added a new `bin/plugin email test-email` CLI command
+1. [](#improved)
+    * Moved Email `Utils` class from Login to Email plugin
+    * Provide a sample base `email/base.html.twig` template for emails
+
 # v2.4.3
 ## 08/16/2016
 

@@ -11,19 +11,22 @@ use Grav\Common\Grav;
 class Utils
 {
     /**
-     * Handle sending an email.
+     * Quick utility method to send an HTML email.
      *
      * @param        $subject
      * @param string $content
      * @param string $to
      *
+     * @param null $from
      * @return bool True if the action was performed.
      */
-    public static function sendEmail($subject, $content, $to)
+    public static function sendEmail($subject, $content, $to, $from = null)
     {
         $grav = Grav::instance();
 
-        $from = $grav['config']->get('plugins.email.from');
+        if (!$from) {
+            $from = $grav['config']->get('plugins.email.from');
+        }
 
         if (!isset($grav['Email']) || empty($from)) {
             throw new \RuntimeException($grav['language']->translate('PLUGIN_EMAIL.EMAIL_NOT_CONFIGURED'));
