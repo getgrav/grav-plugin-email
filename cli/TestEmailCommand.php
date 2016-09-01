@@ -2,8 +2,9 @@
 namespace Grav\Plugin\Console;
 
 use Grav\Common\Grav;
-use Grav\Plugin\Email;
 use Grav\Console\ConsoleCommand;
+use Grav\Plugin\Email\Email;
+use Grav\Plugin\Email\Utils as EmailUtils;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -58,32 +59,20 @@ class TestEmailCommand extends ConsoleCommand
      */
     protected function serve()
     {
-//        $environment = $this->input->getOption('env');
-        $environment = 'grav.rhuk.net';
-
         $grav = Grav::instance();
-
-        $grav['setup']->def('environment', $environment);
-        $grav['setup']->def('streams.schemes.environment.prefixes', ['' => ["user://{$environment}"]]);
-
-        $grav['setup']->init();
-        $grav['config']->init();
 
         $this->output->writeln('');
         $this->output->writeln('<yellow>Current Configuration:</yellow>');
         $this->output->writeln('');
 
-        print_r($grav['config']->get('plugins.email'));
+        dump($grav['config']->get('plugins.email'));
 
         $this->output->writeln('');
 
-        require_once __DIR__ . '/../classes/email.php';
         require_once __DIR__ . '/../vendor/autoload.php';
 
-        /** @var Email $email */
-        $email = new Email();
+        $grav['Email'] = new Email();
 
-        $email_from = $grav['config']->get('plugins.email.from');
         $email_to = $this->input->getOption('to');
         $subject = $this->input->getOption('subject');
         $body = $this->input->getOption('body');
@@ -93,22 +82,17 @@ class TestEmailCommand extends ConsoleCommand
         }
 
         if (!$body) {
-            $body = '<div style="font-family:helvetica;arial;"><p>This email is intended to test the validity of the email plugin settings.</p>The fact that you are reading this indicates that email settings are good!</p><p><strong>Well done!</strong></p></div>';
+            $configuration = print_r($grav['config']->get('plugins.email'), true);
+            $body = $grav['language']->translate(['PLUGIN_EMAIL.TEST_EMAIL_BODY', $configuration]);
         }
 
-        if ($email) {
-            $message = $email->message();
-            $message->setContentType('text/html');
-            $message->setTo($email_to);
-            $message->setFrom($email_from);
-            $message->setSubject($subject);
-            $message->setBody($body);
+        $sent = EmailUtils::sendEmail($subject, $body, $email_to);
 
-            $email->send($message);
-
+        if ($sent) {
             $this->output->writeln("<green>Message sent successfully!</green>");
         } else {
-            $this->output->writeln("<red>Email object not found, probably not enabled.</red>");
+            $this->output->writeln("<red>Problem sending email...</red>");
         }
+
     }
 }

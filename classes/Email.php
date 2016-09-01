@@ -1,5 +1,5 @@
 <?php
-namespace Grav\Plugin;
+namespace Grav\Plugin\Email;
 
 use Grav\Common\Config\Config;
 use Grav\Common\GravTrait;
