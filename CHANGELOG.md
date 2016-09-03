@@ -6,6 +6,8 @@
 1. [](#improved)
     * Moved Email `Utils` class from Login to Email plugin
     * Provide a sample base `email/base.html.twig` template for emails
+1. [](#bugfix)
+    * Fix handling attachments with the updated file upload field
 
 # v2.4.3
 ## 08/16/2016
