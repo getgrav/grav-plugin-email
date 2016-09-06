@@ -1,5 +1,5 @@
-# v2.5.0
-## xx/xx/2016
+# v2.5.0-rc.1
+## 09/06/2016
 
 1. [](#new)
     * Added a new `bin/plugin email test-email` CLI command
