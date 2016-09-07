@@ -4,15 +4,31 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit94684784c8d90dc0335b4e70d4b5afbf
+class ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf
 {
     public static $files = array (
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
     );
 
+    public static $prefixLengthsPsr4 = array (
+        'G' => 
+        array (
+            'Grav\\Plugin\\Email\\' => 18,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Grav\\Plugin\\Email\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/classes',
+        ),
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

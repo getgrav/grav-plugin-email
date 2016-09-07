@@ -1,5 +1,5 @@
 name: Email
-version: 2.4.3
+version: 2.5.0
 description: Enables the emailing system for Grav
 icon: envelope
 author:
@@ -10,6 +10,9 @@ keywords: plugin, email, sender
 homepage: https://github.com/getgrav/grav-plugin-email
 bugs: https://github.com/getgrav/grav-plugin-email/issues
 license: MIT
+
+dependencies:
+    - { name: grav, version: '>=1.1.4' }
 
 form:
   validation: loose

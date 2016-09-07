@@ -3,6 +3,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Plugin;
 use Grav\Common\Twig\Twig;
+use Grav\Plugin\Email\Email;
 use RocketTheme\Toolbox\Event\Event;
 
 class EmailPlugin extends Plugin
@@ -19,7 +20,8 @@ class EmailPlugin extends Plugin
     {
         return [
             'onPluginsInitialized' => ['onPluginsInitialized', 0],
-            'onFormProcessed' => ['onFormProcessed', 0]
+            'onFormProcessed' => ['onFormProcessed', 0],
+            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
         ];
     }
 
@@ -28,7 +30,6 @@ class EmailPlugin extends Plugin
      */
     public function onPluginsInitialized()
     {
-        require_once __DIR__ . '/classes/email.php';
         require_once __DIR__ . '/vendor/autoload.php';
 
         $this->email = new Email();
@@ -36,6 +37,15 @@ class EmailPlugin extends Plugin
         if ($this->email->enabled()) {
             $this->grav['Email'] = $this->email;
         }
+    }
+
+    /**
+     * Add twig paths to plugin templates.
+     */
+    public function onTwigTemplatePaths()
+    {
+        $twig = $this->grav['twig'];
+        $twig->twig_paths[] = __DIR__ . '/templates';
     }
 
     /**
@@ -67,8 +77,14 @@ class EmailPlugin extends Plugin
                     $filesToAttach = (array)$params['attachments'];
                     if ($filesToAttach) foreach ($filesToAttach as $fileToAttach) {
                         $filesValues = $form->value($fileToAttach);
+
                         if ($filesValues) foreach($filesValues as $fileValues) {
-                            $filename = $fileValues['file'];
+                            if (isset($fileValues['file'])) {
+                                $filename = $fileValues['file'];
+                            } else {
+                                $filename = ROOT_DIR . $fileValues['path'];
+                            }
+
                             $message->attach(\Swift_Attachment::fromPath($filename));
                         }
                     }
