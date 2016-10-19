@@ -1,3 +1,10 @@
+# v2.5.1
+## 10/19/2016
+
+1. [](#improved)
+    * CLI command will fallback to use the `to` from email plugin config if not provided
+    * Explicit Composer based class loader to fix issues with class case
+    
 # v2.5.0
 ## 09/07/2016
 
