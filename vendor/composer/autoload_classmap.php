@@ -6,4 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Grav\\Plugin\\Email\\Email' => $baseDir . '/classes/Email.php',
+    'Grav\\Plugin\\Email\\Utils' => $baseDir . '/classes/Utils.php',
 );

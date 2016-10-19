@@ -24,11 +24,17 @@ class ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf
         ),
     );
 
+    public static $classMap = array (
+        'Grav\\Plugin\\Email\\Email' => __DIR__ . '/../..' . '/classes/Email.php',
+        'Grav\\Plugin\\Email\\Utils' => __DIR__ . '/../..' . '/classes/Utils.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf::$classMap;
 
         }, null, ClassLoader::class);
     }
