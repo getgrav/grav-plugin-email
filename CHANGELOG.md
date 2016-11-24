@@ -1,3 +1,11 @@
+# v2.5.2
+## xx/xx/2016
+
+1. [](#new)
+    * Added a new `process_markdown` option for emails in forms
+1. [](#improved)
+    * Improved the `Utils::sendEmail()` method to take the email type as an option
+
 # v2.5.1
 ## 10/19/2016
 

@@ -121,6 +121,7 @@ class EmailPlugin extends Plugin
             'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
             'to' => $this->config->get('plugins.email.to'),
             'to_name' => $this->config->get('plugins.email.to_name'),
+            'process_markdown' => false,
         );
 
         // Create message object.
@@ -145,6 +146,12 @@ class EmailPlugin extends Plugin
                 case 'body':
                     if (is_string($value)) {
                         $body = $twig->processString($value, $vars);
+
+                        if ($params['process_markdown']) {
+                            $parsedown = new \Parsedown();
+                            $body = $parsedown->text($body);
+                        }
+
                         $content_type = !empty($params['content_type']) ? $twig->processString($params['content_type'], $vars) : null;
                         $charset = !empty($params['charset']) ? $twig->processString($params['charset'], $vars) : null;
 
@@ -153,6 +160,12 @@ class EmailPlugin extends Plugin
                     elseif (is_array($value)) {
                         foreach ($value as $body_part) {
                             $body = !empty($body_part['body']) ? $twig->processString($body_part['body'], $vars) : null;
+
+                            if ($params['process_markdown']) {
+                                $parsedown = new \Parsedown();
+                                $body = $parsedown->text($body);
+                            }
+
                             $content_type = !empty($body_part['content_type']) ? $twig->processString($body_part['content_type'], $vars) : null;
                             $charset = !empty($body_part['charset']) ? $twig->processString($body_part['charset'], $vars) : null;
 
