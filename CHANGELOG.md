@@ -1,5 +1,5 @@
-# v2.5.2
-## xx/xx/2016
+# v2.5.2-rc.1
+## 11/26/2016
 
 1. [](#new)
     * Added a new `process_markdown` option for emails in forms
