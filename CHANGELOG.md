@@ -1,5 +1,5 @@
-# v2.5.x
-## xx/xx/2017
+# v2.5.3
+## 01/03/2017
 
 1. [](#improved)
     * Updated to SwiftMailer 5.4.5 [#45](https://github.com/getgrav/grav-plugin-email/issues/45)
