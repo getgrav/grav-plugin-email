@@ -16,11 +16,12 @@ class Utils
      * @param        $subject
      * @param string $content
      * @param string $to
-     *
      * @param null $from
+     * @param string $mimetype
+     *
      * @return bool True if the action was performed.
      */
-    public static function sendEmail($subject, $content, $to, $from = null)
+    public static function sendEmail($subject, $content, $to, $from = null, $mimetype = 'text/html')
     {
         $grav = Grav::instance();
 
@@ -41,7 +42,7 @@ class Utils
 
         $body = $grav['twig']->processTemplate('email/base.html.twig', ['content' => $content]);
 
-        $message = $grav['Email']->message($subject, $body, 'text/html')
+        $message = $grav['Email']->message($subject, $body, $mimetype)
             ->setFrom($from)
             ->setTo($to);
 

@@ -4,6 +4,20 @@
 1. [](#improved)
     * Updated to SwiftMailer 5.4.5 [#45](https://github.com/getgrav/grav-plugin-email/issues/45)
 
+# v2.5.2
+## 12/13/2016
+
+1. [](#new)
+    * RC released as stable
+
+# v2.5.2-rc.1
+## 11/26/2016
+
+1. [](#new)
+    * Added a new `process_markdown` option for emails in forms
+1. [](#improved)
+    * Improved the `Utils::sendEmail()` method to take the email type as an option
+
 # v2.5.1
 ## 10/19/2016
 
