@@ -127,7 +127,7 @@ form:
       type: textarea
       size: medium
       label: Email body
-      placeholder: "Defauls to a table of all form fields"
+      placeholder: "Defaults to a table of all form fields"
 
     mailer.smtp.server:
       type: text
