@@ -226,7 +226,7 @@ class EmailPlugin extends Plugin
                     break;
 
                 case 'subject':
-                    $message->setSubject($twig->processString($value, $vars));
+                    $message->setSubject($twig->processString($this->grav['language']->translate($value), $vars));
                     break;
 
                 case 'to':
