@@ -1,5 +1,5 @@
-# v2.x.x
-## 01/xx/2017
+# v2.6.0
+## 05/22/2017
 
 1. [](#improved)
     * Inherit options from plugin configuration [#39](https://github.com/getgrav/grav-plugin-email/pull/39)
