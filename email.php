@@ -157,7 +157,7 @@ class EmailPlugin extends Plugin
                         $content_type = !empty($params['content_type']) ? $twig->processString($params['content_type'], $vars) : null;
                         $charset = !empty($params['charset']) ? $twig->processString($params['charset'], $vars) : null;
 
-                        $message->setBody($body, $content_type, $charset);
+                        $message->setBody(htmlspecialchars_decode($body), $content_type, $charset);
                     }
                     elseif (is_array($value)) {
                         foreach ($value as $body_part) {
@@ -177,7 +177,7 @@ class EmailPlugin extends Plugin
                             $charset = !empty($body_part['charset']) ? $twig->processString($body_part['charset'], $vars) : null;
 
                             if (!$message->getBody()) {
-                                $message->setBody($body, $content_type, $charset);
+                                $message->setBody(htmlspecialchars_decode($body), $content_type, $charset);
                             }
                             else {
                                 $message->addPart($body, $content_type, $charset);
