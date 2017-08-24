@@ -1,3 +1,9 @@
+# v2.6.1
+## xx/xx/2017
+
+1. [](#improved)
+    * Improved the error message when missing `from` in the configuration
+
 # v2.6.0
 ## 05/22/2017
 
