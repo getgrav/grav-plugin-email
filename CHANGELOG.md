@@ -1,5 +1,5 @@
 # v2.6.1
-## xx/xx/2017
+## 09/07/2017
 
 1. [](#improved)
     * Improved the error message when missing `from` in the configuration
