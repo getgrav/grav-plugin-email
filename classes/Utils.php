@@ -30,7 +30,7 @@ class Utils
         }
 
         if (!isset($grav['Email']) || empty($from)) {
-            throw new \RuntimeException($grav['language']->translate('PLUGIN_EMAIL.EMAIL_NOT_CONFIGURED'));
+            throw new \RuntimeException($grav['language']->translate('PLUGIN_EMAIL.PLEASE_CONFIGURE_A_FROM_ADDRESS'));
         }
 
         if (empty($to) || empty($subject) || empty($content)) {
