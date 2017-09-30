@@ -1,3 +1,9 @@
+# v2.6.2
+## 09/30/2017
+
+1. [](#improved)
+    * Removed extraneous files from vendor folder 
+
 # v2.6.1
 ## 09/07/2017
 
