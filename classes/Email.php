@@ -165,13 +165,11 @@ class Email
                     }
                     break;
                 case 'sendmail':
+                default:
                     $options = $config->get('plugins.email.mailer.sendmail');
                     $bin = !empty($options['bin']) ? $options['bin'] : '/usr/sbin/sendmail';
                     $transport = \Swift_SendmailTransport::newInstance($bin);
                     break;
-                case 'mail':
-                default:
-                    $transport = \Swift_MailTransport::newInstance();
             }
 
             // Create the Mailer using your created Transport

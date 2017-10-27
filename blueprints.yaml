@@ -36,7 +36,6 @@ form:
         none: Disabled
         smtp: SMTP
         sendmail: Sendmail
-        mail: PHP Mail
 
     content_type:
       type: select
