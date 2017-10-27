@@ -2,12 +2,12 @@
 namespace Grav\Plugin\Email;
 
 use Grav\Common\Config\Config;
-use Grav\Common\GravTrait;
+use Grav\Common\Grav;
+use \Monolog\Logger;
+use \Monolog\Handler\StreamHandler;
 
 class Email
 {
-    use GravTrait;
-
     /**
      * @var \Swift_Transport
      */
@@ -25,7 +25,7 @@ class Email
      */
     public function enabled()
     {
-        return self::getGrav()['config']->get('plugins.email.mailer.engine') != 'none';
+        return Grav::instance()['config']->get('plugins.email.mailer.engine') != 'none';
     }
 
     /**
@@ -35,7 +35,7 @@ class Email
      */
     public function debug()
     {
-        return self::getGrav()['config']->get('plugins.email.debug') == 'true';
+        return Grav::instance()['config']->get('plugins.email.debug') == 'true';
     }
 
     /**
@@ -105,10 +105,14 @@ class Email
 
         // Check if emails and debugging are both enabled.
         if ($mailer && $this->debug()) {
-            // Get an instance of the logging service.
-            $log = self::getGrav()['log'];
+
+            $log = new Logger('email');
+            $locator = Grav::instance()['locator'];
+            $log_file = $locator->findResource('log://email.log', true, true);
+            $log->pushHandler(new StreamHandler($log_file, Logger::DEBUG));
+
             // Append the SwiftMailer log to the log.
-            $log->addDebug("Email Log: " . $this->getLogs());
+            $log->addDebug($this->getLogs());
         }
 
         return $result;
@@ -139,7 +143,7 @@ class Email
 
         if (!$this->mailer) {
             /** @var Config $config */
-            $config = self::getGrav()['config'];
+            $config = Grav::instance()['config'];
             $mailer = $config->get('plugins.email.mailer.engine');
 
             // Create the Transport and initialize it.
@@ -165,13 +169,11 @@ class Email
                     }
                     break;
                 case 'sendmail':
+                default:
                     $options = $config->get('plugins.email.mailer.sendmail');
                     $bin = !empty($options['bin']) ? $options['bin'] : '/usr/sbin/sendmail';
                     $transport = \Swift_SendmailTransport::newInstance($bin);
                     break;
-                case 'mail':
-                default:
-                    $transport = \Swift_MailTransport::newInstance();
             }
 
             // Create the Mailer using your created Transport

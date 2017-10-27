@@ -4,7 +4,7 @@ from_name:
 to:
 to_name:
 mailer:
-  engine: mail
+  engine: sendmail
   smtp:
     server: localhost
     port: 25
@@ -12,6 +12,6 @@ mailer:
     user: ''
     password: ''
   sendmail:
-    bin: '/usr/sbin/sendmail'
+    bin: '/usr/sbin/sendmail -bs'
 content_type: text/html
 debug: false

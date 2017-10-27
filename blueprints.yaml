@@ -1,5 +1,5 @@
 name: Email
-version: 2.6.2
+version: 2.7.0
 description: Enables the emailing system for Grav
 icon: envelope
 author:
@@ -36,7 +36,6 @@ form:
         none: Disabled
         smtp: SMTP
         sendmail: Sendmail
-        mail: PHP Mail
 
     content_type:
       type: select

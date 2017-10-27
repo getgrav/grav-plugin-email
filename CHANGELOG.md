@@ -1,3 +1,11 @@
+# v2.7.0
+## 10/26/2017
+
+1. [](#improved)
+    * Now uses a dedicated `logs/email.log` file when `debug: true`
+    * Improved the README.txt file with examples, and troubleshooting
+    * Changed default engine to `sendmail` as `mail` is deprecated and not functioning [swiftmailer#866](https://github.com/swiftmailer/swiftmailer/issues/866}
+
 # v2.6.2
 ## 09/30/2017
 
