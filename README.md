@@ -88,6 +88,23 @@ mailer:
 
 > NOTE: Check your email sending limits: https://support.google.com/a/answer/166852?hl=en
 
+#### Sparkpost
+
+Generous email sending limits even in the free tier, and simple setup, make [Sparkpost](https://www.sparkpost.com) a great option for email sending. You just need to create an account, then setup a verified sending domain.  Sparkpost does a nice job of making this process very easy and undertandable. Then just click on the SMTP Relay option to get your details for the configuration:
+
+```
+mailer:
+  engine: smtp
+  smtp:
+    server: smtp.sparkpostmail.com
+    port: 587
+    encryption: tls
+    user: 'SMTP_Injection'
+    password: 'SEND_EMAIL_API_KEY'
+```
+
+Then try sending a test email...
+
 #### Sendgrid
 
 [Sendgrid](https://sendgrid.com) offers a very easy-to-setup serivce with 100 emails/day for free.  The next level allows you to send 40k/email a day for just $10/month. Configuration is pretty simple, just create an account, then click SMTP integration and click the button to create an API key.  The configuration is as follows:
@@ -157,7 +174,7 @@ Solid SMTP options that even provide a FREE tier for low email volumes include:
 * SendGrid (100/day free) - https://sendgrid.com
 * Mailgun - (10k/month free) - https://www.mailgun.com
 * Mailjet - (6k/month free) - https://www.mailjet.com/
-* Sparkmail - (15k/month free) - https://www.sparkpost.com
+* Sparkpost - (15k/month free) - https://www.sparkpost.com
 * Amazon SES (62k/month free) - https://aws.amazon.com/ses/
 
 If you are still unsure why should be using one in the first place, check out this article: https://zapier.com/learn/email-marketing/best-transactional-email-sending-services/
