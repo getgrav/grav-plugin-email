@@ -101,6 +101,18 @@ mailer:
 
 Simply adjust your binary command line to suite your environment
 
+### Other SMTP Email Services
+
+Solid SMTP options that even provide a FREE tier for low email volumes include:
+
+* Amazon SES (62k/month free) - https://aws.amazon.com/ses/
+* SendGrid (100/day free) - https://sendgrid.com
+* Mailgun - (10k/month free) - https://www.mailgun.com
+* Mailjet - (6k/month free) - https://www.mailjet.com/
+* Sparkmail - (15k/month free) - https://www.sparkpost.com
+
+If you are still unsure why should be using one in the first place, check out this article: https://zapier.com/learn/email-marketing/best-transactional-email-sending-services/
+
 ## Testing with CLI Command
 
 You can test your email configuration with the following CLI Command:
