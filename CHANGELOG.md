@@ -1,3 +1,13 @@
+# v2.7.1
+## 12/05/2017
+
+1. [](#new)
+    * Added new `onEmailSend()` event hook before sending [#70](https://github.com/getgrav/grav-plugin-email/pull/70)
+1. [](#improved)
+    * Added examples of setting up Email plugin with various SMTP providers
+    * Updated RU language [#60](https://github.com/getgrav/grav-plugin-email/pull/60)
+    * Updated to SwiftMailer v5.4.8
+
 # v2.7.0
 ## 10/26/2017
 
