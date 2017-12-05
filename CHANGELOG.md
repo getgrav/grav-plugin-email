@@ -1,5 +1,5 @@
 # v2.7.1
-## xx/xx/2017
+## 12/05/2017
 
 1. [](#new)
     * Added new `onEmailSend()` event hook before sending [#70](https://github.com/getgrav/grav-plugin-email/pull/70)
