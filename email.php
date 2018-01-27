@@ -37,7 +37,7 @@ class EmailPlugin extends Plugin
         $this->email = new Email();
 
         if ($this->email->enabled()) {
-            $this->grav['Email'] = $this->email;
+            $this->grav['email'] = $this->email;
         }
     }
 
