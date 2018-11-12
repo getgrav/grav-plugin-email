@@ -3,6 +3,8 @@
 
 1. [](#new)
     * Switched to SwiftMailer v.6.1.3 (requires PHP7)
+1. [](#improved)
+    * SwiftMailer 6.x compatibility fixes    
 
 # v2.7.1
 ## 12/05/2017

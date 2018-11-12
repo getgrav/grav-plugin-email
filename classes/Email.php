@@ -149,7 +149,7 @@ class Email
             // Create the Transport and initialize it.
             switch ($mailer) {
                 case 'smtp':
-                    $transport = \Swift_SmtpTransport::newInstance();
+                    $transport = new \Swift_SmtpTransport();
 
                     $options = $config->get('plugins.email.mailer.smtp');
                     if (!empty($options['server'])) {
@@ -172,12 +172,12 @@ class Email
                 default:
                     $options = $config->get('plugins.email.mailer.sendmail');
                     $bin = !empty($options['bin']) ? $options['bin'] : '/usr/sbin/sendmail';
-                    $transport = \Swift_SendmailTransport::newInstance($bin);
+                    $transport = new \Swift_SendmailTransport($bin);
                     break;
             }
 
             // Create the Mailer using your created Transport
-            $this->mailer = \Swift_Mailer::newInstance($transport);
+            $this->mailer = new \Swift_Mailer($transport);
 
             // Register the logger if we're debugging.
             if ($this->debug()) {
