@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Grav\\Plugin\\Email\\' => array($baseDir . '/classes'),
+    'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/EmailValidator'),
 );

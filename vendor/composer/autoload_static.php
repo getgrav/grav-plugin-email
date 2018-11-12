@@ -15,12 +15,30 @@ class ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf
         array (
             'Grav\\Plugin\\Email\\' => 18,
         ),
+        'E' => 
+        array (
+            'Egulias\\EmailValidator\\' => 23,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Grav\\Plugin\\Email\\' => 
         array (
             0 => __DIR__ . '/../..' . '/classes',
+        ),
+        'Egulias\\EmailValidator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/egulias/email-validator/EmailValidator',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'D' => 
+        array (
+            'Doctrine\\Common\\Lexer\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/doctrine/lexer/lib',
+            ),
         ),
     );
 
@@ -29,6 +47,7 @@ class ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitdec5d78def1384d1f20996ded9d7efbf::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }
