@@ -118,3 +118,11 @@ ru:
     PLEASE_CONFIGURE_A_FROM_ADDRESS: "Пожалуйста настройте адрес отправителя ('from') в настройках плагина Email Plugin, или на форме"
     TEST_EMAIL_BODY: "<h1>Тестирование электронной почты</h1><p>Это тестовое письмо отправлено на основе следующей конфигурации:</p>  <p><pre>%1$s</pre></p>"
     EMAIL_FOOTER: "GetGrav.org"
+
+uk:
+  PLUGIN_EMAIL:
+    EMAIL_NOT_CONFIGURED: "Електронна пошта не налаштована"
+    PLEASE_CONFIGURE_A_TO_ADDRESS: "Будь ласка налаштуйте адресу одержувача ('to') в налаштуваннях плагіна Email Plugin, або на формі"
+    PLEASE_CONFIGURE_A_FROM_ADDRESS: "Будь ласка налаштуйте адресу відправника ('from') в налаштуваннях плагіна Email Plugin, або на формі"
+    TEST_EMAIL_BODY: "<h1>Тестування електронної пошти</h1><p>Це тестовий лист відправлено на основі такої конфігурації:</p>  <p><pre>%1$s</pre></p>"
+    EMAIL_FOOTER: "GetGrav.org"
