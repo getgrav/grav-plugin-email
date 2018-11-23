@@ -54,7 +54,7 @@ Setup the Email plugin to use that SMTP server with the fake inbox data. For exa
 mailer:
   engine: smtp
   smtp:
-    server: mailtrap.io
+    server: smtp.mailtrap.io
     port: 2525
     encryption: none
     user: YOUR_MAILTRAP_INBOX_USER
