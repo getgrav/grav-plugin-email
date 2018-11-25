@@ -20,6 +20,11 @@ from:
 from_name:
 to:
 to_name:
+queue:
+  enabled: true
+  flush_frequency: '* * * * *'
+  flush_msg_limit: 10
+  flush_time_limit: 100
 mailer:
   engine: sendmail
   smtp:
@@ -178,6 +183,18 @@ Solid SMTP options that even provide a FREE tier for low email volumes include:
 * Amazon SES (62k/month free) - https://aws.amazon.com/ses/
 
 If you are still unsure why should be using one in the first place, check out this article: https://zapier.com/learn/email-marketing/best-transactional-email-sending-services/
+
+## Email Queue
+
+For performance reasons, it's often desirable to queue emails and send them in batches, rather than forcing Grav to wait while an email is sent.  This is because email servers are sometimes slow and you might not want to wait for the whole email-sending process before continuing with Grav processing.
+
+To address this, you can enable the **Email Queue** and this will ensure all email's in Grav are actually sent to the queue, and not sent directly.  In order for the emails to be actually sent, you need to flush the queue.  By default this is handled by the **Grav Scheduler**, so you need to ensure you have that enabled and setup correctly or **your emails will not be sent!!!**.
+
+You can also manually flush the queue by using the provided CLI command:
+
+```
+$ bin/plugin email flush-queue
+```
 
 ## Testing with CLI Command
 

@@ -21,9 +21,10 @@ class EmailPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
-            'onPluginsInitialized' => ['onPluginsInitialized', 0],
-            'onFormProcessed' => ['onFormProcessed', 0],
-            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
+            'onPluginsInitialized'      => ['onPluginsInitialized', 0],
+            'onFormProcessed'           => ['onFormProcessed', 0],
+            'onTwigTemplatePaths'       => ['onTwigTemplatePaths', 0],
+            'onSchedulerInitialized'    => ['onSchedulerInitialized', 0],
         ];
     }
 
@@ -100,6 +101,26 @@ class EmailPlugin extends Plugin
                 break;
         }
     }
+
+    /**
+     * Add index job to Grav Scheduler
+     * Requires Grav 1.6.0 - Scheduler
+     */
+    public function onSchedulerInitialized(Event $e)
+    {
+        if ($this->config->get('plugins.email.queue.enabled')) {
+
+            /** @var Scheduler $scheduler */
+            $scheduler = $e['scheduler'];
+            $at = $this->config->get('plugins.email.queue.flush_frequency');
+            $logs = 'logs/email-queue.out';
+            $job = $scheduler->addFunction('Grav\Plugin\Email\Email::flushQueue', [], 'email-flushqueue');
+            $job->at($at);
+            $job->output($logs);
+        }
+    }
+
+
 
     /**
      * Build e-mail message.

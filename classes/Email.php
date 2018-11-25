@@ -2,9 +2,11 @@
 namespace Grav\Plugin\Email;
 
 use Grav\Common\Config\Config;
+use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
 use \Monolog\Logger;
 use \Monolog\Handler\StreamHandler;
+use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 
 class Email
 {
@@ -23,7 +25,7 @@ class Email
      *
      * @return bool
      */
-    public function enabled()
+    public static function enabled()
     {
         return Grav::instance()['config']->get('plugins.email.mailer.engine') != 'none';
     }
@@ -33,7 +35,7 @@ class Email
      *
      * @return bool
      */
-    public function debug()
+    public static function debug()
     {
         return Grav::instance()['config']->get('plugins.email.debug') == 'true';
     }
@@ -144,37 +146,9 @@ class Email
         if (!$this->mailer) {
             /** @var Config $config */
             $config = Grav::instance()['config'];
-            $mailer = $config->get('plugins.email.mailer.engine');
+            $queue_enabled = $config->get('plugins.email.queue.enabled');
 
-            // Create the Transport and initialize it.
-            switch ($mailer) {
-                case 'smtp':
-                    $transport = new \Swift_SmtpTransport();
-
-                    $options = $config->get('plugins.email.mailer.smtp');
-                    if (!empty($options['server'])) {
-                        $transport->setHost($options['server']);
-                    }
-                    if (!empty($options['port'])) {
-                        $transport->setPort($options['port']);
-                    }
-                    if (!empty($options['encryption']) && $options['encryption'] != 'none') {
-                        $transport->setEncryption($options['encryption']);
-                    }
-                    if (!empty($options['user'])) {
-                        $transport->setUsername($options['user']);
-                    }
-                    if (!empty($options['password'])) {
-                        $transport->setPassword($options['password']);
-                    }
-                    break;
-                case 'sendmail':
-                default:
-                    $options = $config->get('plugins.email.mailer.sendmail');
-                    $bin = !empty($options['bin']) ? $options['bin'] : '/usr/sbin/sendmail';
-                    $transport = new \Swift_SendmailTransport($bin);
-                    break;
-            }
+            $transport = $queue_enabled === true ? $this->getQueue() : $this->getTransport();
 
             // Create the Mailer using your created Transport
             $this->mailer = new \Swift_Mailer($transport);
@@ -187,5 +161,83 @@ class Email
         }
 
         return $this->mailer;
+    }
+
+    protected static function getQueue()
+    {
+        $queue_path = Grav::instance()['locator']->findResource('user://data', true) . '/email-queue';
+
+        if (!file_exists($queue_path)) {
+            mkdir($queue_path);
+        }
+
+        $spool = new \Swift_FileSpool($queue_path);
+        $transport = new \Swift_SpoolTransport($spool);
+
+        return $transport;
+    }
+
+    public static function flushQueue()
+    {
+        $grav = Grav::instance();
+
+        $grav['debugger']->enabled(false);
+
+        $config = $grav['config']->get('plugins.email.queue');
+
+        $queue = static::getQueue();
+        $spool = $queue->getSpool();
+        $spool->setMessageLimit($config['flush_msg_limit']);
+        $spool->setTimeLimit($config['flush_time_limit']);
+
+        try {
+            $failures = [];
+            $result = $spool->flushQueue(static::getTransport(), $failures);
+            return $result . ' messages flushed from queue...';
+        } catch (\Exception $e) {
+            $grav['log']->error($e->getMessage());
+            return $e->getMessage();
+        }
+
+    }
+
+    protected static function getTransport()
+    {
+        /** @var Config $config */
+        $config = Grav::instance()['config'];
+
+        $engine = $config->get('plugins.email.mailer.engine');
+
+        // Create the Transport and initialize it.
+        switch ($engine) {
+            case 'smtp':
+                $transport = new \Swift_SmtpTransport();
+
+                $options = $config->get('plugins.email.mailer.smtp');
+                if (!empty($options['server'])) {
+                    $transport->setHost($options['server']);
+                }
+                if (!empty($options['port'])) {
+                    $transport->setPort($options['port']);
+                }
+                if (!empty($options['encryption']) && $options['encryption'] != 'none') {
+                    $transport->setEncryption($options['encryption']);
+                }
+                if (!empty($options['user'])) {
+                    $transport->setUsername($options['user']);
+                }
+                if (!empty($options['password'])) {
+                    $transport->setPassword($options['password']);
+                }
+                break;
+            case 'sendmail':
+            default:
+                $options = $config->get('plugins.email.mailer.sendmail');
+                $bin = !empty($options['bin']) ? $options['bin'] : '/usr/sbin/sendmail';
+                $transport = new \Swift_SendmailTransport($bin);
+                break;
+        }
+
+        return $transport;
     }
 }

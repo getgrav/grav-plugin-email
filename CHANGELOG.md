@@ -3,8 +3,12 @@
 
 1. [](#new)
     * Switched to SwiftMailer v.6.1.3 (requires PHP7)
+    * Added support for Email Queue with Scheduler support
 1. [](#improved)
-    * SwiftMailer 6.x compatibility fixes    
+    * SwiftMailer 6.x compatibility fixes  
+    * Updated various translations 
+1. [](#bugfix) 
+    * Fixed mailtrap hostname in README.md
 
 # v2.7.1
 ## 12/05/2017
