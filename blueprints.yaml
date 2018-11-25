@@ -166,11 +166,13 @@ form:
     mailer.smtp.user:
       type: text
       size: medium
+      autocomplete: nope
       label: PLUGIN_EMAIL.SMTP_LOGIN_NAME
 
     mailer.smtp.password:
       type: password
       size: medium
+      autocomplete: nope
       label: PLUGIN_EMAIL.SMTP_PASSWORD
 
     sendmail_config:

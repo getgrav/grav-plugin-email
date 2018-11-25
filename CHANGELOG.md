@@ -9,6 +9,7 @@
     * Updated various translations 
 1. [](#bugfix) 
     * Fixed mailtrap hostname in README.md
+    * Disable autocomplete on SMTP `user` and `password` fields
 
 # v2.7.1
 ## 12/05/2017
