@@ -167,6 +167,9 @@ class Email
                     if (!empty($options['password'])) {
                         $transport->setPassword($options['password']);
                     }
+                    if (!empty($options['auth_mode'])) {
+                        $transport->setAuthMode($options['auth_mode']);
+                    }
                     break;
                 case 'sendmail':
                 default:
