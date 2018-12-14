@@ -1,5 +1,5 @@
 # v3.0.0-beta.1
-## mm/dd/2018
+## 12/14/2018
 
 1. [](#new)
     * Switched to SwiftMailer v.6.1.3 (requires PHP7/Grav 1.6)
