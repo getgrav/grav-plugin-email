@@ -2,7 +2,7 @@
 ## mm/dd/2018
 
 1. [](#new)
-    * Switched to SwiftMailer v.6.1.3 (requires PHP7)
+    * Switched to SwiftMailer v.6.1.3 (requires PHP7/Grav 1.6)
     * Added support for Email Queue with Scheduler support
 1. [](#improved)
     * SwiftMailer 6.x compatibility fixes  
