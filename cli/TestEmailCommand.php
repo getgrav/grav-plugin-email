@@ -73,7 +73,7 @@ class TestEmailCommand extends ConsoleCommand
 
         $grav['Email'] = new Email();
 
-        $email_to = $this->input->getOption('to') ?: $grav['config']->get('plugins.email.to');
+        $to = $this->input->getOption('to') ?: $grav['config']->get('plugins.email.to');
         $subject = $this->input->getOption('subject');
         $body = $this->input->getOption('body');
 
@@ -86,7 +86,9 @@ class TestEmailCommand extends ConsoleCommand
             $body = $grav['language']->translate(['PLUGIN_EMAIL.TEST_EMAIL_BODY', $configuration]);
         }
 
-        $sent = EmailUtils::sendEmail($subject, $body, $email_to);
+        // This is the old way....
+        // $sent = EmailUtils::sendEmail($subject, $body, $email_to);
+        $sent = EmailUtils::sendEmail(['subject'=>$subject, 'body'=>$body, 'to'=>$to]);
 
         if ($sent) {
             $this->output->writeln("<green>Message sent successfully!</green>");

@@ -3,6 +3,8 @@
 namespace Grav\Plugin\Email;
 
 use Grav\Common\Grav;
+use Grav\Common\Twig\Twig;
+use Grav\Common\Utils as GravUtils;
 
 /**
  * Class Utils
@@ -13,49 +15,34 @@ class Utils
     /**
      * Quick utility method to send an HTML email.
      *
-     * @param        $subject
-     * @param string $content
-     * @param string $to
-     * @param null $from
-     * @param string $mimetype
+     * @param array $params
      *
      * @return bool True if the action was performed.
      */
-    public static function sendEmail($subject, $content, $to = null, $from = null, $mimetype = 'text/html')
+    public static function sendEmail(...$params)
     {
-        $grav = Grav::instance();
-
-        if (!$to) {
-            $to = $grav['config']->get('plugins.email.to');
-        }
-
-        if (!$from) {
-            $from = $grav['config']->get('plugins.email.from');
-        }
-
-        if (!isset($grav['Email']) || empty($from)) {
-            throw new \RuntimeException($grav['language']->translate('PLUGIN_EMAIL.PLEASE_CONFIGURE_A_FROM_ADDRESS'));
-        }
-
-        if (empty($to) || empty($subject) || empty($content)) {
-            return false;
-        }
-
-        //Initialize twig if not yet initialized
-        $grav['twig']->init();
-
-        $body = $grav['twig']->processTemplate('email/base.html.twig', ['content' => $content]);
-
-        $message = $grav['Email']->message($subject, $body, $mimetype)
-            ->setFrom($from)
-            ->setTo($to);
-
-        $sent = $grav['Email']->send($message);
-
-        if ($sent < 1) {
-            return false;
+        if (is_array($params[0])) {
+            $params = array_shift($params);
         } else {
-            return true;
+            $keys = ['subject', 'body', 'to', 'from', 'content_type'];
+            $params = GravUtils::arrayCombine($keys, $params);
         }
+        
+        //Initialize twig if not yet initialized
+        /** @var Twig $twig */
+        $twig = Grav::instance()['twig']->init();
+
+        /** @var Email $email */
+        $email = Grav::instance()['Email'];
+
+        if (empty($params['to']) || empty($params['subject']) || empty($params['body'])) {
+            return false;
+        }
+
+        $params['body'] = $twig->processTemplate('email/base.html.twig', ['content' => $params['body']]);
+
+        $message = $email->buildMessage($params);
+
+        return $email->send($message);
     }
 }

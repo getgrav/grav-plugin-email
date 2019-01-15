@@ -1,3 +1,11 @@
+# v3.0.0-beta.2
+## 01/15/2019
+
+1. [](#new)
+  * Added new `template:` to choose twig template option for email form processing
+  * Moved `buildMessage()` and `parseAddressValue()` to Email object and made public
+  * Refactored the `EmailUtils::sendEmail()` to take an array of params or the old param list
+  
 # v3.0.0-beta.1
 ## 12/14/2018
 
