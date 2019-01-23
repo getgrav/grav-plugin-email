@@ -26,6 +26,12 @@ class FlushQueueCommand extends ConsoleCommand
         $this
             ->setName('flush-queue')
             ->setAliases(['flushqueue'])
+            ->addOption(
+                'env',
+                'e',
+                InputOption::VALUE_OPTIONAL,
+                'The environment to trigger a specific configuration. For example: localhost, mysite.dev, www.mysite.com'
+            )
             ->setDescription('Flushes the email queue of any pending emails')
             ->setHelp('The <info>flush-queue</info> command flushes the email queue of any pending emails');
     }
