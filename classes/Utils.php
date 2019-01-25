@@ -21,9 +21,13 @@ class Utils
      *
      * @return bool True if the action was performed.
      */
-    public static function sendEmail($subject, $content, $to, $from = null, $mimetype = 'text/html')
+    public static function sendEmail($subject, $content, $to = null, $from = null, $mimetype = 'text/html')
     {
         $grav = Grav::instance();
+
+        if (!$to) {
+            $to = $grav['config']->get('plugins.email.to');
+        }
 
         if (!$from) {
             $from = $grav['config']->get('plugins.email.from');
