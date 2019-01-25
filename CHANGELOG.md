@@ -1,3 +1,15 @@
+# v2.7.2
+## 01/25/2019
+
+1. [](#improved)
+    * Added default for `to` address
+    * Updated EN language [#99](https://github.com/getgrav/grav-plugin-email/pull/99)
+    * Updated UK language [#98](https://github.com/getgrav/grav-plugin-email/pull/98)
+    * Updated RU language [#100](https://github.com/getgrav/grav-plugin-email/pull/100)
+    * Updated to SwiftMailer v5.4.12
+1. [](#bugfix)
+    * Fix `mailtrap` hostname
+
 # v2.7.1
 ## 12/05/2017
 
@@ -7,7 +19,7 @@
     * Added examples of setting up Email plugin with various SMTP providers
     * Updated RU language [#60](https://github.com/getgrav/grav-plugin-email/pull/60)
     * Updated to SwiftMailer v5.4.8
-
+    
 # v2.7.0
 ## 10/26/2017
 
