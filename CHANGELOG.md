@@ -1,10 +1,12 @@
 # v3.0.0-beta.2
-## 01/15/2019
+## 01/25/2019
 
 1. [](#new)
   * Added new `template:` to choose twig template option for email form processing
   * Moved `buildMessage()` and `parseAddressValue()` to Email object and made public
   * Refactored the `EmailUtils::sendEmail()` to take an array of params or the old param list
+1. [](#improved)
+  * Added support for `environment` option to `flushqueue` CLI command  
   
 # v3.0.0-beta.1
 ## 12/14/2018
@@ -18,6 +20,18 @@
 1. [](#bugfix) 
     * Fixed mailtrap hostname in README.md
     * Disable autocomplete on SMTP `user` and `password` fields
+    
+# v2.7.2
+## 01/25/2019
+
+1. [](#improved)
+    * Added default for `to` address
+    * Updated EN language [#99](https://github.com/getgrav/grav-plugin-email/pull/99)
+    * Updated UK language [#98](https://github.com/getgrav/grav-plugin-email/pull/98)
+    * Updated RU language [#100](https://github.com/getgrav/grav-plugin-email/pull/100)
+    * Updated to SwiftMailer v5.4.12
+1. [](#bugfix)
+    * Fixed `mailtrap` hostname    
 
 # v2.7.1
 ## 12/05/2017
