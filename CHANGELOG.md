@@ -8,7 +8,7 @@
     * Updated RU language [#100](https://github.com/getgrav/grav-plugin-email/pull/100)
     * Updated to SwiftMailer v5.4.12
 1. [](#bugfix)
-    * Fix `mailtrap` hostname
+    * Fixed `mailtrap` hostname
 
 # v2.7.1
 ## 12/05/2017
