@@ -20,6 +20,8 @@ class Email
      */
     protected $logger;
 
+    protected $queue_path;
+
     /**
      * Returns true if emails have been enabled in the system.
      *
@@ -375,13 +377,20 @@ class Email
         return $this->mailer;
     }
 
-    protected static function getQueue()
+    protected static function getQueuePath()
     {
         $queue_path = Grav::instance()['locator']->findResource('user://data', true) . '/email-queue';
 
         if (!file_exists($queue_path)) {
             mkdir($queue_path);
         }
+
+        return $queue_path;
+    }
+
+    protected static function getQueue()
+    {
+        $queue_path = static::getQueuePath();
 
         $spool = new \Swift_FileSpool($queue_path);
         $transport = new \Swift_SpoolTransport($spool);
@@ -410,6 +419,83 @@ class Email
             $grav['log']->error($e->getMessage());
             return $e->getMessage();
         }
+
+    }
+
+    public static function clearQueueFailures()
+    {
+        $grav = Grav::instance();
+        $grav['debugger']->enabled(false);
+
+        $preferences = \Swift_Preferences::getInstance();
+        $preferences->setTempDir(sys_get_temp_dir());
+
+        /** @var \Swift_Transport $transport */
+        $transport = static::getTransport();
+        if (!$transport->isStarted()) {
+            $transport->start();
+        }
+
+        $queue_path = static::getQueuePath();
+
+        foreach (new \GlobIterator($queue_path . '/*.sending') as $file) {
+            $final_message = $file->getPathname();
+
+            /** @var $message \Swift_Message */
+            $message = unserialize(file_get_contents($final_message));
+
+            echo(sprintf(
+                'Retrying "%s" to "%s"',
+                $message->getSubject(),
+                implode(', ', array_keys($message->getTo()))
+            ) . "\n");
+
+            try {
+                $clean = static::cloneMessage($message);
+                $transport->send($clean);
+                echo("sent!\n");
+
+                // DOn't want to trip up any errors from sending too fast
+                sleep(1);
+            } catch (\Swift_TransportException $e) {
+                echo("ERROR: Send failed - deleting spooled message\n");
+            }
+
+            // Remove the file
+            unlink($final_message);
+        }
+    }
+
+    /**
+     * Clean copy a message
+     *
+     * @param $message \Swift_Message
+     */
+    public static function cloneMessage($message) {
+        $clean = new \Swift_Message();
+
+        $clean->setBoundary($message->getBoundary());
+        $clean->setBcc($message->getBcc());
+        $clean->setBody($message->getBody());
+        $clean->setCharset($message->getCharset());
+        $clean->setChildren($message->getChildren());
+        $clean->setContentType($message->getContentType());
+        $clean->setCc($message->getCc());
+        $clean->setDate($message->getDate());
+        $clean->setDescription($message->getDescription());
+        $clean->setEncoder($message->getEncoder());
+        $clean->setFormat($message->getFormat());
+        $clean->setFrom($message->getFrom());
+        $clean->setId($message->getId());
+        $clean->setMaxLineLength($message->getMaxLineLength());
+        $clean->setPriority($message->getPriority());
+        $clean->setReplyTo($message->getReplyTo());
+        $clean->setReturnPath($message->getReturnPath());
+        $clean->setSender($message->getSender());
+        $clean->setSubject($message->getSubject());
+        $clean->setTo($message->getTo());
+
+        return $clean;
 
     }
 

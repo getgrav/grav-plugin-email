@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
  * Class FlushQueueCommand
  * @package Grav\Console\Cli\
  */
-class FlushQueueCommand extends ConsoleCommand
+class ClearQueueFailuresCommand extends ConsoleCommand
 {
     /**
      * @var array
@@ -23,16 +23,16 @@ class FlushQueueCommand extends ConsoleCommand
     protected function configure()
     {
         $this
-            ->setName('flush-queue')
-            ->setAliases(['flushqueue'])
+            ->setName('clear-queue-failures')
+            ->setAliases(['clearqueue'])
             ->addOption(
                 'env',
                 'e',
                 InputOption::VALUE_OPTIONAL,
                 'The environment to trigger a specific configuration. For example: localhost, mysite.dev, www.mysite.com'
             )
-            ->setDescription('Flushes the email queue of any pending emails')
-            ->setHelp('The <info>flush-queue</info> command flushes the email queue of any pending emails');
+            ->setDescription('Clears any queue failures that have accumulated')
+            ->setHelp('The <info>clear-queue-failures</info> command clears any queue failures that have accumulated');
     }
 
     /**
@@ -52,7 +52,7 @@ class FlushQueueCommand extends ConsoleCommand
 
         require_once __DIR__ . '/../vendor/autoload.php';
 
-        $output = Email::flushQueue();
+        $output = Email::clearQueueFailures();
 
         $this->output->writeln('<green>' . $output . '</green>');
 
