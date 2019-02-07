@@ -1,5 +1,5 @@
 # v3.0.0-rc.2
-## mm/dd/2019
+## 02/07/2019
 
 1. [](#new)
   * Added a new `clear-queue-failures` CLI command to flush out failed sends
