@@ -178,7 +178,7 @@ form:
 
     sendmail_config:
       type: section
-      title: Sendmail Configuration
+      title: PLUGIN_EMAIL.SENDMAIL_CONFIGURATION
       underline: true
 
     mailer.sendmail.bin:
