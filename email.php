@@ -115,6 +115,7 @@ class EmailPlugin extends Plugin
             $job = $scheduler->addFunction('Grav\Plugin\Email\Email::flushQueue', [], 'email-flushqueue');
             $job->at($at);
             $job->output($logs);
+            $job->backlink('/plugins/email');
         }
     }
 
