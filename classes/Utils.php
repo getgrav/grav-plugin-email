@@ -15,7 +15,7 @@ class Utils
     /**
      * Quick utility method to send an HTML email.
      *
-     * @param array $params
+     * @param array<int,mixed> $params
      *
      * @return bool True if the action was performed.
      */

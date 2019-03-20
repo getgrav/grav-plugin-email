@@ -1,3 +1,9 @@
+# v3.0.0-rc.4
+## mm/dd/2019
+
+1. [](#new)
+    * Code cleanup, composer update
+
 # v3.0.0-rc.3
 ## 02/18/2019
 

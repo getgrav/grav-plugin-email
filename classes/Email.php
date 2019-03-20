@@ -5,6 +5,7 @@ use Grav\Common\Config\Config;
 use Grav\Common\Grav;
 use Grav\Common\Language\Language;
 use Grav\Common\Twig\Twig;
+use Grav\Framework\Form\Interfaces\FormInterface;
 use \Monolog\Logger;
 use \Monolog\Handler\StreamHandler;
 
@@ -29,7 +30,7 @@ class Email
      */
     public static function enabled()
     {
-        return Grav::instance()['config']->get('plugins.email.mailer.engine') != 'none';
+        return Grav::instance()['config']->get('plugins.email.mailer.engine') !== 'none';
     }
 
     /**
@@ -129,7 +130,7 @@ class Email
      * @param array $vars
      * @return \Swift_Message
      */
-    public function buildMessage(array $params, array $vars = array())
+    public function buildMessage(array $params, array $vars = [])
     {
         /** @var Twig $twig */
         $twig = Grav::instance()['twig'];
@@ -141,23 +142,23 @@ class Email
         $language = Grav::instance()['language'];
 
         // Extend parameters with defaults.
-        $params += array(
-            'bcc' => $config->get('plugins.email.bcc', array()),
+        $params += [
+            'bcc' => $config->get('plugins.email.bcc', []),
             'body' => $config->get('plugins.email.body', '{% include "forms/data.html.twig" %}'),
-            'cc' => $config->get('plugins.email.cc', array()),
+            'cc' => $config->get('plugins.email.cc', []),
             'cc_name' => $config->get('plugins.email.cc_name'),
             'charset' =>  $config->get('plugins.email.charset', 'utf-8'),
             'from' => $config->get('plugins.email.from'),
             'from_name' => $config->get('plugins.email.from_name'),
             'content_type' => $config->get('plugins.email.content_type', 'text/html'),
-            'reply_to' => $config->get('plugins.email.reply_to', array()),
+            'reply_to' => $config->get('plugins.email.reply_to', []),
             'reply_to_name' => $config->get('plugins.email.reply_to_name'),
-            'subject' => !empty($vars['form']) && $vars['form'] instanceof Form ? $vars['form']->page()->title() : null,
+            'subject' => !empty($vars['form']) && $vars['form'] instanceof FormInterface ? $vars['form']->page()->title() : null,
             'to' => $config->get('plugins.email.to'),
             'to_name' => $config->get('plugins.email.to_name'),
             'process_markdown' => false,
             'template' => false
-        );
+        ];
 
         // Create message object.
         $message = $this->message();
@@ -192,10 +193,10 @@ class Email
                     }
                     elseif (is_array($value)) {
                         foreach ($value as $body_part) {
-                            $body_part += array(
+                            $body_part += [
                                 'charset' => $params['charset'],
                                 'content_type' => $params['content_type'],
-                            );
+                            ];
 
                             $body = !empty($body_part['body']) ? $twig->processString($body_part['body'], $vars) : null;
 
@@ -223,10 +224,10 @@ class Email
 
                 case 'to':
                     if (is_string($value) && !empty($params['to_name'])) {
-                        $value = array(
+                        $value = [
                             'mail' => $twig->processString($value, $vars),
                             'name' => $twig->processString($params['to_name'], $vars),
-                        );
+                        ];
                     }
 
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
@@ -236,10 +237,10 @@ class Email
 
                 case 'cc':
                     if (is_string($value) && !empty($params['cc_name'])) {
-                        $value = array(
+                        $value = [
                             'mail' => $twig->processString($value, $vars),
                             'name' => $twig->processString($params['cc_name'], $vars),
-                        );
+                        ];
                     }
 
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
@@ -255,10 +256,10 @@ class Email
 
                 case 'from':
                     if (is_string($value) && !empty($params['from_name'])) {
-                        $value = array(
+                        $value = [
                             'mail' => $twig->processString($value, $vars),
                             'name' => $twig->processString($params['from_name'], $vars),
-                        );
+                        ];
                     }
 
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
@@ -268,10 +269,10 @@ class Email
 
                 case 'reply_to':
                     if (is_string($value) && !empty($params['reply_to_name'])) {
-                        $value = array(
+                        $value = [
                             'mail' => $twig->processString($value, $vars),
                             'name' => $twig->processString($params['reply_to_name'], $vars),
-                        );
+                        ];
                     }
 
                     foreach ($this->parseAddressValue($value, $vars) as $address) {
@@ -288,23 +289,23 @@ class Email
     /**
      * Return parsed e-mail address value.
      *
-     * @param $value
+     * @param string|string[] $value
      * @param array $vars
      * @return array
      */
-    public function parseAddressValue($value, array $vars = array())
+    public function parseAddressValue($value, array $vars = [])
     {
-        $parsed = array();
+        $parsed = [];
 
         /** @var Twig $twig */
         $twig = Grav::instance()['twig'];
 
         // Single e-mail address string
         if (is_string($value)) {
-            $parsed[] = (object) array(
+            $parsed[] = (object) [
                 'mail' => $twig->processString($value, $vars),
                 'name' => null,
-            );
+            ];
         }
 
         else {
@@ -313,10 +314,10 @@ class Email
 
             // Single e-mail address array
             if (!empty($value['mail'])) {
-                $parsed[] = (object) array(
+                $parsed[] = (object) [
                     'mail' => $twig->processString($value['mail'], $vars),
                     'name' => !empty($value['name']) ? $twig->processString($value['name'], $vars) : NULL,
-                );
+                ];
             }
 
             // Multiple addresses (either as strings or arrays)
@@ -441,7 +442,7 @@ class Email
         foreach (new \GlobIterator($queue_path . '/*.sending') as $file) {
             $final_message = $file->getPathname();
 
-            /** @var $message \Swift_Message */
+            /** @var \Swift_Message $message */
             $message = unserialize(file_get_contents($final_message));
 
             echo(sprintf(
@@ -469,9 +470,10 @@ class Email
     /**
      * Clean copy a message
      *
-     * @param $message \Swift_Message
+     * @param \Swift_Message $message
      */
-    public static function cloneMessage($message) {
+    public static function cloneMessage($message)
+    {
         $clean = new \Swift_Message();
 
         $clean->setBoundary($message->getBoundary());
@@ -518,7 +520,7 @@ class Email
                 if (!empty($options['port'])) {
                     $transport->setPort($options['port']);
                 }
-                if (!empty($options['encryption']) && $options['encryption'] != 'none') {
+                if (!empty($options['encryption']) && $options['encryption'] !== 'none') {
                     $transport->setEncryption($options['encryption']);
                 }
                 if (!empty($options['user'])) {
