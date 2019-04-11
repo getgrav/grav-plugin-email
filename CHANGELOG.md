@@ -1,49 +1,19 @@
-# v3.0.0-rc.4
-## 03/20/2019
+# v3.0.0
+## 04/11/2019
 
 1. [](#new)
-    * Code cleanup, composer update
-1. [](#improved)
-    * Added backlink for scheduler task
-
-# v3.0.0-rc.3
-## 02/18/2019
-
-1. [](#new)
-  * Release Candidate 3
-
-# v3.0.0-rc.2
-## 02/07/2019
-
-1. [](#new)
-  * Added a new `clear-queue-failures` CLI command to flush out failed sends
-
-# v3.0.0-rc.1
-## 01/30/2019
-
-1. [](#new)
-  * Release Candidate
-
-# v3.0.0-beta.2
-## 01/25/2019
-
-1. [](#new)
-  * Added new `template:` to choose twig template option for email form processing
-  * Moved `buildMessage()` and `parseAddressValue()` to Email object and made public
-  * Refactored the `EmailUtils::sendEmail()` to take an array of params or the old param list
-1. [](#improved)
-  * Added support for `environment` option to `flushqueue` CLI command  
-  
-# v3.0.0-beta.1
-## 12/14/2018
-
-1. [](#new)
+    * Added new `template:` to choose twig template option for email form processing
+    * Moved `buildMessage()` and `parseAddressValue()` to Email object and made public
+    * Refactored the `EmailUtils::sendEmail()` to take an array of params or the old param list
     * Switched to SwiftMailer v.6.1.3 (requires PHP7/Grav 1.6)
-    * Added support for Email Queue with Scheduler support
-1. [](#improved)
     * SwiftMailer 6.x compatibility fixes  
     * Updated various translations 
-1. [](#bugfix) 
+    * Added support for Email Queue with Scheduler support
+    * Code cleanup, composer update
+    * Added a new `clear-queue-failures` CLI command to flush out failed sends
+1. [](#improved)
+    * Added backlink for scheduler task
+    * Added support for `environment` option to `flushqueue` CLI command 
     * Fixed mailtrap hostname in README.md
     * Disable autocomplete on SMTP `user` and `password` fields
     
