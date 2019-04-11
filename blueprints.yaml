@@ -1,5 +1,6 @@
 name: Email
-version: 2.7.2
+version: 3.0.0
+testing: false
 description: Enables the emailing system for Grav
 icon: envelope
 author:
@@ -12,7 +13,7 @@ bugs: https://github.com/getgrav/grav-plugin-email/issues
 license: MIT
 
 dependencies:
-    - { name: grav, version: '>=1.1.9' }
+    - { name: grav, version: '>=1.6.0' }
 
 form:
   validation: loose
@@ -51,6 +52,11 @@ form:
       size: medium
       label: PLUGIN_EMAIL.CHARSET
       placeholder: "Defaults to UTF-8"
+
+    email_Defaults:
+      type: section
+      title: PLUGIN_EMAIL.EMAIL_DEFAULTS
+      underline: true
 
     from:
       type: email
@@ -128,6 +134,11 @@ form:
       label: PLUGIN_EMAIL.EMAIL_BODY
       placeholder: PLUGIN_EMAIL.EMAIL_BODY_PLACEHOLDER
 
+    smtp_config:
+      type: section
+      title: PLUGIN_EMAIL.SMTP_CONFIGURATION
+      underline: true
+
     mailer.smtp.server:
       type: text
       size: medium
@@ -156,12 +167,19 @@ form:
     mailer.smtp.user:
       type: text
       size: medium
+      autocomplete: nope
       label: PLUGIN_EMAIL.SMTP_LOGIN_NAME
 
     mailer.smtp.password:
       type: password
       size: medium
+      autocomplete: nope
       label: PLUGIN_EMAIL.SMTP_PASSWORD
+
+    sendmail_config:
+      type: section
+      title: Sendmail Configuration
+      underline: true
 
     mailer.sendmail.bin:
       type: text
@@ -169,13 +187,56 @@ form:
       label: PLUGIN_EMAIL.PATH_TO_SENDMAIL
       placeholder: "/usr/sbin/sendmail"
 
+    queue_section:
+      type: section
+      title: PLUGIN_EMAIL.QUEUE_TITLE
+      text: PLUGIN_EMAIL.QUEUE_DESC
+      markdown: true
+      underline: true
+
+    queue.enabled:
+      type: toggle
+      label: PLUGIN_EMAIL.QUEUE_ENABLED
+      highlight: 0
+      default: 0
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
+    queue.flush_frequency:
+      type: cron
+      label: PLUGIN_EMAIL.QUEUE_FLUSH_FREQUENCY
+      size: medium
+      help: PLUGIN_EMAIL.QUEUE_FLUSH_FREQUENCY_HELP
+      default: '* * * * *'
+      placeholder: '* * * * *'
+
+    queue.flush_msg_limit:
+      type: number
+      label: PLUGIN_EMAIL.QUEUE_FLUSH_MSG_LIMIT
+      size: x-small
+      append: Messages
+
+    queue.flush_time_limit:
+      type: number
+      label: PLUGIN_EMAIL.QUEUE_FLUSH_TIME_LIMIT
+      size: x-small
+      append: Seconds
+
+    advanced_section:
+      type: section
+      title: PLUGIN_EMAIL.ADVANCED
+      underline: true
+
     debug:
       type: toggle
       label: PLUGIN_EMAIL.DEBUG
       highlight: 1
       default: 0
       options:
-        true: PLUGIN_ADMIN.ENABLED
-        false: PLUGIN_ADMIN.DISABLED
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
       validate:
         type: bool
