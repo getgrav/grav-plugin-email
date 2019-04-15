@@ -71,6 +71,10 @@ class EmailPlugin extends Plugin
                     'form' => $form
                 );
 
+                // Copy files now, we need those.
+                // TODO: we need a better solution. Maybe we can use streams for the attachments?
+                $form->copyFiles();
+
                 $grav = Grav::instance();
                 $grav->fireEvent('onEmailSend', new Event(['params' => &$params, 'vars' => &$vars]));
 
@@ -89,7 +93,12 @@ class EmailPlugin extends Plugin
                                 $filename = ROOT_DIR . $fileValues['path'];
                             }
 
-                            $message->attach(\Swift_Attachment::fromPath($filename));
+                            try {
+                                $message->attach(\Swift_Attachment::fromPath($filename));
+                            } catch (\Exception $e) {
+                                // Log any issues
+                                $grav['log']->error($e->getMessage());
+                            }
                         }
                     }
                 }
