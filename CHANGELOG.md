@@ -1,5 +1,5 @@
 # v3.0.1
-## mm/dd/2019
+## 04/15/2019
 
 1. [](#improved)
     * Put a `try/catch` around email attachments and log any errors rather than hard fail
