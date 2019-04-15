@@ -1,3 +1,9 @@
+# v3.0.1
+## mm/dd/2019
+
+1. [](#bugfix)
+    * Fixed missing attachments when sending an email using a form [form#333](https://github.com/getgrav/grav-plugin-form/issues/333)
+
 # v3.0.0
 ## 04/11/2019
 

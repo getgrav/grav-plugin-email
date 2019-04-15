@@ -71,6 +71,10 @@ class EmailPlugin extends Plugin
                     'form' => $form
                 );
 
+                // Copy files now, we need those.
+                // TODO: we need a better solution. Maybe we can use streams for the attachments?
+                $form->copyFiles();
+
                 $grav = Grav::instance();
                 $grav->fireEvent('onEmailSend', new Event(['params' => &$params, 'vars' => &$vars]));
 
