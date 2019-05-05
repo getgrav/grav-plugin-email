@@ -34,7 +34,7 @@ form:
       label: PLUGIN_EMAIL.MAIL_ENGINE
       size: medium
       options:
-        none: Disabled
+        none: PLUGIN_ADMIN.DISABLED
         smtp: SMTP
         sendmail: Sendmail
 
@@ -44,14 +44,14 @@ form:
       size: medium
       default: 'text/html'
       options:
-        'text/plain': Plain text
+        'text/plain': PLUGIN_EMAIL.CONTENT_TYPE_PLAIN_TEXT
         'text/html': HTML
 
     charset:
       type: text
       size: medium
       label: PLUGIN_EMAIL.CHARSET
-      placeholder: "Defaults to UTF-8"
+      placeholder: PLUGIN_EMAIL.CHARSET_PLACEHOLDER
 
     email_Defaults:
       type: section
@@ -160,7 +160,7 @@ form:
       size: medium
       label: PLUGIN_EMAIL.SMTP_ENCRYPTION
       options:
-        none: None
+        none: PLUGIN_EMAIL.SMTP_ENCRYPTION_NONE
         ssl: SSL
         tls: TLS
 
@@ -178,7 +178,7 @@ form:
 
     sendmail_config:
       type: section
-      title: Sendmail Configuration
+      title: PLUGIN_EMAIL.SENDMAIL_CONFIGURATION
       underline: true
 
     mailer.sendmail.bin:
@@ -217,13 +217,13 @@ form:
       type: number
       label: PLUGIN_EMAIL.QUEUE_FLUSH_MSG_LIMIT
       size: x-small
-      append: Messages
+      append: PLUGIN_EMAIL.QUEUE_FLUSH_MSG_LIMIT_APPEND
 
     queue.flush_time_limit:
       type: number
       label: PLUGIN_EMAIL.QUEUE_FLUSH_TIME_LIMIT
       size: x-small
-      append: Seconds
+      append: PLUGIN_EMAIL.QUEUE_FLUSH_TIME_LIMIT_APPEND
 
     advanced_section:
       type: section
