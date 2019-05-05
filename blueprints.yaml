@@ -34,7 +34,7 @@ form:
       label: PLUGIN_EMAIL.MAIL_ENGINE
       size: medium
       options:
-        none: Disabled
+        none: PLUGIN_ADMIN.DISABLED
         smtp: SMTP
         sendmail: Sendmail
 
@@ -51,7 +51,7 @@ form:
       type: text
       size: medium
       label: PLUGIN_EMAIL.CHARSET
-      placeholder: "Defaults to UTF-8"
+      placeholder: PLUGIN_EMAIL.CHARSET_PLACEHOLDER
 
     email_Defaults:
       type: section
