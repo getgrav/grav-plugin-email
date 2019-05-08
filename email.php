@@ -74,6 +74,7 @@ class EmailPlugin extends Plugin
                 // Copy files now, we need those.
                 // TODO: needs an update
                 $form->legacyUploads();
+                $form->copyFiles();
 
                 $grav = Grav::instance();
                 $grav->fireEvent('onEmailSend', new Event(['params' => &$params, 'vars' => &$vars]));
