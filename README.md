@@ -272,15 +272,14 @@ form:
     # Their values may be referenced in email actions via '{{ form.value.FIELDNAME|e }}'
 
   process:
-    -
-      email:
+    email:
+      -
         subject: "[Custom Email 1] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
         from: {mail: "owner@mysite.com", name: "Site OWner"}'
         to: {mail: "recepient_1@example.com", name: "Recepient 1"}
         template: "email/base.html.twig"
-    -
-      email:
+      -
         subject: "[Custom Email 2] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
         from: {mail: "owner@mysite.com", name: "Site OWner"}'
