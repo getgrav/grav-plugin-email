@@ -387,6 +387,12 @@ to:
   name: Human-readable name
 ```
 
+or inline:
+
+```
+to: {mail: 'mail@example.com', name: 'Human-readable name'}
+```
+
 #### Multiple email addresses (with and without names)
 
 ```
@@ -401,6 +407,16 @@ to:
     mail+3@example.com
   -
     mail+4@example.com
+```
+
+or inline:
+
+```
+to:
+  - {mail: 'mail@example.com', name: 'Human-readable name'} 
+  - {mail: 'mail+2@example.com', name: 'Another human-readable name'}
+  - mail+3@example.com
+  - mail+4@example.com
 ```
 
 ## Multi-part MIME messages
