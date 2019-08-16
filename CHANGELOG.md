@@ -1,3 +1,13 @@
+# v3.0.3
+## 08/16/2019
+
+1. [](#new)
+    * Support an array of multiple emails in `email:` form process
+    * Allow form values in email templates 
+1. [](#improved)
+    * Added Twig blocks for `content` and `footer` in `email/base.html.twig` template
+    * Updated `README.md` to reflect working setup for GMail 
+
 # v3.0.2
 ## 05/09/2019
 

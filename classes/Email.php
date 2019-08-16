@@ -183,7 +183,8 @@ class Email
                         }
 
                         if ($params['template']) {
-                            $body = $twig->processTemplate($params['template'], ['content' => $body]);
+                            $vars = array_merge($vars, ['content' => $body]);
+                            $body = $twig->processTemplate($params['template'], $vars);
                         }
 
                         $content_type = !empty($params['content_type']) ? $twig->processString($params['content_type'], $vars) : null;

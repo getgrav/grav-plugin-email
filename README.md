@@ -85,8 +85,8 @@ mailer:
   engine: smtp
   smtp:
     server: smtp.gmail.com
-    port: 465
-    encryption: ssl
+    port: 587
+    encryption: tls
     user: 'YOUR_GOOGLE_EMAIL_ADDRESS'
     password: 'YOUR_GOOGLE_PASSWORD'
 ```

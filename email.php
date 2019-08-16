@@ -1,7 +1,6 @@
 <?php
 namespace Grav\Plugin;
 
-use Grav\Common\Grav;
 use Grav\Common\Plugin;
 use Grav\Plugin\Email\Email;
 use RocketTheme\Toolbox\Event\Event;
@@ -76,36 +75,16 @@ class EmailPlugin extends Plugin
                 $form->legacyUploads();
                 $form->copyFiles();
 
-                $grav = Grav::instance();
-                $grav->fireEvent('onEmailSend', new Event(['params' => &$params, 'vars' => &$vars]));
+                $this->grav->fireEvent('onEmailSend', new Event(['params' => &$params, 'vars' => &$vars]));
 
-                // Build message
-                $message = $this->email->buildMessage($params, $vars);
-
-                if (isset($params['attachments'])) {
-                    $filesToAttach = (array)$params['attachments'];
-                    if ($filesToAttach) foreach ($filesToAttach as $fileToAttach) {
-                        $filesValues = $form->value($fileToAttach);
-
-                        if ($filesValues) foreach($filesValues as $fileValues) {
-                            if (isset($fileValues['file'])) {
-                                $filename = $fileValues['file'];
-                            } else {
-                                $filename = ROOT_DIR . $fileValues['path'];
-                            }
-
-                            try {
-                                $message->attach(\Swift_Attachment::fromPath($filename));
-                            } catch (\Exception $e) {
-                                // Log any issues
-                                $grav['log']->error($e->getMessage());
-                            }
-                        }
+                if (!$this->isAssocArray($params)) {
+                    $this->sendFormEmail($form, $params, $vars);
+                } else {
+                    foreach ($params as $email) {
+                        $this->sendFormEmail($form, $email, $vars);
                     }
                 }
 
-                // Send e-mail
-                $this->email->send($message);
                 break;
         }
     }
@@ -127,6 +106,43 @@ class EmailPlugin extends Plugin
             $job->output($logs);
             $job->backlink('/plugins/email');
         }
+    }
+
+    protected function sendFormEmail($form, $params, $vars)
+    {
+        // Build message
+        $message = $this->email->buildMessage($params, $vars);
+
+        if (isset($params['attachments'])) {
+            $filesToAttach = (array)$params['attachments'];
+            if ($filesToAttach) foreach ($filesToAttach as $fileToAttach) {
+                $filesValues = $form->value($fileToAttach);
+
+                if ($filesValues) foreach($filesValues as $fileValues) {
+                    if (isset($fileValues['file'])) {
+                        $filename = $fileValues['file'];
+                    } else {
+                        $filename = ROOT_DIR . $fileValues['path'];
+                    }
+
+                    try {
+                        $message->attach(\Swift_Attachment::fromPath($filename));
+                    } catch (\Exception $e) {
+                        // Log any issues
+                        $this->grav['log']->error($e->getMessage());
+                    }
+                }
+            }
+        }
+
+        // Send e-mail
+        $this->email->send($message);
+    }
+
+    protected function isAssocArray(array $arr)
+    {
+        if (array() === $arr) return false;
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
 }
