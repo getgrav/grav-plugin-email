@@ -1,5 +1,5 @@
 name: Email
-version: 3.0.2
+version: 3.0.3
 testing: false
 description: Enables the emailing system for Grav
 icon: envelope
