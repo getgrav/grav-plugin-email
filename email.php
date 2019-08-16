@@ -77,7 +77,7 @@ class EmailPlugin extends Plugin
 
                 $this->grav->fireEvent('onEmailSend', new Event(['params' => &$params, 'vars' => &$vars]));
 
-                if (!$this->isAssocArray($params)) {
+                if ($this->isAssocArray($params)) {
                     $this->sendFormEmail($form, $params, $vars);
                 } else {
                     foreach ($params as $email) {
@@ -142,7 +142,9 @@ class EmailPlugin extends Plugin
     protected function isAssocArray(array $arr)
     {
         if (array() === $arr) return false;
-        return array_keys($arr) !== range(0, count($arr) - 1);
+        $keys = array_keys($arr);
+        $index_keys = range(0, count($arr) - 1);
+        return $keys !== $index_keys;
     }
 
 }
