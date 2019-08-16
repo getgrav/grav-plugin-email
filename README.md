@@ -246,15 +246,80 @@ form:
     # Their values may be referenced in email actions via '{{ form.value.FIELDNAME|e }}'
 
   process:
-    - email:
-        subject: "[Custom form] {{ form.value.name|e }}"
+    email:
+      subject: "[Custom form] {{ form.value.name|e }}"
+      body: "{% include 'forms/data.txt.twig' %}"
+      from: sender@example.com
+      from_name: 'Custom sender name'
+      to: recipient@example.com
+      to_name: 'Custom recipient name'
+      content_type: 'text/plain'
+      process_markdown: true
+```
+
+## Multiple Emails
+
+You can send multiple emails by creating an array of emails under the `process: email:` option in the form:
+
+```
+title: Custom form
+
+form:
+  name: custom_form
+  fields:
+
+    # Any fields you'd like to add to the form:
+    # Their values may be referenced in email actions via '{{ form.value.FIELDNAME|e }}'
+
+  process:
+    -
+      email:
+        subject: "[Custom Email 1] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
-        from: sender@example.com
-        from_name: 'Custom sender name'
-        to: recipient@example.com
-        to_name: 'Custom recipient name'
-        content_type: 'text/plain'
-        process_markdown: true
+        from: {mail: "owner@mysite.com", name: "Site OWner"}'
+        to: {mail: "recepient_1@example.com", name: "Recepient 1"}
+        template: "email/base.html.twig"
+    -
+      email:
+        subject: "[Custom Email 2] {{ form.value.name|e }}"
+        body: "{% include 'forms/data.txt.twig' %}"
+        from: {mail: "owner@mysite.com", name: "Site OWner"}'
+        to: {mail: "recepient_2@example.com", name: "Recepient 1"}
+        template: "email/base.html.twig"
+```
+
+## Templating Emails
+
+You can specify a Twig template for HTML rendering, else Grav will use the default one `email/base.html.twig` which is included in this plugin.  You can also specify a custom template that extends the base, where you can customize the `{% block content %}` and `{% block footer %}`.  For example:
+
+```twig
+{% extends 'email/base.html.twig' %}
+
+{% block content %}
+<p>
+    Greetings {{ form.value.name|e }},
+</p>
+
+<p>
+    We have received your request for help. Our team will get in touch with you within 3 Business Days.
+</p>
+
+<p>
+    Regards,
+</p>
+
+<p>
+    <b>My Company</b>
+    <br /><br />
+    E - <a href="mailto:help@mycompany.com">help@mycompany.com</a><br />
+    M - +1 555-123-4567<br />
+    W - <a href="https://mycompany.com">mycompany.com</a>
+</p>
+{% endblock %}
+
+{% block footer %}
+  <p style="text-align: center;">My Company - All Rights Reserved</p>
+{% endblock %}
 ```
 
 ## Sending Attachments
@@ -267,8 +332,7 @@ form:
   name: custom_form
   fields:
 
-    -
-      name: my-file
+    my-file:
       label: 'Add a file'
       type: file
       multiple: false
@@ -280,11 +344,11 @@ form:
         - text/plain
 
   process:
-    -
-      email:
-        body: '{% include "forms/data.html.twig" %}'
-        attachments:
-          - 'my-file'
+    
+    email:
+      body: '{% include "forms/data.html.twig" %}'
+      attachments:
+        - 'my-file'
 ```
 
 ## Additional action parameters
