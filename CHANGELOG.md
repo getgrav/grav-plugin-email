@@ -1,3 +1,9 @@
+# v3.0.4
+## mm/dd/2019
+
+1. [](#improved)
+    * Added ZOHO configuration example
+
 # v3.0.3
 ## 08/16/2019
 
