@@ -3,6 +3,7 @@
 
 1. [](#improved)
     * Added ZOHO configuration example
+    * Updated SwiftMailer library for PHP 7.4 support
 
 # v3.0.3
 ## 08/16/2019
