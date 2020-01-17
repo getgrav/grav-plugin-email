@@ -13,4 +13,5 @@ return array(
     'Grav\\Plugin\\Email\\' => array($baseDir . '/classes'),
     'Grav\\Plugin\\Console\\' => array($baseDir . '/cli'),
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/EmailValidator'),
+    'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/lib/Doctrine/Common/Lexer'),
 );
