@@ -1,5 +1,5 @@
 # v3.0.4
-## mm/dd/2019
+## 01/17/2019
 
 1. [](#improved)
     * Added ZOHO configuration example
