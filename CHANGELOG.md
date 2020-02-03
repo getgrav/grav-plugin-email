@@ -1,3 +1,9 @@
+# v3.0.5
+## 02/03/2020
+
+1. [](#bugfix)
+    * Fixed a date in changelog (no other changes)
+
 # v3.0.4
 ## 01/17/2020
 
