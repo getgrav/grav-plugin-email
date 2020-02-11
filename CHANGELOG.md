@@ -1,3 +1,9 @@
+# v3.0.6
+## 02/11/2020
+
+1. [](#improved)
+    * Updated email validator library
+
 # v3.0.5
 ## 02/03/2020
 
