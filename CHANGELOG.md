@@ -1,8 +1,8 @@
 # v3.0.7
-## mm/dd/2020
+## 03/05/2020
 
 1. [](#improved)
-    * Updated email validator library again...
+    * Updated email validator library
 1. [](#bugfix)
     * Fixed `Invalid resource theme://` on CLI command `test-email` on Grav 1.6.21 and later versions [#128](https://github.com/getgrav/grav-plugin-email/issues/128)
 
