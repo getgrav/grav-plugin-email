@@ -4,6 +4,7 @@ namespace Grav\Plugin\Email;
 use Grav\Common\Config\Config;
 use Grav\Common\Grav;
 use Grav\Common\Language\Language;
+use Grav\Common\Markdown\Parsedown;
 use Grav\Common\Twig\Twig;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use \Monolog\Logger;
@@ -178,7 +179,7 @@ class Email
                         $body = $twig->processString($value, $vars);
 
                         if ($params['process_markdown']) {
-                            $parsedown = new \Parsedown();
+                            $parsedown = new Parsedown();
                             $body = $parsedown->text($body);
                         }
 
@@ -202,7 +203,7 @@ class Email
                             $body = !empty($body_part['body']) ? $twig->processString($body_part['body'], $vars) : null;
 
                             if ($params['process_markdown']) {
-                                $parsedown = new \Parsedown();
+                                $parsedown = new Parsedown();
                                 $body = $parsedown->text($body);
                             }
 
