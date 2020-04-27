@@ -1,3 +1,10 @@
+# v3.0.8
+## 04/27/2020
+
+1. [](#improved)
+    * Updated vendor library files
+    * Use Grav's Parsedown class
+
 # v3.0.7
 ## 03/05/2020
 
