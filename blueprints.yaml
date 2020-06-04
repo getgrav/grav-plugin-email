@@ -20,6 +20,7 @@ dependencies:
 
 form:
   validation: loose
+
   fields:
     enabled:
       type: hidden
@@ -170,13 +171,13 @@ form:
     mailer.smtp.user:
       type: text
       size: medium
-      autocomplete: nope
+      autocomplete: 'off'
       label: PLUGIN_EMAIL.SMTP_LOGIN_NAME
 
     mailer.smtp.password:
       type: password
       size: medium
-      autocomplete: nope
+      autocomplete: 'new-password'
       label: PLUGIN_EMAIL.SMTP_PASSWORD
 
     sendmail_config:
