@@ -1,3 +1,10 @@
+# v3.0.9
+## 06/08/2020
+
+1. [](#improved)
+    * Disable password autocomplete in password field
+    * Don't save empty string in password field [#134](https://github.com/getgrav/grav-plugin-email/issues/134)
+
 # v3.0.8
 ## 04/27/2020
 
