@@ -1,5 +1,5 @@
 # v3.0.9
-## mm/dd/2020
+## 06/08/2020
 
 1. [](#improved)
     * Disable password autocomplete in password field
