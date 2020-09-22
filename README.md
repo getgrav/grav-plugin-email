@@ -12,7 +12,7 @@ $ bin/gpm install email
 
 # Configuration
 
-By default, the plugin uses PHP Mail as the mail engine. 
+By default, the plugin uses PHP Mail as the mail engine.
 
 ```
 enabled: true
@@ -33,6 +33,7 @@ mailer:
     encryption: none
     user: ''
     password: ''
+    auth_mode: ''
   sendmail:
     bin: '/usr/sbin/sendmail -bs'
 content_type: text/html
@@ -249,7 +250,7 @@ Add this code in your plugins:
 
         $sent = $this->grav['Email']->send($message);
 ```
- 
+
 # Emails sent with Forms
 
 When executing email actions during form processing, action parameters are inherited from the global configuration but may also be overridden on a per-action basis.
@@ -362,7 +363,7 @@ form:
         - text/plain
 
   process:
-    
+
     email:
       body: '{% include "forms/data.html.twig" %}'
       attachments:
@@ -431,7 +432,7 @@ or inline:
 
 ```
 to:
-  - {mail: 'mail@example.com', name: 'Human-readable name'} 
+  - {mail: 'mail@example.com', name: 'Human-readable name'}
   - {mail: 'mail+2@example.com', name: 'Another human-readable name'}
   - mail+3@example.com
   - mail+4@example.com
@@ -460,7 +461,7 @@ body:
 
 The first step in determining why emails are not sent is to enable debugging.  This can be done via the `user/config/email.yaml` file or via the plugin settings in the admin.  Just enable this and then try sending an email again.  Then inspect the `logs/email.log` file for potential problems.
 
-#### ISP Port 25 blocking 
+#### ISP Port 25 blocking
 
 By default, when sending via PHP or Sendmail the machine running the webserver will attempt to send mail using the SMTP protocol.  This uses port `25` which is often blocked by ISPs to protected against spamming.  You can determine if this port is blocked by running this command in your temrinal (mac/linux only):
 
@@ -477,12 +478,12 @@ If you get an exception when sending email but you cannot see what the error is,
 
 ```
 errors:
-  display: 1                                    
-  log: true 
+  display: 1
+  log: true
 ```
 
 ## Configuration Issues
 
-As explained above in the Configuration section, if you're using the default settings, set the Plugin configuration to use a SMTP server. It can be [Gmail](https://www.digitalocean.com/community/tutorials/how-to-use-google-s-smtp-server) or another SMTP server you have at your disposal. 
+As explained above in the Configuration section, if you're using the default settings, set the Plugin configuration to use a SMTP server. It can be [Gmail](https://www.digitalocean.com/community/tutorials/how-to-use-google-s-smtp-server) or another SMTP server you have at your disposal.
 
 This is the first thing to check. The reason is that PHP Mail, the default system used by the Plugin, is not 100% reliable and emails might not arrive.
