@@ -163,6 +163,11 @@ form:
       size: medium
       label: PLUGIN_EMAIL.SMTP_PASSWORD
 
+    mailer.smtp.auth_mode:
+      type: text
+      size: medium
+      label: PLUGIN_EMAIL.SMTP_AUTH_MODE
+
     mailer.sendmail.bin:
       type: text
       size: medium
