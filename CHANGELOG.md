@@ -1,5 +1,5 @@
 # v3.0.10
-## mm/dd/2020
+## 11/09/2020
 
 1. [](#improved)
     * Tweaked default `base.html.twig` template to better support dark-mode clients
