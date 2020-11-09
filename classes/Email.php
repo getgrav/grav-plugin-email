@@ -178,7 +178,7 @@ class Email
                     if (is_string($value)) {
                         $body = $twig->processString($value, $vars);
 
-                        if ($params['process_markdown']) {
+                        if ($params['process_markdown'] && $params['content_type'] === 'text/html') {
                             $parsedown = new Parsedown();
                             $body = $parsedown->text($body);
                         }
@@ -202,9 +202,14 @@ class Email
 
                             $body = !empty($body_part['body']) ? $twig->processString($body_part['body'], $vars) : null;
 
-                            if ($params['process_markdown']) {
+                            if ($params['process_markdown'] && $body_part['content_type'] === 'text/html') {
                                 $parsedown = new Parsedown();
                                 $body = $parsedown->text($body);
+                            }
+
+                            if (isset($body_part['template'])) {
+                                $vars = array_merge($vars, ['content' => $body]);
+                                $body = $twig->processTemplate($body_part['template'], $vars);
                             }
 
                             $content_type = !empty($body_part['content_type']) ? $twig->processString($body_part['content_type'], $vars) : null;
