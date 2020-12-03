@@ -16,6 +16,7 @@ mailer:
     encryption: none
     user: ''
     password: ''
+    auth_mode: ''
   sendmail:
     bin: '/usr/sbin/sendmail -bs'
 content_type: text/html

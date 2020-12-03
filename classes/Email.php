@@ -503,6 +503,7 @@ class Email
         $clean->setSender($message->getSender());
         $clean->setSubject($message->getSubject());
         $clean->setTo($message->getTo());
+        $clean->setAuthMode($message->getAuthMode());
 
         return $clean;
 
@@ -535,6 +536,9 @@ class Email
                 }
                 if (!empty($options['password'])) {
                     $transport->setPassword($options['password']);
+                }
+                if (!empty($options['auth_mode'])) {
+                    $transport->setAuthMode($options['auth_mode']);
                 }
                 break;
             case 'sendmail':

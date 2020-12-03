@@ -34,6 +34,7 @@ en:
     SMTP_ENCRYPTION_NONE: "None"
     SMTP_LOGIN_NAME: "SMTP login name"
     SMTP_PASSWORD: "SMTP password"
+    SMTP_AUTH_MODE: "SMTP auth mode"
     PATH_TO_SENDMAIL: "Path to sendmail"
     DEBUG: "Debug"
     EMAIL_NOT_CONFIGURED: "Email not configured"
@@ -56,7 +57,7 @@ en:
     QUEUE_FLUSH_TIME_LIMIT_APPEND: "Seconds"
 
 
- 
+
 da:
   PLUGIN_EMAIL:
     PLEASE_CONFIGURE_A_TO_ADDRESS: "Konfigurere venligst en 'til' email adresse i Email Plugin indstillingerne eller her i formularen"
@@ -80,7 +81,7 @@ fr:
     PLEASE_CONFIGURE_A_FROM_ADDRESS: "Veuillez configurer une adresse 'd'expéditeur' dans les paramètres du Plugin ou dans le formulaire."
     TEST_EMAIL_BODY: "<h1>E-mail de test</h1><p>Cet e-mail de test est basé sur la configuration suivante :</p>  <p><pre>%1$s</pre></p>"
     EMAIL_FOOTER: "GetGrav.org"
-   
+
 hr:
   PLUGIN_EMAIL:
     EMAIL_NOT_CONFIGURED: "Email nije konfiguriran"
