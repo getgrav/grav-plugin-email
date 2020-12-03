@@ -48,6 +48,8 @@ The first setting you'd likely change is your `Email from` / `Email to` names an
 
 Also, you'd likely want to setup a SMTP server instead of using PHP Mail, as the latter is not 100% reliable and you might experience problems with emails.
 
+Valid values for `auth_mode` include `plain`, `login`, `cram-md5`, or `null`.
+
 > NOTE: `engine: mail` has been deprecated from the SwiftMail library that this plugin uses as it does not funtion at all.  Please use `smtp` if at all possibe, and `sendmail` if SMTP is not an option.
 
 ### Mailtrap.io
