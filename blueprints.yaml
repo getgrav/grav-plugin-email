@@ -180,6 +180,11 @@ form:
       autocomplete: 'new-password'
       label: PLUGIN_EMAIL.SMTP_PASSWORD
 
+    mailer.smtp.auth_mode:
+      type: text
+      size: medium
+      label: PLUGIN_EMAIL.SMTP_AUTH_MODE
+
     sendmail_config:
       type: section
       title: PLUGIN_EMAIL.SENDMAIL_CONFIGURATION
