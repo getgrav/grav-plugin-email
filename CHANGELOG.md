@@ -1,3 +1,10 @@
+# v3.1.0
+## 12/02/2020
+
+1. [](#improved)
+    * Added support for `auth_mode` in SMTP engine [#101](https://github.com/getgrav/grav-plugin-email/pull/101)
+    * Obfuscate the password shown in the CLI `test-email` command [#140](https://github.com/getgrav/grav-plugin-email/pull/140)
+
 # v3.0.10
 ## 11/09/2020
 
