@@ -73,7 +73,9 @@ class TestEmailCommand extends ConsoleCommand
 
         $email_config = new Data($grav['config']->get('plugins.email'));
         if ($email_config->get('mailer.smtp.password')) {
-            $email_config->set('mailer.smtp.password', 'removed');
+            $password = $email_config->get('mailer.smtp.password');
+            $obfuscated_password = str_repeat('*', strlen($password) - 2) . substr($password, -2);
+            $email_config->set('mailer.smtp.password', $obfuscated_password);
         }
 
         dump($email_config);
