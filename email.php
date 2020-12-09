@@ -91,7 +91,8 @@ class EmailPlugin extends Plugin
             case 'email':
                 // Prepare Twig variables
                 $vars = array(
-                    'form' => $form
+                    'form' => $form,
+                    'page' => $this->grav['page']
                 );
 
                 // Copy files now, we need those.
