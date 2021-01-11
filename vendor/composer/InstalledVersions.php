@@ -24,12 +24,12 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => 'dev-master',
-    'version' => 'dev-master',
+    'pretty_version' => 'dev-develop',
+    'version' => 'dev-develop',
     'aliases' => 
     array (
     ),
-    'reference' => 'bcee6ab252e139ad74c7804effc7b1f8befe1273',
+    'reference' => 'bf017bce28ae1ef7947a9183eac018f0e5edfe9e',
     'name' => 'getgrav/grav-plugin-email',
   ),
   'versions' => 
@@ -54,12 +54,12 @@ private static $installed = array (
     ),
     'getgrav/grav-plugin-email' => 
     array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
+      'pretty_version' => 'dev-develop',
+      'version' => 'dev-develop',
       'aliases' => 
       array (
       ),
-      'reference' => 'bcee6ab252e139ad74c7804effc7b1f8befe1273',
+      'reference' => 'bf017bce28ae1ef7947a9183eac018f0e5edfe9e',
     ),
     'swiftmailer/swiftmailer' => 
     array (
