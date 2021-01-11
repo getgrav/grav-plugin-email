@@ -14,13 +14,11 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class TestEmailCommand extends ConsoleCommand
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $options = [];
 
     /**
-     *
+     * @return void
      */
     protected function configure()
     {
@@ -56,7 +54,7 @@ class TestEmailCommand extends ConsoleCommand
     }
 
     /**
-     * @return int|null|void
+     * @return int
      */
     protected function serve()
     {
@@ -65,12 +63,11 @@ class TestEmailCommand extends ConsoleCommand
             $this->initializeThemes();
         }
 
-        $grav = Grav::instance();
-
         $this->output->writeln('');
         $this->output->writeln('<yellow>Current Configuration:</yellow>');
         $this->output->writeln('');
 
+        $grav = Grav::instance();
         $email_config = new Data($grav['config']->get('plugins.email'));
         if ($email_config->get('mailer.smtp.password')) {
             $password = $email_config->get('mailer.smtp.password');
@@ -105,5 +102,6 @@ class TestEmailCommand extends ConsoleCommand
             $this->output->writeln("<red>Problem sending email...</red>");
         }
 
+        return 0;
     }
 }

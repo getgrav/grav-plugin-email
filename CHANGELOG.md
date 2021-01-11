@@ -1,3 +1,10 @@
+# v3.1.1
+## mm/dd/2021
+
+1. [](#improved)
+   * Latest vendor updates
+   * Updated CLI commands
+
 # v3.1.0
 ## 12/02/2020
 
