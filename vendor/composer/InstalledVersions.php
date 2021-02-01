@@ -24,12 +24,12 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => 'dev-master',
-    'version' => 'dev-master',
+    'pretty_version' => 'dev-develop',
+    'version' => 'dev-develop',
     'aliases' => 
     array (
     ),
-    'reference' => 'bcee6ab252e139ad74c7804effc7b1f8befe1273',
+    'reference' => '22b33105768561e48c79c283cb2e7d960f89558f',
     'name' => 'getgrav/grav-plugin-email',
   ),
   'versions' => 
@@ -54,21 +54,21 @@ private static $installed = array (
     ),
     'getgrav/grav-plugin-email' => 
     array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
+      'pretty_version' => 'dev-develop',
+      'version' => 'dev-develop',
       'aliases' => 
       array (
       ),
-      'reference' => 'bcee6ab252e139ad74c7804effc7b1f8befe1273',
+      'reference' => '22b33105768561e48c79c283cb2e7d960f89558f',
     ),
     'swiftmailer/swiftmailer' => 
     array (
-      'pretty_version' => 'v6.2.4',
-      'version' => '6.2.4.0',
+      'pretty_version' => 'v6.2.5',
+      'version' => '6.2.5.0',
       'aliases' => 
       array (
       ),
-      'reference' => '56f0ab23f54c4ccbb0d5dcc67ff8552e0c98d59e',
+      'reference' => '698a6a9f54d7eb321274de3ad19863802c879fb7',
     ),
     'symfony/polyfill-iconv' => 
     array (

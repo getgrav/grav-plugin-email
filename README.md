@@ -298,13 +298,13 @@ form:
       -
         subject: "[Custom Email 1] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
-        from: {mail: "owner@mysite.com", name: "Site OWner"}'
+        from: {mail: "owner@mysite.com", name: "Site OWner"}
         to: {mail: "recepient_1@example.com", name: "Recepient 1"}
         template: "email/base.html.twig"
       -
         subject: "[Custom Email 2] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
-        from: {mail: "owner@mysite.com", name: "Site OWner"}'
+        from: {mail: "owner@mysite.com", name: "Site OWner"}
         to: {mail: "recepient_2@example.com", name: "Recepient 1"}
         template: "email/base.html.twig"
 ```

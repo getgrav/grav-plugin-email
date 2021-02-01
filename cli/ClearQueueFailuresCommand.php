@@ -55,9 +55,7 @@ class ClearQueueFailuresCommand extends ConsoleCommand
 
         require_once __DIR__ . '/../vendor/autoload.php';
 
-        $output = Email::clearQueueFailures();
-
-        $this->output->writeln('<green>' . $output . '</green>');
+        Email::clearQueueFailures();
 
         return 0;
     }
