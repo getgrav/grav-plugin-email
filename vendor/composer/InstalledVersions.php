@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'bf017bce28ae1ef7947a9183eac018f0e5edfe9e',
+    'reference' => '22b33105768561e48c79c283cb2e7d960f89558f',
     'name' => 'getgrav/grav-plugin-email',
   ),
   'versions' => 
@@ -59,16 +59,16 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'bf017bce28ae1ef7947a9183eac018f0e5edfe9e',
+      'reference' => '22b33105768561e48c79c283cb2e7d960f89558f',
     ),
     'swiftmailer/swiftmailer' => 
     array (
-      'pretty_version' => 'v6.2.4',
-      'version' => '6.2.4.0',
+      'pretty_version' => 'v6.2.5',
+      'version' => '6.2.5.0',
       'aliases' => 
       array (
       ),
-      'reference' => '56f0ab23f54c4ccbb0d5dcc67ff8552e0c98d59e',
+      'reference' => '698a6a9f54d7eb321274de3ad19863802c879fb7',
     ),
     'symfony/polyfill-iconv' => 
     array (

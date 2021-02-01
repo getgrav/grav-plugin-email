@@ -2,8 +2,9 @@
 ## mm/dd/2021
 
 1. [](#improved)
-   * Latest vendor updates
+   * Latest vendor updates including SwiftMailer `6.2.5`
    * Updated CLI commands
+    
 
 # v3.1.0
 ## 12/02/2020
