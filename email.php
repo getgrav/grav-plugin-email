@@ -159,6 +159,9 @@ class EmailPlugin extends Plugin
             }
         }
 
+        //fire event to apply optional signers
+        $this->grav->fireEvent('onBeforeFinalEmailSend', new Event(['message' => $message]));
+
         // Send e-mail
         $this->email->send($message);
     }
