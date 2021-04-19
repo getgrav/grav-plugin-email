@@ -1,3 +1,9 @@
+# v3.1.3
+## mm/dd/2021
+
+1. [](#improved)
+    * Pass page variable to processed forms [#141](https://github.com/getgrav/grav-plugin-email/pull/141)
+
 # v3.1.2
 ## 04/06/2021
 
