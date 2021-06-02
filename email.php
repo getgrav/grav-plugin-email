@@ -167,7 +167,7 @@ class EmailPlugin extends Plugin
         $this->email->send($message);
 
         //fire event after eMail was sent
-        $this->grav->fireEvent('onEmailWasSent', new Event(['message' => $message, 'params' => $params, 'form' => $form]));
+        $this->grav->fireEvent('onEmailSent', new Event(['message' => $message, 'params' => $params, 'form' => $form]));
     }
 
     protected function isAssocArray(array $arr)
