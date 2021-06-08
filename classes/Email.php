@@ -171,6 +171,11 @@ class Email
             throw new \RuntimeException($language->translate('PLUGIN_EMAIL.PLEASE_CONFIGURE_A_FROM_ADDRESS'));
         }
 
+        // make email configuration available to templates
+        $vars += [
+            'email' => $params,
+        ];
+
         // Process parameters.
         foreach ($params as $key => $value) {
             switch ($key) {
