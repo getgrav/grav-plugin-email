@@ -1,3 +1,11 @@
+# v3.1.3
+## 07/19/2021
+
+1. [](#improved)
+   * Pass page variable to processed forms [#141](https://github.com/getgrav/grav-plugin-email/pull/141)
+   * Email configuration available to templates [#152](https://github.com/getgrav/grav-plugin-email/pull/152)
+   * New Event after eMail was sent [#151](https://github.com/getgrav/grav-plugin-email/pull/151)
+
 # v3.1.2
 ## 04/06/2021
 
