@@ -1,3 +1,9 @@
+# v3.1.4
+## 11/16/2021
+
+1. [](#improved)
+    * Added second parameter to `Email::send()` to get failed recipients
+
 # v3.1.3
 ## 07/19/2021
 
