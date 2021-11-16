@@ -1,5 +1,5 @@
 # v3.1.4
-## mm/dd/2021
+## 11/16/2021
 
 1. [](#improved)
     * Added second parameter to `Email::send()` to get failed recipients
