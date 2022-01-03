@@ -1,3 +1,9 @@
+# v3.1.5
+## 01/03/22
+
+1. [](#improved)
+   * Updated to Swiftmailer `v6.3.0` with PHP 8.1 compatibility [#157](https://github.com/getgrav/grav-plugin-email/issues/157)
+
 # v3.1.4
 ## 11/16/2021
 
