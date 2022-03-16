@@ -143,6 +143,9 @@ class Email
         /** @var Language $language */
         $language = Grav::instance()['language'];
 
+        // Create message object.
+        $message = $this->message();
+
         // Extend parameters with defaults.
         $params += [
             'bcc' => $config->get('plugins.email.bcc', []),
@@ -159,11 +162,9 @@ class Email
             'to' => $config->get('plugins.email.to'),
             'to_name' => $config->get('plugins.email.to_name'),
             'process_markdown' => false,
-            'template' => false
+            'template' => false,
+            'message' => $message
         ];
-
-        // Create message object.
-        $message = $this->message();
 
         if (!$params['to']) {
             throw new \RuntimeException($language->translate('PLUGIN_EMAIL.PLEASE_CONFIGURE_A_TO_ADDRESS'));
@@ -233,7 +234,9 @@ class Email
                     break;
 
                 case 'subject':
-                    $message->setSubject($twig->processString($language->translate($value), $vars));
+                    if ($value) {
+                        $message->setSubject($twig->processString($language->translate($value), $vars));
+                    }
                     break;
 
                 case 'to':
