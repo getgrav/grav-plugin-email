@@ -3,7 +3,8 @@
 
 1. [](#improved)
     * Added access email message object inside the twig template file
-
+2. [](#bugfix)
+    * Fixed twig not being initialized when building an email message
 
 # v3.1.5
 ## 01/03/2022

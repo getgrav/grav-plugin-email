@@ -136,6 +136,7 @@ class Email
     {
         /** @var Twig $twig */
         $twig = Grav::instance()['twig'];
+        $twig->init();
 
         /** @var Config $config */
         $config = Grav::instance()['config'];
