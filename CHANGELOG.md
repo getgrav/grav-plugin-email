@@ -1,6 +1,8 @@
-# v3.1.6
+# v3.2.0
 ## mm/dd/2022
 
+1. [](#new)
+    * Require **Grav 1.7.26** and **Form 6.0.0**
 1. [](#improved)
     * Added access email message object inside the twig template file
 2. [](#bugfix)
