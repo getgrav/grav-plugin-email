@@ -5,7 +5,7 @@
         'type' => 'grav-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '738db575b099c1710d1f3ee14fef2a6cbeaaa0e5',
+        'reference' => '6ab4ab743d351b196fa32aa7885651e6b7e2e6d4',
         'name' => 'getgrav/grav-plugin-email',
         'dev' => false,
     ),
@@ -34,7 +34,7 @@
             'type' => 'grav-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '738db575b099c1710d1f3ee14fef2a6cbeaaa0e5',
+            'reference' => '6ab4ab743d351b196fa32aa7885651e6b7e2e6d4',
             'dev_requirement' => false,
         ),
         'swiftmailer/swiftmailer' => array(

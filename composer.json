@@ -34,5 +34,10 @@
             "Grav\\Plugin\\Console\\": "cli/"
         },
         "classmap":  ["email.php"]
+    },
+    "config": {
+        "platform": {
+            "php": "7.3.6"
+        }
     }
 }
