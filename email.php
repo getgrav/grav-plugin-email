@@ -1,6 +1,7 @@
 <?php
 namespace Grav\Plugin;
 
+use Composer\Autoload\ClassLoader;
 use Grav\Common\Data\Data;
 use Grav\Common\Plugin;
 use Grav\Plugin\Email\Email;
@@ -28,15 +29,21 @@ class EmailPlugin extends Plugin
     }
 
     /**
+     * @return ClassLoader
+     */
+    public function autoload(): ClassLoader
+    {
+        return require __DIR__ . '/vendor/autoload.php';
+    }
+
+    /**
      * Initialize emailing.
      */
     public function onPluginsInitialized()
     {
-        require_once __DIR__ . '/vendor/autoload.php';
-
         $this->email = new Email();
 
-        if ($this->email->enabled()) {
+        if ($this->email::enabled()) {
             $this->grav['Email'] = $this->email;
         }
     }

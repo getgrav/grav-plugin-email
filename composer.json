@@ -20,8 +20,13 @@
         "docs": "https://github.com/getgrav/grav-plugin-email/blob/master/README.md"
     },
     "require": {
-        "php": ">=7.1.3",
+        "php": ">=7.3.6",
         "swiftmailer/swiftmailer": "~6.0"
+    },
+    "replace": {
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php72": "*"
     },
     "autoload": {
         "psr-4": {
@@ -29,5 +34,10 @@
             "Grav\\Plugin\\Console\\": "cli/"
         },
         "classmap":  ["email.php"]
+    },
+    "config": {
+        "platform": {
+            "php": "7.3.6"
+        }
     }
 }
