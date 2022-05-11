@@ -166,7 +166,7 @@ It's that easy!
 
 ZOHO is a popular solution for hosted email due to it's great 'FREE' tier.  It's paid options are also very reasonable and combined with the latest UI updates and outstanding security features, it's a solid email option.
 
-In order to get ZOHO working with Grav, you need to send email via a user account.  You can either use your users' password or generate an **App Password** via your ZOHO account (clicking on your avatar once logged in), then navigating to `Two Factor Authentication -> App Passwords -> Generate`. Just enter a unique app name (i.e. `Grav Website`).
+In order to get ZOHO working with Grav, you need to send email via a user account.  You can either use your users' password or generate an **App Password** via your ZOHO account (clicking on your avatar once logged in), then navigating to `My Account -> Security -> App Passwords -> Generate`. Just enter a unique app name (i.e. `Grav Website`).
 
 NOTE: The SMTP host required can be found in `Settings -> Mail - > Mail Accounts -> POP/IMAP -> SMTP`.  This will provide the SMTP server for this account (it may not be `imap.zoho.com` depending on what region you are in)
 
