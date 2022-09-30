@@ -9,27 +9,23 @@ use Grav\Common\Twig\Twig;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use \Monolog\Logger;
 use \Monolog\Handler\StreamHandler;
+use Symfony\Component\Mime\Email as SymfonyEmail;
 
 class Email
 {
     /**
-     * @var \Swift_Transport
+     * @var Mailer
      */
     protected $mailer;
 
-    /**
-     * @var \Swift_Plugins_LoggerPlugin
-     */
     protected $logger;
-
-    protected $queue_path;
 
     /**
      * Returns true if emails have been enabled in the system.
      *
      * @return bool
      */
-    public static function enabled()
+    public static function enabled(): bool
     {
         return Grav::instance()['config']->get('plugins.email.mailer.engine') !== 'none';
     }
@@ -39,7 +35,7 @@ class Email
      *
      * @return bool
      */
-    public static function debug()
+    public static function debug(): bool
     {
         return Grav::instance()['config']->get('plugins.email.debug') == 'true';
     }
@@ -51,11 +47,18 @@ class Email
      * @param string $body
      * @param string $contentType
      * @param string $charset
-     * @return \Swift_Message
+     * @return SymfonyEmail
      */
     public function message($subject = null, $body = null, $contentType = null, $charset = null)
     {
-        return new \Swift_Message($subject, $body, $contentType, $charset);
+        $email = (new SymfonyEmail())->subject($subject);
+        if ($contentType === 'text/html') {
+            $email->html($body);
+        } else {
+            $email->text($body);
+        }
+
+        return $email;
     }
 
     /**
@@ -381,7 +384,7 @@ class Email
             $config = Grav::instance()['config'];
             $queue_enabled = $config->get('plugins.email.queue.enabled');
 
-            $transport = $queue_enabled === true ? $this->getQueue() : $this->getTransport();
+            $transport = $this->getTransport();
 
             // Create the Mailer using your created Transport
             $this->mailer = new \Swift_Mailer($transport);
@@ -396,126 +399,23 @@ class Email
         return $this->mailer;
     }
 
-    protected static function getQueuePath()
-    {
-        $queue_path = Grav::instance()['locator']->findResource('user://data', true) . '/email-queue';
 
-        if (!file_exists($queue_path)) {
-            mkdir($queue_path);
-        }
-
-        return $queue_path;
-    }
-
-    protected static function getQueue()
-    {
-        $queue_path = static::getQueuePath();
-
-        $spool = new \Swift_FileSpool($queue_path);
-        $transport = new \Swift_SpoolTransport($spool);
-
-        return $transport;
-    }
-
+    /**
+     * @return string
+     * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
+     */
     public static function flushQueue()
     {
-        $grav = Grav::instance();
+        return 'Switched from Swiftmailer to Symfony/Mailer - No longer supported';
 
-        $grav['debugger']->enabled(false);
-
-        $config = $grav['config']->get('plugins.email.queue');
-
-        try {
-            $queue = static::getQueue();
-            $spool = $queue->getSpool();
-            $spool->setMessageLimit($config['flush_msg_limit']);
-            $spool->setTimeLimit($config['flush_time_limit']);
-            $failures = [];
-            $result = $spool->flushQueue(static::getTransport(), $failures);
-            return $result . ' messages flushed from queue...';
-        } catch (\Exception $e) {
-            $grav['log']->error($e->getMessage());
-            return $e->getMessage();
-        }
-
-    }
-
-    public static function clearQueueFailures()
-    {
-        $grav = Grav::instance();
-        $grav['debugger']->enabled(false);
-
-        $preferences = \Swift_Preferences::getInstance();
-        $preferences->setTempDir(sys_get_temp_dir());
-
-        /** @var \Swift_Transport $transport */
-        $transport = static::getTransport();
-        if (!$transport->isStarted()) {
-            $transport->start();
-        }
-
-        $queue_path = static::getQueuePath();
-
-        foreach (new \GlobIterator($queue_path . '/*.sending') as $file) {
-            $final_message = $file->getPathname();
-
-            /** @var \Swift_Message $message */
-            $message = unserialize(file_get_contents($final_message));
-
-            echo(sprintf(
-                'Retrying "%s" to "%s"',
-                $message->getSubject(),
-                implode(', ', array_keys($message->getTo()))
-            ) . "\n");
-
-            try {
-                $clean = static::cloneMessage($message);
-                $transport->send($clean);
-                echo("sent!\n");
-
-                // DOn't want to trip up any errors from sending too fast
-                sleep(1);
-            } catch (\Swift_TransportException $e) {
-                echo("ERROR: Send failed - deleting spooled message\n");
-            }
-
-            // Remove the file
-            unlink($final_message);
-        }
     }
 
     /**
-     * Clean copy a message
-     *
-     * @param \Swift_Message $message
+     * @return void
+     * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
      */
-    public static function cloneMessage($message)
+    public static function clearQueueFailures()
     {
-        $clean = new \Swift_Message();
-
-        $clean->setBoundary($message->getBoundary());
-        $clean->setBcc($message->getBcc());
-        $clean->setBody($message->getBody());
-        $clean->setCharset($message->getCharset());
-        $clean->setChildren($message->getChildren());
-        $clean->setContentType($message->getContentType());
-        $clean->setCc($message->getCc());
-        $clean->setDate($message->getDate());
-        $clean->setDescription($message->getDescription());
-        $clean->setEncoder($message->getEncoder());
-        $clean->setFormat($message->getFormat());
-        $clean->setFrom($message->getFrom());
-        $clean->setId($message->getId());
-        $clean->setMaxLineLength($message->getMaxLineLength());
-        $clean->setPriority($message->getPriority());
-        $clean->setReplyTo($message->getReplyTo());
-        $clean->setReturnPath($message->getReturnPath());
-        $clean->setSender($message->getSender());
-        $clean->setSubject($message->getSubject());
-        $clean->setTo($message->getTo());
-        $clean->setAuthMode($message->getAuthMode());
-
-        return $clean;
 
     }
 
