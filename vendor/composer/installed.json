@@ -1452,6 +1452,6 @@
             "install-path": "../symfony/service-contracts"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }

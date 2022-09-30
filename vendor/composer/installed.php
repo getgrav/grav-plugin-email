@@ -3,11 +3,11 @@
         'name' => 'getgrav/grav-plugin-email',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '5dd098b1cab4fecde3bf50e69fc70b0f1086e31b',
+        'reference' => '133ee992aab3f27efc94846ccbd495f2a2b3910b',
         'type' => 'grav-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'doctrine/lexer' => array(
@@ -31,7 +31,7 @@
         'getgrav/grav-plugin-email' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '5dd098b1cab4fecde3bf50e69fc70b0f1086e31b',
+            'reference' => '133ee992aab3f27efc94846ccbd495f2a2b3910b',
             'type' => 'grav-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
