@@ -4,7 +4,6 @@ namespace Grav\Plugin\Email;
 use Grav\Common\Config\Config;
 use Grav\Common\Grav;
 use Grav\Common\Utils;
-use Grav\Common\Utils as GravUtils;
 use Grav\Common\Language\Language;
 use Grav\Common\Markdown\Parsedown;
 use Grav\Common\Twig\Twig;
@@ -23,9 +22,7 @@ use Symfony\Component\Mime\RawMessage;
 
 class Email
 {
-    /**
-     * @var Mailer
-     */
+    /** @var SymfonyMailer */
     protected $mailer;
 
     protected $log;
@@ -64,18 +61,19 @@ class Email
      * @param string $body
      * @param string $contentType
      * @param string $charset
-     * @return SymfonyEmail
+     * @return Message
      */
-    public function message($subject = null, $body = null, $contentType = null, $charset = null)
+    public function message(string $subject = null, string $body = null, string $contentType = null, string $charset = null): Message
     {
-        $email = (new SymfonyEmail())->subject($subject);
+        $message = new Message();
+        $message->subject($subject);
         if ($contentType === 'text/html') {
-            $email->html($body);
+            $message->html($body);
         } else {
-            $email->text($body);
+            $message->text($body);
         }
 
-        return $email;
+        return $message;
     }
 
     /**
@@ -120,19 +118,25 @@ class Email
     /**
      * Send email.
      *
-     * @param RawMessage $message
+     * @param Message $message
      * @param Envelope|null $envelope
-     * @return void
-     * @throws TransportExceptionInterface
+     * @return int
      */
-    public function send(RawMessage $message, Envelope $envelope = null)
+    public function send(Message $message, Envelope $envelope = null): int
     {
-        $this->mailer->send($message, $envelope);
+        $msg = 'sent email';
+        try {
+            $this->mailer->send($message->getEmail(), $envelope);
+            $return = 1;
+        } catch (TransportExceptionInterface $e) {
+            $return = 0;
+            $msg = $e->getMessage();
+        }
 
         if ($this->debug()) {
-            $msg = 'need details here...';
             $this->log->addInfo($msg);
         }
+        return $return;
     }
 
     /**
@@ -140,9 +144,9 @@ class Email
      *
      * @param array $params
      * @param array $vars
-     * @return SymfonyEmail
+     * @return Message
      */
-    public function buildMessage(array $params, array $vars = []): SymfonyEmail
+    public function buildMessage(array $params, array $vars = []): Message
     {
         /** @var Twig $twig */
         $twig = Grav::instance()['twig'];
@@ -154,8 +158,9 @@ class Email
         /** @var Language $language */
         $language = Grav::instance()['language'];
 
+        $message = new Message();
+
         // Create message object.
-        $message = new SymfonyEmail();
 
         // Extend parameters with defaults.
         $params += [
