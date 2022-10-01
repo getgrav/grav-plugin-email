@@ -60,6 +60,12 @@ class Message
         return $this;
     }
 
+    public function attachFromPath($path): Message
+    {
+        $this->email->attachFromPath($path);
+        return $this;
+    }
+
     public function getEmail(): SymfonyEmail
     {
         return $this->email;

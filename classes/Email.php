@@ -16,9 +16,6 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Mailer as SymfonyMailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Email as SymfonyEmail;
-use Symfony\Component\Mime\RawMessage;
-
 
 class Email
 {
@@ -218,55 +215,40 @@ class Email
 
                 case 'subject':
                     if ($value) {
-                        $message->subject($twig->processString($language->translate($value), $vars));
+                        $message->subject($language->translate($value));
                     }
                     break;
 
                 case 'to':
-                    if (is_string($value) && !empty($params['to_name'])) {
-                        $value = ['email' => $value, 'name' => $params['to_name']];
-                    }
-                    $recipients = $this->processRecipients('to', $value);
+                    $recipients = $this->processRecipients('to', $params);
                     foreach ($recipients as $address) {
                         $message->to($address);
                     }
                     break;
 
                 case 'cc':
-                    if (is_string($value) && !empty($params['cc_name'])) {
-                        $value = ['email' => $value, 'name' => $params['cc_name']];
-                    }
-                    $recipients = $this->processRecipients('cc', $value);
+                    $recipients = $this->processRecipients('cc', $params);
                     foreach ($recipients as $address) {
                         $message->cc($address);
                     }
                     break;
 
                 case 'bcc':
-                    if (is_string($value) && !empty($params['bcc_name'])) {
-                        $value = ['email' => $value, 'name' => $params['bcc_name']];
-                    }
-                    $recipients = $this->processRecipients('bcc', $value);
+                    $recipients = $this->processRecipients('bcc', $params);
                     foreach ($recipients as $address) {
                         $message->bcc($address);
                     }
                     break;
 
                 case 'from':
-                    if (is_string($value) && !empty($params['from_name'])) {
-                        $value = ['email' => $value, 'name' => $params['from_name']];
-                    }
-                    $recipients = $this->processRecipients('from', $value);
+                    $recipients = $this->processRecipients('from', $params);
                     foreach ($recipients as $address) {
                         $message->from($address);
                     }
                     break;
 
                 case 'reply_to':
-                    if (is_string($value) && !empty($params['reply_to_name'])) {
-                        $value = ['email' => $value, 'name' => $params['reply_to_name']];
-                    }
-                    $recipients = $this->processRecipients('reply_to', $value);
+                    $recipients = $this->processRecipients('reply_to', $params);
                     foreach ($recipients as $address) {
                         $message->replyTo($address);
                     }
@@ -279,10 +261,7 @@ class Email
 
     protected function processRecipients(string $type, array $params): array
     {
-        $recipients = $params[$type] ??
-                      $this->config->get('plugins.mailersend.defaults.'.$type) ??
-                      $this->config->get('plugins.email.'.$type) ??
-                      [];
+        $recipients = $params[$type] ?? Grav::instance()['config']->get('plugins.email.'.$type) ?? [];
 
         $list = [];
 
@@ -301,6 +280,9 @@ class Email
                             $list[] = $this->createAddress($recipient);
                         }
                     } else {
+                        if (isset($params[$type."_name"])) {
+                            $recipients = [$recipients, $params[$type."_name"]];
+                        }
                         $list[] = $this->createAddress($recipients);
                     }
                 }
@@ -319,7 +301,7 @@ class Email
                 $name = trim($matches[1]);
             } else {
                 $email = $data;
-                $name = null;
+                $name = '';
             }
         } elseif (Utils::isAssoc($data)) {
             $first_key = array_key_first($data);
@@ -327,12 +309,12 @@ class Email
                 $email = $first_key;
                 $name = $data[$first_key];
             } else {
-                $email = $data['email'] ?? $data['mail'] ?? $data['address'] ?? null;
-                $name = $data['name'] ?? $data['fullname'] ?? null;
+                $email = $data['email'] ?? $data['mail'] ?? $data['address'] ?? '';
+                $name = $data['name'] ?? $data['fullname'] ?? '';
             }
         } else {
-            $email = $data[0] ?? null;
-            $name = $data[1] ?? null;
+            $email = $data[0] ?? '';
+            $name = $data[1] ?? '';
         }
         return new Address($email, $name);
     }
@@ -370,7 +352,9 @@ class Email
     {
         $twig = Grav::instance()['twig'];
         array_walk_recursive($params, function(&$value) use ($twig, $vars) {
-            $value = $twig->processString($value, $vars);
+            if (is_string($value)) {
+                $value = $twig->processString($value, $vars);
+            }
         });
         return $params;
     }
