@@ -361,20 +361,26 @@ class Email
                     $auth .= $options['user'];
                 }
                 if (isset($options['password'])) {
-                    $auth .= ':' . $options['password'];
+                    $auth .= ":{$$options['password']}";
                 }
                 if (!empty($auth)) {
-                    $dsn .= $auth . '@';
+                    $dsn .= "$auth@";
                 }
                 if (isset($options['server'])) {
                     $dsn .= $options['server'];
                 }
                 if (isset($options['port'])) {
-                    $dsn .= ':' . $options['port'];
+                    $dsn .= ":{$options['port']}";
                 }
                 if (isset($options['options'])) {
                     $dsn .= '?' . http_build_query($options['options']);
                 }
+                break;
+            case 'mailjet':
+                $options = $config->get('plugins.email.mailer.mailjet');
+                $dsn = "mailjet+{$options['transport']}://";
+                $dsn .= "{$options['api_key']}:{$options['secret_key']}";
+                $dsn .= "@default";
                 break;
             case 'native':
                 $dsn = 'native://default';

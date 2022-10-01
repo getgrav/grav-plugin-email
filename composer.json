@@ -21,9 +21,10 @@
     },
     "require": {
         "php": ">=7.3.6",
-        "swiftmailer/swiftmailer": "~6.0",
         "symfony/mailer": "^5.4",
-        "symfony/messenger": "^5.4"
+        "symfony/messenger": "^5.4",
+        "symfony/sendgrid-mailer": "^5.4",
+        "symfony/mailjet-mailer": "^5.4"
     },
     "replace": {
         "symfony/polyfill-iconv": "*",

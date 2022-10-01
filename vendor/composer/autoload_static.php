@@ -11,7 +11,6 @@ class ComposerStaticInit73924571ea6ee98bb12d10ff20aff2ab
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
-        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -27,6 +26,8 @@ class ComposerStaticInit73924571ea6ee98bb12d10ff20aff2ab
             'Symfony\\Component\\Messenger\\Bridge\\Doctrine\\' => 44,
             'Symfony\\Component\\Messenger\\Bridge\\Amqp\\' => 40,
             'Symfony\\Component\\Messenger\\' => 28,
+            'Symfony\\Component\\Mailer\\Bridge\\Sendgrid\\' => 41,
+            'Symfony\\Component\\Mailer\\Bridge\\Mailjet\\' => 40,
             'Symfony\\Component\\Mailer\\' => 25,
             'Symfony\\Component\\EventDispatcher\\' => 34,
         ),
@@ -91,6 +92,14 @@ class ComposerStaticInit73924571ea6ee98bb12d10ff20aff2ab
         'Symfony\\Component\\Messenger\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/messenger',
+        ),
+        'Symfony\\Component\\Mailer\\Bridge\\Sendgrid\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/sendgrid-mailer',
+        ),
+        'Symfony\\Component\\Mailer\\Bridge\\Mailjet\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/mailjet-mailer',
         ),
         'Symfony\\Component\\Mailer\\' => 
         array (
