@@ -1,8 +1,6 @@
 enabled: true
 from:
-from_name:
 to:
-to_name:
 mailer:
   engine: sendmail
   smtp:

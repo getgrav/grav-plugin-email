@@ -16,8 +16,6 @@ return array(
     'Symfony\\Component\\Messenger\\Bridge\\Doctrine\\' => array($vendorDir . '/symfony/doctrine-messenger'),
     'Symfony\\Component\\Messenger\\Bridge\\Amqp\\' => array($vendorDir . '/symfony/amqp-messenger'),
     'Symfony\\Component\\Messenger\\' => array($vendorDir . '/symfony/messenger'),
-    'Symfony\\Component\\Mailer\\Bridge\\Sendgrid\\' => array($vendorDir . '/symfony/sendgrid-mailer'),
-    'Symfony\\Component\\Mailer\\Bridge\\Mailjet\\' => array($vendorDir . '/symfony/mailjet-mailer'),
     'Symfony\\Component\\Mailer\\' => array($vendorDir . '/symfony/mailer'),
     'Symfony\\Component\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),

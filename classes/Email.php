@@ -10,6 +10,7 @@ use Grav\Common\Twig\Twig;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use \Monolog\Logger;
 use \Monolog\Handler\StreamHandler;
+use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -190,34 +191,6 @@ class Email
                         $message->$key($address);
                     }
                     break;
-
-                case 'cc':
-                    $recipients = $this->processRecipients('cc', $params);
-                    foreach ($recipients as $address) {
-                        $message->cc($address);
-                    }
-                    break;
-
-                case 'bcc':
-                    $recipients = $this->processRecipients('bcc', $params);
-                    foreach ($recipients as $address) {
-                        $message->bcc($address);
-                    }
-                    break;
-
-                case 'from':
-                    $recipients = $this->processRecipients('from', $params);
-                    foreach ($recipients as $address) {
-                        $message->from($address);
-                    }
-                    break;
-
-                case 'reply_to':
-                    $recipients = $this->processRecipients('reply_to', $params);
-                    foreach ($recipients as $address) {
-                        $message->replyTo($address);
-                    }
-                    break;
             }
         }
 
@@ -245,7 +218,7 @@ class Email
                             $list[] = $this->createAddress($recipient);
                         }
                     } else {
-                        if (isset($params[$type."_name"])) {
+                        if (!Utils::contains($recipients, ['<','>']) && ($params[$type."_name"])) {
                             $recipients = [$recipients, $params[$type."_name"]];
                         }
                         $list[] = $this->createAddress($recipients);
@@ -358,16 +331,16 @@ class Email
                 $auth = '';
 
                 if (isset($options['user'])) {
-                    $auth .= $options['user'];
+                    $auth .= urlencode($options['user']);
                 }
                 if (isset($options['password'])) {
-                    $auth .= ":{$$options['password']}";
+                    $auth .= ':'. urlencode($options['password']);
                 }
                 if (!empty($auth)) {
                     $dsn .= "$auth@";
                 }
                 if (isset($options['server'])) {
-                    $dsn .= $options['server'];
+                    $dsn .= urlencode($options['server']);
                 }
                 if (isset($options['port'])) {
                     $dsn .= ":{$options['port']}";
@@ -375,12 +348,6 @@ class Email
                 if (isset($options['options'])) {
                     $dsn .= '?' . http_build_query($options['options']);
                 }
-                break;
-            case 'mailjet':
-                $options = $config->get('plugins.email.mailer.mailjet');
-                $dsn = "mailjet+{$options['transport']}://";
-                $dsn .= "{$options['api_key']}:{$options['secret_key']}";
-                $dsn .= "@default";
                 break;
             case 'native':
                 $dsn = 'native://default';
@@ -390,6 +357,13 @@ class Email
                 $bin = $config->get('plugins.email.mailer.sendmail.bin');
                 if (isset($bin)) {
                     $dsn .= '?command=' . urlencode($bin);
+                }
+                break;
+            default:
+                $e = new Event(['engine' => $engine, ]);
+                Grav::instance()->fireEvent('onEmailTransportDsn', $e);
+                if (isset($e['dsn'])) {
+                    $dsn = $e['dsn'];
                 }
                 break;
         }

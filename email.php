@@ -3,6 +3,7 @@ namespace Grav\Plugin;
 
 use Composer\Autoload\ClassLoader;
 use Grav\Common\Data\Data;
+use Grav\Common\Grav;
 use Grav\Common\Plugin;
 use Grav\Common\Utils;
 use Grav\Plugin\Email\Email;
@@ -120,14 +121,6 @@ class EmailPlugin extends Plugin
         }
     }
 
-    /**
-     * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
-     */
-    public function onSchedulerInitialized(Event $e)
-    {
-
-    }
-
     protected function sendFormEmail($form, $params, $vars)
     {
         // Build message
@@ -163,6 +156,49 @@ class EmailPlugin extends Plugin
 
         //fire event after eMail was sent
         $this->grav->fireEvent('onEmailSent', new Event(['message' => $message, 'params' => $params, 'form' => $form]));
+    }
+
+    public static function stringifyEmail($type): string
+    {
+        $config = Grav::instance()['config']->get('plugins.email');
+        $email = $config[$type] ?? '';
+
+        preg_match('/^(.*)\<(.*)\>$/', $email, $matches);
+        if (isset($matches[2])) {
+            return $email;
+        } else {
+            $name = $config["{$type}_name"] ?? false;
+            if ($name) {
+                $email .= " <$name>";
+            }
+        }
+
+        return $email;
+    }
+
+    /**
+     * Used for dynamic blueprint field
+     *
+     * @return array
+     */
+    public static function getEngines(): array
+    {
+        $engines = (object) [
+            'none' => 'PLUGIN_ADMIN.DISABLED',
+            'smtp' => 'SMTP',
+            'sendmail' => 'Sendmail',
+            'native' => 'Native'
+        ];
+        Grav::instance()->fireEvent('onEmailEngines', new Event(['engines' => $engines]));
+        return (array) $engines;
+    }
+
+    /**
+     * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
+     */
+    public function onSchedulerInitialized(Event $e)
+    {
+
     }
 
 }

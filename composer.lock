@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "220cc01a374a66e39260d644832b974f",
+    "content-hash": "af2cff88b1d472f0931ba2c86fcdddc9",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -748,72 +748,6 @@
             "time": "2022-08-29T06:47:07+00:00"
         },
         {
-            "name": "symfony/mailjet-mailer",
-            "version": "v5.4.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/mailjet-mailer.git",
-                "reference": "c186b0240d691236fe848c748566e987925d2e1c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mailjet-mailer/zipball/c186b0240d691236fe848c748566e987925d2e1c",
-                "reference": "c186b0240d691236fe848c748566e987925d2e1c",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2.5",
-                "psr/event-dispatcher": "^1",
-                "symfony/mailer": "^4.4|^5.0|^6.0"
-            },
-            "require-dev": {
-                "symfony/http-client": "^4.4|^5.0|^6.0"
-            },
-            "type": "symfony-mailer-bridge",
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Mailer\\Bridge\\Mailjet\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony Mailjet Mailer Bridge",
-            "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/mailjet-mailer/tree/v5.4.8"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-04-12T16:02:29+00:00"
-        },
-        {
             "name": "symfony/messenger",
             "version": "v5.4.13",
             "source": {
@@ -1306,72 +1240,6 @@
                 }
             ],
             "time": "2022-09-11T09:11:59+00:00"
-        },
-        {
-            "name": "symfony/sendgrid-mailer",
-            "version": "v5.4.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/sendgrid-mailer.git",
-                "reference": "8c1ef727aed18460e91a3ec54237a0e48b80a1dd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/sendgrid-mailer/zipball/8c1ef727aed18460e91a3ec54237a0e48b80a1dd",
-                "reference": "8c1ef727aed18460e91a3ec54237a0e48b80a1dd",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2.5",
-                "psr/event-dispatcher": "^1",
-                "symfony/mailer": "^4.4|^5.0|^6.0"
-            },
-            "require-dev": {
-                "symfony/http-client": "^4.4|^5.0|^6.0"
-            },
-            "type": "symfony-mailer-bridge",
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Mailer\\Bridge\\Sendgrid\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony Sendgrid Mailer Bridge",
-            "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/sendgrid-mailer/tree/v5.4.7"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-03-24T17:11:08+00:00"
         },
         {
             "name": "symfony/service-contracts",

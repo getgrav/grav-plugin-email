@@ -2,6 +2,7 @@ en:
   PLUGIN_EMAIL:
     MAIL_ENGINE: "Mail Engine"
     MAIL_ENGINE_DISABLED: "Disabled"
+    MAIL_ENGINE_DESC: "NOTE: If you select an engine provided by another plugin, you should configure options in that plugin."
     CONTENT_TYPE: "Content type"
     CONTENT_TYPE_PLAIN_TEXT: "Plain text"
     CHARSET: "Charset"
@@ -55,8 +56,7 @@ en:
     QUEUE_FLUSH_MSG_LIMIT_APPEND: "Messages"
     QUEUE_FLUSH_TIME_LIMIT: "Flush time limit"
     QUEUE_FLUSH_TIME_LIMIT_APPEND: "Seconds"
-
-
+    EMAIL_FORMAT: "Use the `addr` format: `email@address.org` or `name-addr` format: `Your Name <email@address.org>`. Comma separated for multiple addresses"
 
 da:
   PLUGIN_EMAIL:
