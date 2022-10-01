@@ -14,14 +14,18 @@ use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Mailer\Mailer as SymfonyMailer;
+use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
 
 class Email
 {
-    /** @var SymfonyMailer */
+    /** @var Mailer */
     protected $mailer;
+
+    /** @var TransportInterface */
+    protected $transport;
 
     protected $log;
 
@@ -83,18 +87,25 @@ class Email
      */
     public function send(Message $message, Envelope $envelope = null): int
     {
-        $msg = 'sent email';
+        $status = '🛑 ';
+        $sent_msg = null;
+
         try {
-            $this->mailer->send($message->getEmail(), $envelope);
+            $sent_msg = $this->transport->send($message->getEmail(), $envelope);
             $return = 1;
+            $status = '✅';
         } catch (TransportExceptionInterface $e) {
             $return = 0;
-            $msg = $e->getMessage();
+            $status .= $e->getMessage();
         }
 
         if ($this->debug()) {
+            $log_msg = "Email sent to %s at %s -> %s\n%s";
+            $to = $this->jsonifyRecipients($sent_msg->getEnvelope()->getRecipients());
+            $msg = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $status, $sent_msg->getDebug());
             $this->log->addInfo($msg);
         }
+
         return $return;
     }
 
@@ -258,8 +269,8 @@ class Email
     }
 
     /**
-     * @internal
-     * @return null|SymfonyMailer
+     * @return null|Mailer
+     *@internal
      */
     protected function initMailer()
     {
@@ -267,9 +278,9 @@ class Email
             return null;
         }
         if (!$this->mailer) {
-            $transport = $this->getTransport();
+            $this->transport = $this->getTransport();
             // Create the Mailer using your created Transport
-            $this->mailer = new SymfonyMailer($transport);
+            $this->mailer = new Mailer($this->transport);
         }
         return $this->mailer;
     }
@@ -371,6 +382,15 @@ class Email
         $transport = Transport::fromDsn($dsn);
 
         return $transport;
+    }
+
+    protected function jsonifyRecipients(array $recipients): string
+    {
+        $json = [];
+        foreach ($recipients as $recipient) {
+            $json[] = str_replace('"', "", $recipient->toString());
+        }
+        return json_encode($json);
     }
 
     /**

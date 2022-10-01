@@ -158,24 +158,6 @@ class EmailPlugin extends Plugin
         $this->grav->fireEvent('onEmailSent', new Event(['message' => $message, 'params' => $params, 'form' => $form]));
     }
 
-    public static function stringifyEmail($type): string
-    {
-        $config = Grav::instance()['config']->get('plugins.email');
-        $email = $config[$type] ?? '';
-
-        preg_match('/^(.*)\<(.*)\>$/', $email, $matches);
-        if (isset($matches[2])) {
-            return $email;
-        } else {
-            $name = $config["{$type}_name"] ?? false;
-            if ($name) {
-                $email .= " <$name>";
-            }
-        }
-
-        return $email;
-    }
-
     /**
      * Used for dynamic blueprint field
      *

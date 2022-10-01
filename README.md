@@ -1,6 +1,6 @@
 # Grav Email Plugin
 
-The **email plugin** for [Grav](http://github.com/getgrav/grav) adds the ability to send email. This is particularly useful for the **admin** and **login** plugins.
+The **email plugin** for [Grav](http://github.com/getgrav/grav) adds the ability to send email utilizing the `symfony/mailer` package. This is particularly useful for the **admin** and **login** plugins.
 
 # Installation
 
@@ -17,14 +17,7 @@ By default, the plugin uses PHP Mail as the mail engine.
 ```
 enabled: true
 from:
-from_name:
 to:
-to_name:
-queue:
-  enabled: true
-  flush_frequency: '* * * * *'
-  flush_msg_limit: 10
-  flush_time_limit: 100
 mailer:
   engine: sendmail
   smtp:
@@ -89,7 +82,6 @@ mailer:
   smtp:
     server: smtp.gmail.com
     port: 587
-    encryption: tls
     user: 'YOUR_GOOGLE_EMAIL_ADDRESS'
     password: 'YOUR_GOOGLE_PASSWORD'
 ```
@@ -106,7 +98,6 @@ mailer:
   smtp:
     server: smtp.sparkpostmail.com
     port: 587
-    encryption: tls
     user: 'SMTP_Injection'
     password: 'SEND_EMAIL_API_KEY'
 ```
@@ -123,7 +114,6 @@ mailer:
   smtp:
     server: smtp.sendgrid.net
     port: 587
-    encryption: tls
     user: 'apikey'
     password: 'YOUR_SENDGRID_API_KEY'
 ```
@@ -138,7 +128,6 @@ mailer:
   smtp:
     server: smtp.mailgun.org
     port: 587
-    encryption: tls
     user: 'MAILGUN_EMAIL_ADDRESS'
     password: 'MAILGUN_EMAIL_PASSWORD'
 ```
@@ -155,7 +144,6 @@ mailer:
   smtp:
     server: in-v3.mailjet.com
     port: 587
-    encryption: tls
     user: 'MAILJUST_USERNAME_API_KEY'
     password: 'MAILJUST_PASSWORD_SECRET_KEY'
 ```
@@ -176,7 +164,6 @@ mailer:
   smtp:
     server: smtp.zoho.com
     port: 587
-    encryption: tls
     user: 'ZOHO_EMAIL_ADDRESS'
     password: 'ZOHO_EMAIL_PASSWORD'
 ```
@@ -205,18 +192,6 @@ Solid SMTP options that even provide a FREE tier for low email volumes include:
 * Amazon SES (62k/month free) - https://aws.amazon.com/ses/
 
 If you are still unsure why should be using one in the first place, check out this article: https://zapier.com/learn/email-marketing/best-transactional-email-sending-services/
-
-## Email Queue
-
-For performance reasons, it's often desirable to queue emails and send them in batches, rather than forcing Grav to wait while an email is sent.  This is because email servers are sometimes slow and you might not want to wait for the whole email-sending process before continuing with Grav processing.
-
-To address this, you can enable the **Email Queue** and this will ensure all email's in Grav are actually sent to the queue, and not sent directly.  In order for the emails to be actually sent, you need to flush the queue.  By default this is handled by the **Grav Scheduler**, so you need to ensure you have that enabled and setup correctly or **your emails will not be sent!!!**.
-
-You can also manually flush the queue by using the provided CLI command:
-
-```
-$ bin/plugin email flush-queue
-```
 
 ## Testing with CLI Command
 
@@ -271,11 +246,8 @@ form:
     email:
       subject: "[Custom form] {{ form.value.name|e }}"
       body: "{% include 'forms/data.txt.twig' %}"
-      from: sender@example.com
-      from_name: 'Custom sender name'
-      to: recipient@example.com
-      to_name: 'Custom recipient name'
-      content_type: 'text/plain'
+      from: Custom Sender <sender@example.com>
+      to: Custom Recipient <recipient@example.com>
       process_markdown: true
 ```
 
@@ -298,14 +270,14 @@ form:
       -
         subject: "[Custom Email 1] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
-        from: {mail: "owner@mysite.com", name: "Site OWner"}
-        to: {mail: "recepient_1@example.com", name: "Recepient 1"}
+        from: Site Owner <owner@mysite.com>
+        to: Recipient 1 <recepient_1@example.com>
         template: "email/base.html.twig"
       -
         subject: "[Custom Email 2] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
-        from: {mail: "owner@mysite.com", name: "Site OWner"}
-        to: {mail: "recepient_2@example.com", name: "Recepient 1"}
+        from: Site Owner <owner@mysite.com>
+        to: Recipient 2 <recepient_2@example.com>
         template: "email/base.html.twig"
 ```
 
@@ -379,7 +351,6 @@ To have more control over your generated email, you may also use the following a
 * `reply_to`: Set one or more addresses that should be used to reply to the message.
 * `cc` _(Carbon copy)_: Add one or more addresses to the delivery list. Many email clients will mark email in one's inbox differently depending on whether they are in the `To:` or `Cc:` list.
 * `bcc` _(Blind carbon copy)_: Add one or more addresses to the delivery list that should (usually) not be listed in the message data, remaining invisible to other recipients.
-* `charset`: Explicitly set a charset for the generated email body (only takes effect if `body` parameter is a string, defaults to `utf-8`)
 
 ### Specifying email addresses
 
@@ -391,6 +362,12 @@ Email-related parameters (`from`, `to`, `reply_to`, `cc`and `bcc`) allow differe
 to: mail@example.com
 ```
 
+#### `name-addr` RFC822 Formatted string
+
+```
+to: Joe Bloggs <maiil@example.com>
+```
+
 ####  Multiple email address strings
 
 ```
@@ -400,49 +377,64 @@ to:
   - mail+2@example.com
 ```
 
-#### Single email address with name
+or in `name-addr` format:
 
 ```
 to:
-  mail: mail@example.com
-  name: Human-readable name
+  - Joe Bloggs <mail@example.com>
+  - Jane Doe <mail+1@example.com>
+  - Jasper Jesperson <mail+2@example.com>
+```
+
+#### Simple array format with names
+
+```
+to: [mail@exmaple.com, Joe Bloggs]
+```
+
+#### Formatted email address with names
+
+```
+to:
+  email: mail@example.com
+  name: Joe Bloggs
 ```
 
 or inline:
 
 ```
-to: {mail: 'mail@example.com', name: 'Human-readable name'}
+to: {email: 'mail@example.com', name: 'Joe Bloggs'}
 ```
 
 #### Multiple email addresses (with and without names)
 
 ```
 to:
+  - [mail@example.com, Joe Bloggs]
+  - [mail+2@example.com, Jane Doe]
+```
+
+```
+to:
   -
-    mail: mail@example.com
-    name: Human-readable name
+    email: mail@example.com
+    name: Joe Bloggs
   -
-    mail: mail+2@example.com
-    name: Another human-readable name
-  -
-    mail+3@example.com
-  -
-    mail+4@example.com
+    email: mail+2@example.com
+    name: Jane Doe
 ```
 
 or inline:
 
 ```
 to:
-  - {mail: 'mail@example.com', name: 'Human-readable name'}
-  - {mail: 'mail+2@example.com', name: 'Another human-readable name'}
-  - mail+3@example.com
-  - mail+4@example.com
+  - {email: 'mail@example.com', name: 'Joe Bloggs'}
+  - {email: 'mail+2@example.com', name: 'Jane Doe'}
 ```
 
 ## Multi-part MIME messages
 
-Apart from a simple string, an email body may contain different MIME parts (e.g. HTML body with plain text fallback). You may even specify a different charset for each part (default to `utf-8`):
+Apart from a simple string, an email body may contain different MIME parts (e.g. HTML body with plain text fallback):
 
 ```
 body:
@@ -452,7 +444,7 @@ body:
   -
     content_type: 'text/plain'
     body: "{% include 'forms/default/data.txt.twig' %}"
-    charset: 'iso-8859-1'
+
 ```
 
 # Troubleshooting
