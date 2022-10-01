@@ -66,18 +66,32 @@ class Message
         return $this;
     }
 
-    public function getEmail(): SymfonyEmail
+    public function embedFromPath($path): Message
     {
-        return $this->email;
+        $this->email->embedFromPath($path);
+        return $this;
+    }
+
+    public function reply_to($reply_to): Message
+    {
+        $this->replyTo($reply_to);
+        return $this;
     }
 
     public function setFrom($from): Message
     {
         $this->from($from);
+        return $this;
     }
 
     public function setTo($to): Message
     {
         $this->to($to);
+        return $this;
+    }
+
+    public function getEmail(): SymfonyEmail
+    {
+        return $this->email;
     }
 }

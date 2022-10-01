@@ -74,45 +74,6 @@ class Email
     }
 
     /**
-     * Creates an attachment.
-     *
-     * @param string $data
-     * @param string $filename
-     * @param string $contentType
-     * @return \Swift_Attachment
-     */
-    public function attachment($data = null, $filename = null, $contentType = null)
-    {
-        return new \Swift_Attachment($data, $filename, $contentType);
-    }
-
-    /**
-     * Creates an embedded attachment.
-     *
-     * @param string $data
-     * @param string $filename
-     * @param string $contentType
-     * @return \Swift_EmbeddedFile
-     */
-    public function embedded($data = null, $filename = null, $contentType = null)
-    {
-        return new \Swift_EmbeddedFile($data, $filename, $contentType);
-    }
-
-    /**
-     * Creates an image attachment.
-     *
-     * @param string $data
-     * @param string $filename
-     * @param string $contentType
-     * @return
-     */
-    public function image($data = null, $filename = null, $contentType = null)
-    {
-        return new \Swift_Image($data, $filename, $contentType);
-    }
-
-    /**
      * Send email.
      *
      * @param Message $message
@@ -220,9 +181,13 @@ class Email
                     break;
 
                 case 'to':
-                    $recipients = $this->processRecipients('to', $params);
+                case 'from':
+                case 'cc':
+                case 'bcc':
+                case 'reply_to':
+                    $recipients = $this->processRecipients($key, $params);
                     foreach ($recipients as $address) {
-                        $message->to($address);
+                        $message->$key($address);
                     }
                     break;
 
@@ -407,6 +372,9 @@ class Email
                 if (isset($options['port'])) {
                     $dsn .= ':' . $options['port'];
                 }
+                if (isset($options['options'])) {
+                    $dsn .= '?' . http_build_query($options['options']);
+                }
                 break;
             case 'native':
                 $dsn = 'native://default';
@@ -426,21 +394,49 @@ class Email
     }
 
     /**
-     * @return string
+     * @return void
      * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
      */
-    public static function flushQueue(): string
-    {
-        return 'Switched from Swiftmailer to Symfony/Mailer - No longer supported';
-    }
+    public static function flushQueue() {}
 
     /**
      * @return void
      * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
      */
-    public static function clearQueueFailures()
-    {
+    public static function clearQueueFailures() {}
 
-    }
+        /**
+     * Creates an attachment.
+     *
+     * @param string $data
+     * @param string $filename
+     * @param string $contentType
+     * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
+     * @return void
+     */
+    public function attachment($data = null, $filename = null, $contentType = null) {}
+
+    /**
+     * Creates an embedded attachment.
+     *
+     * @param string $data
+     * @param string $filename
+     * @param string $contentType
+     * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
+     * @return void
+     */
+    public function embedded($data = null, $filename = null, $contentType = null) {}
+
+
+    /**
+     * Creates an image attachment.
+     *
+     * @param string $data
+     * @param string $filename
+     * @param string $contentType
+     * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
+     * @return void
+     */
+    public function image($data = null, $filename = null, $contentType = null) {}
 
 }
