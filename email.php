@@ -8,6 +8,8 @@ use Grav\Common\Plugin;
 use Grav\Common\Utils;
 use Grav\Plugin\Email\Email;
 use RocketTheme\Toolbox\Event\Event;
+use Symfony\Component\Mailer\Header\MetadataHeader;
+use Symfony\Component\Mailer\Header\TagHeader;
 
 class EmailPlugin extends Plugin
 {
@@ -125,6 +127,20 @@ class EmailPlugin extends Plugin
     {
         // Build message
         $message = $this->email->buildMessage($params, $vars);
+        // Get headers
+        $headers = $message->getEmail()->getHeaders();
+
+        if (isset($params['tags'])) {
+            foreach ((array) $params['tags'] as $tag) {
+                $headers->add(new TagHeader($tag));
+            }
+        }
+
+        if (isset($params['metadata'])) {
+            foreach ((array) $params['metadata'] as $key => $value) {
+                $headers->add(new MetadataHeader($key, $value));
+            }
+        }
 
         if (isset($params['attachments'])) {
             $filesToAttach = (array)$params['attachments'];
