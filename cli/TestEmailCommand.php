@@ -79,8 +79,6 @@ class TestEmailCommand extends ConsoleCommand
 
         $this->output->writeln('');
 
-        $grav['Email'] = new Email();
-
         $to = $this->input->getOption('to') ?: $grav['config']->get('plugins.email.to');
         $subject = $this->input->getOption('subject');
         $body = $this->input->getOption('body');

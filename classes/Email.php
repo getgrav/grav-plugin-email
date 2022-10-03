@@ -33,7 +33,6 @@ class Email
     {
         $this->initMailer();
         $this->initLog();
-
     }
 
     /**
@@ -379,7 +378,11 @@ class Email
                 break;
         }
 
-        $transport = Transport::fromDsn($dsn);
+        if ($dsn instanceof TransportInterface) {
+            $transport = $dsn;
+        } else {
+           $transport = Transport::fromDsn($dsn) ;
+        }
 
         return $transport;
     }
