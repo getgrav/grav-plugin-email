@@ -6,10 +6,9 @@ mailer:
   smtp:
     server: localhost
     port: 25
-    encryption: none
-    user: ''
-    password: ''
-    auth_mode: ''
+    encryption:
+    user:
+    password:
   sendmail:
     bin: '/usr/sbin/sendmail -bs'
 content_type: text/html

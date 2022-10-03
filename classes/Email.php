@@ -88,20 +88,23 @@ class Email
     {
         $status = '🛑 ';
         $sent_msg = null;
+        $debug = null;
 
         try {
             $sent_msg = $this->transport->send($message->getEmail(), $envelope);
             $return = 1;
             $status = '✅';
+            $debug = $sent_msg->getDebug();
         } catch (TransportExceptionInterface $e) {
             $return = 0;
             $status .= $e->getMessage();
+            $debug = $e->getDebug();
         }
 
         if ($this->debug()) {
             $log_msg = "Email sent to %s at %s -> %s\n%s";
-            $to = $this->jsonifyRecipients($sent_msg->getEnvelope()->getRecipients());
-            $msg = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $status, $sent_msg->getDebug());
+            $to = $this->jsonifyRecipients($message->getEmail()->getTo());
+            $msg = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $status, $debug);
             $this->log->addInfo($msg);
         }
 
@@ -333,13 +336,18 @@ class Email
         $engine = $config->get('plugins.email.mailer.engine');
         $dsn = 'null://default';
 
+
         // Create the Transport and initialize it.
         switch ($engine) {
+            case 'smtps':
             case 'smtp':
                 $options = $config->get('plugins.email.mailer.smtp');
-                $dsn = 'smtp://';
+                $dsn = $engine . '://';
                 $auth = '';
 
+                if (isset($options['encryption']) && $options['encryption'] === 'none') {
+                    $options['options']['verify_peer'] = 0;
+                }
                 if (isset($options['user'])) {
                     $auth .= urlencode($options['user']);
                 }

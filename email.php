@@ -168,6 +168,7 @@ class EmailPlugin extends Plugin
         $engines = (object) [
             'none' => 'PLUGIN_ADMIN.DISABLED',
             'smtp' => 'SMTP',
+            'smtps' => 'SMTPS',
             'sendmail' => 'Sendmail',
             'native' => 'Native'
         ];

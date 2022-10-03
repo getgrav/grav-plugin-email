@@ -69,7 +69,7 @@ form:
               size: medium
               label: PLUGIN_EMAIL.SMTP_ENCRYPTION
               options:
-                none: PLUGIN_EMAIL.SMTP_ENCRYPTION_NONE
+                null: PLUGIN_EMAIL.SMTP_ENCRYPTION_NONE
                 ssl: SSL
                 tls: TLS
 
@@ -85,10 +85,6 @@ form:
               autocomplete: 'new-password'
               label: PLUGIN_EMAIL.SMTP_PASSWORD
 
-            mailer.smtp.auth_mode:
-              type: text
-              size: medium
-              label: PLUGIN_EMAIL.SMTP_AUTH_MODE
         sendmail:
           type: element
           fields:
