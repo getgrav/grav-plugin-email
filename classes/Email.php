@@ -14,6 +14,8 @@ use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\Header\MetadataHeader;
+use Symfony\Component\Mailer\Header\TagHeader;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\TransportInterface;
@@ -130,9 +132,9 @@ class Email
         /** @var Language $language */
         $language = Grav::instance()['language'];
 
-        $message = new Message();
-
         // Create message object.
+        $message = new Message();
+        $headers = $message->getEmail()->getHeaders();
 
         // Extend parameters with defaults.
         $params += [
@@ -202,6 +204,20 @@ class Email
                     $recipients = $this->processRecipients($key, $params);
                     foreach ($recipients as $address) {
                         $message->$key($address);
+                    }
+                    break;
+                case 'tags':
+                    foreach ((array) $value as $tag) {
+                        if (is_string($tag)) {
+                            $headers->add(new TagHeader($tag));
+                        }
+                    }
+                    break;
+                case 'metadata':
+                    foreach ((array) $value as $k => $v) {
+                        if (is_string($k) && is_string($v)) {
+                            $headers->add(new MetadataHeader($k, $v));
+                        }
                     }
                     break;
             }
