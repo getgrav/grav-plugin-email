@@ -70,9 +70,7 @@ You can try and fine tune the emails there while testing.
 
 A popular option for sending email is to simply use your Google Accounts SMTP server.  To set this up you will need to do 2 things first:
 
-1. Enable IMAP in your Gmail `Settings` -> `Forwarding and POP/IMAP` -> `IMAP Access`
-2. Enable `Less secure apps` in your [user account settings](https://myaccount.google.com/lesssecureapps)
-3. If you have 2-factor authentication, you will need to create a unique application password to use rather than your personal password
+As Gmail no longer supports the "allow less secure apps" option, you now need to have 2FA enabled on the account and setup an "App Password" to create a specific password rather than your general account password.  Follow these instructions: [https://support.google.com/accounts/answer/185833](https://support.google.com/accounts/answer/185833)
 
 Then configure the Email plugin:
 
@@ -88,7 +86,7 @@ mailer:
 
 > NOTE: Check your email sending limits: https://support.google.com/a/answer/166852?hl=en
 
-#### Sparkpost
+### Sparkpost
 
 Generous email sending limits even in the free tier, and simple setup, make [Sparkpost](https://www.sparkpost.com) a great option for email sending. You just need to create an account, then setup a verified sending domain.  Sparkpost does a nice job of making this process very easy and undertandable. Then just click on the SMTP Relay option to get your details for the configuration:
 
@@ -104,7 +102,7 @@ mailer:
 
 Then try sending a test email...
 
-#### Sendgrid
+### Sendgrid
 
 [Sendgrid](https://sendgrid.com) offers a very easy-to-setup serivce with 100 emails/day for free.  The next level allows you to send 40k/email a day for just $10/month. Configuration is pretty simple, just create an account, then click SMTP integration and click the button to create an API key.  The configuration is as follows:
 
@@ -118,7 +116,7 @@ mailer:
     password: 'YOUR_SENDGRID_API_KEY'
 ```
 
-#### Mailgun
+### Mailgun
 
 [Mailgun is a great service](https://www.mailgun.com/) that offers 10k/emails per month for free.  Setup does require SPIF domain verification so that means you need to add at least a TXT entry in your DNS.  This is pretty standard for SMTP sending services and does provide verification for remote email servers and makes your email sending more reliable.  The Mailgun site, walks you through this process however, and the verification process is simple and fast.
 
@@ -134,7 +132,7 @@ mailer:
 
 Adjust these configurations for your account.
 
-#### MailJet
+### MailJet
 
 Mailjet is another great service that is easy to quickly setup and get started sending email.  The free account gives you 200 emails/day or 600 emails/month.  Just signup and setup your SPF and DKIM entries for your domain.  Then click on the SMTP settings and use those to configure the email plugin:
 
@@ -148,9 +146,8 @@ mailer:
     password: 'MAILJUST_PASSWORD_SECRET_KEY'
 ```
 
-It's that easy!
 
-#### ZOHO
+### ZOHO
 
 ZOHO is a popular solution for hosted email due to it's great 'FREE' tier.  It's paid options are also very reasonable and combined with the latest UI updates and outstanding security features, it's a solid email option.
 
@@ -168,7 +165,7 @@ mailer:
     password: 'ZOHO_EMAIL_PASSWORD'
 ```
 
-#### Sendmail
+### Sendmail
 
 Although not as reliable as SMTP not providing as much debug information, sendmail is a simple option as long as your hosting provider is not blocking the default SMTP port `25`:
 
@@ -181,7 +178,7 @@ mailer:
 
 Simply adjust your binary command line to suite your environment
 
-### SMTP Email Services
+## SMTP Email Services
 
 Solid SMTP options that even provide a FREE tier for low email volumes include:
 
