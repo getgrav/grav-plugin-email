@@ -2,11 +2,12 @@
 ## mm/dd/2022
    
 1. [](#new)
-   * Migrated from `Swiftmailer` which has been deprecated to `Symfony/Mailer` which is a more modern and extensible library.
-   * Native support for `SMTP`, `Sendmail` and `Native` engines
+   * Migrated from `Swiftmailer` (which has been deprecated) to `Symfony/Mailer`, a more modern and extensible mailing library.
+   * Built-in support for `SMTP`, `SMTPS`, `Sendmail` and `Native` (uses best solution per-platform) engines
    * Added ability to have 3rd party plugins that provide new engines (e.g. `SendGrid`, `MailJet`, etc.) with `SMTP`, `API` or `HTTPS` transports for faster and more reliable email sending
    * More flexible options for email formatting including RFC822 `name-addr` format (`Joe Bloggs <user@example.com>`) and simple arrays (`[user@example.com, Joe Bloggs]`)
    * Support `tags` and `metadata` in `Email::buildMessage()`
+   * Two new events `onEmailEngines` and `onEmailTransportDsn` to facilitate the integration of custom engines via plugins
 
 # v3.2.0
 ## 03/28/2022
