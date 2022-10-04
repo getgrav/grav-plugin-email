@@ -34,70 +34,64 @@ form:
         type: bool
 
     mailer.engine:
-      type: elements
+      type: select
       label: PLUGIN_EMAIL.MAIL_ENGINE
       size: medium
       description: PLUGIN_EMAIL.MAIL_ENGINE_DESC
       data-options@: '\Grav\Plugin\EmailPlugin::getEngines'
-      fields:
-        smtp:
-          type: element
-          fields:
-            smtp_config:
-              type: section
-              title: PLUGIN_EMAIL.SMTP_CONFIGURATION
-              underline: true
 
-            mailer.smtp.server:
-              type: text
-              size: medium
-              label: PLUGIN_EMAIL.SMTP_SERVER
-              placeholder: PLUGIN_EMAIL.SMTP_SERVER_PLACEHOLDER
+    smtp_config:
+      type: section
+      title: PLUGIN_EMAIL.SMTP_CONFIGURATION
+      underline: true
 
-            mailer.smtp.port:
-              type: text
-              size: small
-              label: PLUGIN_EMAIL.SMTP_PORT
-              placeholder: PLUGIN_EMAIL.SMTP_PORT_PLACEHOLDER
-              validate:
-                type: number
-                min: 1
-                max: 65535
+    mailer.smtp.server:
+      type: text
+      size: medium
+      label: PLUGIN_EMAIL.SMTP_SERVER
+      placeholder: PLUGIN_EMAIL.SMTP_SERVER_PLACEHOLDER
 
-            mailer.smtp.encryption:
-              type: select
-              size: medium
-              label: PLUGIN_EMAIL.SMTP_ENCRYPTION
-              options:
-                null: PLUGIN_EMAIL.SMTP_ENCRYPTION_NONE
-                ssl: SSL
-                tls: TLS
+    mailer.smtp.port:
+      type: text
+      size: small
+      label: PLUGIN_EMAIL.SMTP_PORT
+      placeholder: PLUGIN_EMAIL.SMTP_PORT_PLACEHOLDER
+      validate:
+        type: number
+        min: 1
+        max: 65535
 
-            mailer.smtp.user:
-              type: text
-              size: medium
-              autocomplete: 'off'
-              label: PLUGIN_EMAIL.SMTP_LOGIN_NAME
+    mailer.smtp.encryption:
+      type: select
+      size: medium
+      label: PLUGIN_EMAIL.SMTP_ENCRYPTION
+      options:
+        none: PLUGIN_EMAIL.SMTP_ENCRYPTION_NONE
+        ssl: SSL
+        tls: TLS
 
-            mailer.smtp.password:
-              type: password
-              size: medium
-              autocomplete: 'new-password'
-              label: PLUGIN_EMAIL.SMTP_PASSWORD
+    mailer.smtp.user:
+      type: text
+      size: medium
+      autocomplete: 'off'
+      label: PLUGIN_EMAIL.SMTP_LOGIN_NAME
 
-        sendmail:
-          type: element
-          fields:
-            sendmail_config:
-              type: section
-              title: PLUGIN_EMAIL.SENDMAIL_CONFIGURATION
-              underline: true
+    mailer.smtp.password:
+      type: password
+      size: medium
+      autocomplete: 'new-password'
+      label: PLUGIN_EMAIL.SMTP_PASSWORD
 
-            mailer.sendmail.bin:
-              type: text
-              size: medium
-              label: PLUGIN_EMAIL.PATH_TO_SENDMAIL
-              placeholder: "/usr/sbin/sendmail"
+    sendmail_config:
+      type: section
+      title: PLUGIN_EMAIL.SENDMAIL_CONFIGURATION
+      underline: true
+
+    mailer.sendmail.bin:
+      type: text
+      size: medium
+      label: PLUGIN_EMAIL.PATH_TO_SENDMAIL
+      placeholder: "/usr/sbin/sendmail"
 
 
 

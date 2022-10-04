@@ -6,7 +6,7 @@ mailer:
   smtp:
     server: localhost
     port: 25
-    encryption:
+    encryption: none
     user:
     password:
   sendmail:
