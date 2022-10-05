@@ -1,5 +1,5 @@
-# v4.0.0
-## mm/dd/2022
+# v4.0.0-rc.1
+## 10/05/2022
    
 1. [](#new)
    * Migrated from `Swiftmailer` (which has been deprecated) to `Symfony/Mailer`, a more modern and extensible mailing library.
