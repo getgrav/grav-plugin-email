@@ -2,6 +2,8 @@
 
 The **email plugin** for [Grav](http://github.com/getgrav/grav) adds the ability to send email utilizing the `symfony/mailer` package. This is particularly useful for the **admin** and **login** plugins.
 
+> Version 4.0 replaced the old deprecated `SwiftMailer` library with `Symfony/Mailer` package.  This is a modern and well supported library that also has the capability to support 3rd party libraries such as  `SendGrid`, `MailJet`, `MailGun`, `MailChimp`, etc.
+
 # Installation
 
 The email plugin is easy to install with GPM.
@@ -39,12 +41,6 @@ That's the easiest route. Or you can also alter the Plugin configuration by copy
 The first setting you'd likely change is your `Email from` / `Email to` names and emails.
 
 Also, you'd likely want to setup a SMTP server instead of using PHP Mail, as the latter is not 100% reliable and you might experience problems with emails.
-
-Valid values for `auth_mode` include `plain`, `login`, `cram-md5`, or `null`.
-
-> NOTE: `engine: mail` has been deprecated from the SwiftMail library that this plugin uses as it does not function at all.  Please use `smtp` if at all possible, and `sendmail` if SMTP is not an option.
-> 
-
 
 ## 3rd Party Plugin Support
 
