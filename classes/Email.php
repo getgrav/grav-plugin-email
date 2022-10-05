@@ -383,6 +383,7 @@ class Email
                     $dsn .= '?' . http_build_query($options['options']);
                 }
                 break;
+            case 'mail':
             case 'native':
                 $dsn = 'native://default';
                 break;
