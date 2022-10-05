@@ -60,10 +60,10 @@ class Email
     /**
      * Creates an email message.
      *
-     * @param string $subject
-     * @param string $body
-     * @param string $contentType
-     * @param string $charset
+     * @param string|null $subject
+     * @param string|null $body
+     * @param string|null $contentType
+     * @param string|null $charset @deprecated
      * @return Message
      */
     public function message(string $subject = null, string $body = null, string $contentType = null, string $charset = null): Message
@@ -226,6 +226,11 @@ class Email
         return $message;
     }
 
+    /**
+     * @param string $type
+     * @param array $params
+     * @return array
+     */
     protected function processRecipients(string $type, array $params): array
     {
         $recipients = $params[$type] ?? Grav::instance()['config']->get('plugins.email.'.$type) ?? [];
@@ -259,6 +264,10 @@ class Email
         return $list;
     }
 
+    /**
+     * @param $data
+     * @return Address
+     */
     protected function createAddress($data): Address
     {
         if (is_string($data)) {
@@ -288,9 +297,9 @@ class Email
 
     /**
      * @return null|Mailer
-     *@internal
+     * @internal
      */
-    protected function initMailer()
+    protected function initMailer(): ?Mailer
     {
         if (!$this->enabled()) {
             return null;
@@ -315,6 +324,11 @@ class Email
         $this->log->pushHandler(new StreamHandler($log_file, Logger::DEBUG));
     }
 
+    /**
+     * @param array $params
+     * @param array $vars
+     * @return array
+     */
     protected function processParams(array $params, array $vars = []): array
     {
         $twig = Grav::instance()['twig'];
@@ -326,6 +340,14 @@ class Email
         return $params;
     }
 
+    /**
+     * @param $message
+     * @param $params
+     * @param $vars
+     * @param $twig
+     * @param $body
+     * @return void
+     */
     protected function processBody($message, $params, $vars, $twig, $body)
     {
         if ($params['process_markdown'] && $params['content_type'] === 'text/html') {
@@ -345,6 +367,9 @@ class Email
         }
     }
 
+    /**
+     * @return TransportInterface
+     */
     protected static function getTransport(): Transport\TransportInterface
     {
         /** @var Config $config */
@@ -412,6 +437,10 @@ class Email
         return $transport;
     }
 
+    /**
+     * @param array $recipients
+     * @return string
+     */
     protected function jsonifyRecipients(array $recipients): string
     {
         $json = [];
