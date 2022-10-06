@@ -197,13 +197,13 @@ If you are still unsure why should be using one in the first place, check out th
 You can test your email configuration with the following CLI Command:
 
 ```
-$ bin/plugin email test-email -t steve@apple.com
+$ bin/plugin email test-email -t test@email.com
 ```
 
 You can also pass in a configuration environment:
 
 ```
-$ bin/plugin email test-email -t steve@apple.com -e mysite.com
+$ bin/plugin email test-email -t test@email.com -e mysite.com
 ```
 
 This will use the email configuration you have located in `user/mysite.com/config/plugins/email.yaml`. Read the docs to find out more about environment-based configuration: https://learn.getgrav.org/advanced/environment-config
