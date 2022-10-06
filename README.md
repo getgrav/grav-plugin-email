@@ -203,7 +203,7 @@ $ bin/plugin email test-email -t test@email.com
 You can also pass in a configuration environment:
 
 ```
-$ bin/plugin email test-email -t test@email.com -e mysite.com
+$ bin/plugin email test-email -t test@email.com --env=mysite.com
 ```
 
 This will use the email configuration you have located in `user/mysite.com/config/plugins/email.yaml`. Read the docs to find out more about environment-based configuration: https://learn.getgrav.org/advanced/environment-config
