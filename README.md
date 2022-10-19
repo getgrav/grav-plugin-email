@@ -42,9 +42,29 @@ The first setting you'd likely change is your `Email from` / `Email to` names an
 
 Also, you'd likely want to setup a SMTP server instead of using PHP Mail, as the latter is not 100% reliable and you might experience problems with emails.
 
-## 3rd Party Plugin Support
+## Built-in Engines
+
+By default Email 4.0 supports 4 native engines:
+
+* SMTP - Standard "Simple Mail Transport Protocol" - The default for most providers  
+* SMTPS - "Simple Mail Transport Protocol Secure" - Not very commonly used
+* Sendmail - Uses the built-in `sendmail` binary file available on many Linux and Mac systems
+* Native - Uses `sendmail_path` of `php.ini` for Mac + Linux, and `smtp` and `smtp_port` on Windows
+
+Due to the modular nature of Symfony/Mailer, 3rd party engines are supported via Grav plugins.
+
+## 3rd-Party Engines Plugin Support
 
 Along with the **Email** `v4.0` release, there has also been several custom provider plugins released to provide support for `SMTP`, `API`, and sometimes even `HTTPS` support for 3rd party providers such as **Sendgrid**, **MailJet**, **MailGun**, **Amazon SES**, **Mailchimp/Mandrill**, and others!  `API` or `HTTPS` will provide a faster email sending experience compared to `SMTP` which is an older protocol and requires more back-and-forth negotiation and communication compared to the single-request of `API` or `HTTPS` solutions.
+
+Examples of the currently available plugins include: 
+
+* https://github.com/getgrav/grav-plugin-email-sendgrid - Sengrid Mailer
+* https://github.com/getgrav/grav-plugin-email-amazon - Amazon SES
+* https://github.com/getgrav/grav-plugin-email-mandrill - Mailchimp Mandrill Mailer
+* https://github.com/getgrav/grav-plugin-email-mailersend - Mailersend Mailer
+
+More plugins will be released soon to support `Gmail`, `Mailgun`, `Mailjet`, `OhMySMTP`, `Postmark`, and `SendInBlue`.
 
 ## SMTP Configurations for popular solutions:
 

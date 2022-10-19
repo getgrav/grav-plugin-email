@@ -166,11 +166,11 @@ class EmailPlugin extends Plugin
     public static function getEngines(): array
     {
         $engines = (object) [
-            'none' => 'PLUGIN_ADMIN.DISABLED',
+            'sendmail' => 'Sendmail',
             'smtp' => 'SMTP',
             'smtps' => 'SMTPS',
-            'sendmail' => 'Sendmail',
-            'native' => 'Native'
+            'native' => 'Native',
+            'none' => 'PLUGIN_ADMIN.DISABLED',
         ];
         Grav::instance()->fireEvent('onEmailEngines', new Event(['engines' => $engines]));
         return (array) $engines;

@@ -1,3 +1,10 @@
+# v4.0.0-rc.2
+## 10/19/2022
+   
+1. [](#improved)
+   * Set `sendmail` as default engine to provide better fallback for unsupported `mailer` option
+   * Added info about available engine plugins in `README.md`
+
 # v4.0.0-rc.1
 ## 10/05/2022
    
