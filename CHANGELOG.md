@@ -1,3 +1,9 @@
+# v4.0.0-rc.3
+## mm/dd/2022
+   
+1. [](#bugfix)
+   * Fixed an issue with array based email address
+
 # v4.0.0-rc.2
 ## 10/19/2022
    

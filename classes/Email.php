@@ -246,7 +246,7 @@ class Email
                         $list[] = $this->createAddress($recipient);
                     }
                 } else {
-                    if (Utils::contains($recipients, ',')) {
+                    if (is_string($recipients) && Utils::contains($recipients, ',')) {
                         $recipients = array_map('trim', explode(',', $recipients));
                         foreach ($recipients as $recipient) {
                             $list[] = $this->createAddress($recipient);
