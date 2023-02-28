@@ -135,6 +135,7 @@ class Email
         // Create message object.
         $message = new Message();
         $headers = $message->getEmail()->getHeaders();
+        $email = $message->getEmail();
 
         // Extend parameters with defaults.
         $params += [
@@ -201,9 +202,9 @@ class Email
                 case 'cc':
                 case 'bcc':
                 case 'reply_to':
-                    $recipients = $this->processRecipients($key, $params);
-                    foreach ($recipients as $address) {
-                        $message->$key($address);
+                    if ($recipients = $this->processRecipients($key, $params)) {
+                        $key = $key === 'reply_to' ? 'replyTo' : $key;
+                        $email->$key(...$recipients);
                     }
                     break;
                 case 'tags':
@@ -241,9 +242,13 @@ class Email
             if (is_array($recipients) && Utils::isAssoc($recipients)) {
                 $list[] = $this->createAddress($recipients);
             } else {
-                if (is_array($recipients[0])) {
-                    foreach ($recipients as $recipient) {
-                        $list[] = $this->createAddress($recipient);
+                if (is_array($recipients)) {
+                    if (count($recipients) ===2 && $this->isValidEmail($recipients[0]) && is_string($recipients[1])) {
+                        $list[] = $this->createAddress($recipients);
+                    } else {
+                        foreach ($recipients as $recipient) {
+                            $list[] = $this->createAddress($recipient);
+                        }
                     }
                 } else {
                     if (is_string($recipients) && Utils::contains($recipients, ',')) {
@@ -448,6 +453,11 @@ class Email
             $json[] = str_replace('"', "", $recipient->toString());
         }
         return json_encode($json);
+    }
+
+    protected function isValidEmail($email): bool
+    {
+        return is_string($email) && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
     /**

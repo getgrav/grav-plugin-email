@@ -1,3 +1,10 @@
+# v4.0.0-rc.4
+## 02/27/2023
+   
+1. [](#bugfix)
+   * Fixed for multiple recipients [#167](https://github.com/getgrav/grav-plugin-email/issues/167)
+   * Fix for simple array format with names which wasn't working
+
 # v4.0.0-rc.3
 ## 10/27/2022
    
