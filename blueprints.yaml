@@ -1,8 +1,8 @@
 name: Email
 slug: email
 type: plugin
-version: 4.0.0-rc.4
-testing: true
+version: 4.0.0
+testing: false
 description: Enables the emailing system for Grav
 icon: envelope
 author:
@@ -15,7 +15,7 @@ bugs: https://github.com/getgrav/grav-plugin-email/issues
 license: MIT
 
 dependencies:
-    - { name: grav, version: '>=1.7.37' }
+    - { name: grav, version: '>=1.7.41' }
     - { name: form, version: '>=7.0.0' }
 
 form:
