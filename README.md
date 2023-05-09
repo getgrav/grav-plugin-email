@@ -1,6 +1,8 @@
 # Grav Email Plugin
 
-The **email plugin** for [Grav](http://github.com/getgrav/grav) adds the ability to send email. This is particularly useful for the **admin** and **login** plugins.
+The **email plugin** for [Grav](http://github.com/getgrav/grav) adds the ability to send email utilizing the `symfony/mailer` package. This is particularly useful for the **admin** and **login** plugins.
+
+> IMPORTANT: **Version 4.0** replaced the old deprecated **SwiftMailer** library with **Symfony/Mailer** package.  This is a modern and well supported library that also has the capability to support 3rd party transport engines such as `SendGrid`, `MailJet`, `MailGun`, `MailChimp`, etc. This library should be backwards compatible with existing configurations, but please create an issue if you run into any problems.
 
 # Installation
 
@@ -12,28 +14,20 @@ $ bin/gpm install email
 
 # Configuration
 
-By default, the plugin uses PHP Mail as the mail engine.
+The plugin uses `sendmail` binary as the default mail engine.
 
 ```
 enabled: true
 from:
-from_name:
 to:
-to_name:
-queue:
-  enabled: true
-  flush_frequency: '* * * * *'
-  flush_msg_limit: 10
-  flush_time_limit: 100
 mailer:
   engine: sendmail
   smtp:
     server: localhost
     port: 25
     encryption: none
-    user: ''
-    password: ''
-    auth_mode: ''
+    user:
+    password:
   sendmail:
     bin: '/usr/sbin/sendmail -bs'
 content_type: text/html
@@ -48,9 +42,51 @@ The first setting you'd likely change is your `Email from` / `Email to` names an
 
 Also, you'd likely want to setup a SMTP server instead of using PHP Mail, as the latter is not 100% reliable and you might experience problems with emails.
 
-Valid values for `auth_mode` include `plain`, `login`, `cram-md5`, or `null`.
+## Built-in Engines
 
-> NOTE: `engine: mail` has been deprecated from the SwiftMail library that this plugin uses as it does not funtion at all.  Please use `smtp` if at all possibe, and `sendmail` if SMTP is not an option.
+By default Email 4.0 supports 4 native engines:
+
+* SMTP - Standard "Simple Mail Transport Protocol" - The default for most providers  
+* SMTPS - "Simple Mail Transport Protocol Secure" - Not very commonly used
+* Sendmail - Uses the built-in `sendmail` binary file available on many Linux and Mac systems
+* Native - Uses `sendmail_path` of `php.ini` for Mac + Linux, and `smtp` and `smtp_port` on Windows
+
+Due to the modular nature of Symfony/Mailer, 3rd party engines are supported via Grav plugins.
+
+## 3rd-Party Engines Plugin Support
+
+Along with the **Email** `v4.0` release, there has also been several custom provider plugins released to provide support for `SMTP`, `API`, and sometimes even `HTTPS` support for 3rd party providers such as **Sendgrid**, **MailJet**, **MailGun**, **Amazon SES**, **Mailchimp/Mandrill**, and others!  `API` or `HTTPS` will provide a faster email sending experience compared to `SMTP` which is an older protocol and requires more back-and-forth negotiation and communication compared to the single-request of `API` or `HTTPS` solutions.
+
+Examples of the currently available plugins include: 
+
+* https://github.com/getgrav/grav-plugin-email-sendgrid - Sengrid Mailer
+* https://github.com/getgrav/grav-plugin-email-amazon - Amazon SES
+* https://github.com/getgrav/grav-plugin-email-mandrill - Mailchimp Mandrill Mailer
+* https://github.com/getgrav/grav-plugin-email-mailersend - Mailersend Mailer
+
+More plugins will be released soon to support `Gmail`, `Mailgun`, `Mailjet`, `OhMySMTP`, `Postmark`, and `SendInBlue`.
+
+## SMTP Configurations for popular solutions:
+
+### Google Email
+
+A popular option for sending email is to simply use your Google Accounts SMTP server.  To set this up you will need to do 2 things first:
+
+As Gmail no longer supports the "allow less secure apps" option, you now need to have 2FA enabled on the account and setup an "App Password" to create a specific password rather than your general account password.  Follow these instructions: [https://support.google.com/accounts/answer/185833](https://support.google.com/accounts/answer/185833)
+
+Then configure the Email plugin:
+
+```
+mailer:
+  engine: smtp
+  smtp:
+    server: smtp.gmail.com
+    port: 587
+    user: 'YOUR_GOOGLE_EMAIL_ADDRESS'
+    password: 'YOUR_GOOGLE_PASSWORD'
+```
+
+> NOTE: Check your email sending limits: https://support.google.com/a/answer/166852?hl=en
 
 ### Mailtrap.io
 
@@ -73,30 +109,7 @@ That service will intercept emails and show them on their web-based interface in
 
 You can try and fine tune the emails there while testing.
 
-### Google Email
-
-A popular option for sending email is to simply use your Google Accounts SMTP server.  To set this up you will need to do 2 things first:
-
-1. Enable IMAP in your Gmail `Settings` -> `Forwarding and POP/IMAP` -> `IMAP Access`
-2. Enable `Less secure apps` in your [user account settings](https://myaccount.google.com/lesssecureapps)
-3. If you have 2-factor authentication, you will need to create a unique application password to use rather than your personal password
-
-Then configure the Email plugin:
-
-```
-mailer:
-  engine: smtp
-  smtp:
-    server: smtp.gmail.com
-    port: 587
-    encryption: tls
-    user: 'YOUR_GOOGLE_EMAIL_ADDRESS'
-    password: 'YOUR_GOOGLE_PASSWORD'
-```
-
-> NOTE: Check your email sending limits: https://support.google.com/a/answer/166852?hl=en
-
-#### Sparkpost
+### Sparkpost
 
 Generous email sending limits even in the free tier, and simple setup, make [Sparkpost](https://www.sparkpost.com) a great option for email sending. You just need to create an account, then setup a verified sending domain.  Sparkpost does a nice job of making this process very easy and undertandable. Then just click on the SMTP Relay option to get your details for the configuration:
 
@@ -106,14 +119,13 @@ mailer:
   smtp:
     server: smtp.sparkpostmail.com
     port: 587
-    encryption: tls
     user: 'SMTP_Injection'
     password: 'SEND_EMAIL_API_KEY'
 ```
 
 Then try sending a test email...
 
-#### Sendgrid
+### Sendgrid
 
 [Sendgrid](https://sendgrid.com) offers a very easy-to-setup serivce with 100 emails/day for free.  The next level allows you to send 40k/email a day for just $10/month. Configuration is pretty simple, just create an account, then click SMTP integration and click the button to create an API key.  The configuration is as follows:
 
@@ -123,12 +135,11 @@ mailer:
   smtp:
     server: smtp.sendgrid.net
     port: 587
-    encryption: tls
     user: 'apikey'
     password: 'YOUR_SENDGRID_API_KEY'
 ```
 
-#### Mailgun
+### Mailgun
 
 [Mailgun is a great service](https://www.mailgun.com/) that offers 10k/emails per month for free.  Setup does require SPIF domain verification so that means you need to add at least a TXT entry in your DNS.  This is pretty standard for SMTP sending services and does provide verification for remote email servers and makes your email sending more reliable.  The Mailgun site, walks you through this process however, and the verification process is simple and fast.
 
@@ -138,14 +149,13 @@ mailer:
   smtp:
     server: smtp.mailgun.org
     port: 587
-    encryption: tls
     user: 'MAILGUN_EMAIL_ADDRESS'
     password: 'MAILGUN_EMAIL_PASSWORD'
 ```
 
 Adjust these configurations for your account.
 
-#### MailJet
+### MailJet
 
 Mailjet is another great service that is easy to quickly setup and get started sending email.  The free account gives you 200 emails/day or 600 emails/month.  Just signup and setup your SPF and DKIM entries for your domain.  Then click on the SMTP settings and use those to configure the email plugin:
 
@@ -155,18 +165,15 @@ mailer:
   smtp:
     server: in-v3.mailjet.com
     port: 587
-    encryption: tls
     user: 'MAILJUST_USERNAME_API_KEY'
     password: 'MAILJUST_PASSWORD_SECRET_KEY'
 ```
 
-It's that easy!
-
-#### ZOHO
+### ZOHO
 
 ZOHO is a popular solution for hosted email due to it's great 'FREE' tier.  It's paid options are also very reasonable and combined with the latest UI updates and outstanding security features, it's a solid email option.
 
-In order to get ZOHO working with Grav, you need to send email via a user account.  You can either use your users' password or generate an **App Password** via your ZOHO account (clicking on your avatar once logged in), then navigating to `Two Factor Authentication -> App Passwords -> Generate`. Just enter a unique app name (i.e. `Grav Website`).
+In order to get ZOHO working with Grav, you need to send email via a user account.  You can either use your users' password or generate an **App Password** via your ZOHO account (clicking on your avatar once logged in), then navigating to `My Account -> Security -> App Passwords -> Generate`. Just enter a unique app name (i.e. `Grav Website`).
 
 NOTE: The SMTP host required can be found in `Settings -> Mail - > Mail Accounts -> POP/IMAP -> SMTP`.  This will provide the SMTP server for this account (it may not be `imap.zoho.com` depending on what region you are in)
 
@@ -176,12 +183,11 @@ mailer:
   smtp:
     server: smtp.zoho.com
     port: 587
-    encryption: tls
     user: 'ZOHO_EMAIL_ADDRESS'
     password: 'ZOHO_EMAIL_PASSWORD'
 ```
 
-#### Sendmail
+### Sendmail
 
 Although not as reliable as SMTP not providing as much debug information, sendmail is a simple option as long as your hosting provider is not blocking the default SMTP port `25`:
 
@@ -194,7 +200,7 @@ mailer:
 
 Simply adjust your binary command line to suite your environment
 
-### SMTP Email Services
+## SMTP Email Services
 
 Solid SMTP options that even provide a FREE tier for low email volumes include:
 
@@ -206,30 +212,18 @@ Solid SMTP options that even provide a FREE tier for low email volumes include:
 
 If you are still unsure why should be using one in the first place, check out this article: https://zapier.com/learn/email-marketing/best-transactional-email-sending-services/
 
-## Email Queue
-
-For performance reasons, it's often desirable to queue emails and send them in batches, rather than forcing Grav to wait while an email is sent.  This is because email servers are sometimes slow and you might not want to wait for the whole email-sending process before continuing with Grav processing.
-
-To address this, you can enable the **Email Queue** and this will ensure all email's in Grav are actually sent to the queue, and not sent directly.  In order for the emails to be actually sent, you need to flush the queue.  By default this is handled by the **Grav Scheduler**, so you need to ensure you have that enabled and setup correctly or **your emails will not be sent!!!**.
-
-You can also manually flush the queue by using the provided CLI command:
-
-```
-$ bin/plugin email flush-queue
-```
-
 ## Testing with CLI Command
 
 You can test your email configuration with the following CLI Command:
 
 ```
-$ bin/plugin email test-email -t steve@apple.com
+$ bin/plugin email test-email -t test@email.com
 ```
 
 You can also pass in a configuration environment:
 
 ```
-$ bin/plugin email test-email -t steve@apple.com -e mysite.com
+$ bin/plugin email test-email -t test@email.com --env=mysite.com
 ```
 
 This will use the email configuration you have located in `user/mysite.com/config/plugins/email.yaml`. Read the docs to find out more about environment-based configuration: https://learn.getgrav.org/advanced/environment-config
@@ -271,11 +265,8 @@ form:
     email:
       subject: "[Custom form] {{ form.value.name|e }}"
       body: "{% include 'forms/data.txt.twig' %}"
-      from: sender@example.com
-      from_name: 'Custom sender name'
-      to: recipient@example.com
-      to_name: 'Custom recipient name'
-      content_type: 'text/plain'
+      from: Custom Sender <sender@example.com>
+      to: Custom Recipient <recipient@example.com>
       process_markdown: true
 ```
 
@@ -298,14 +289,14 @@ form:
       -
         subject: "[Custom Email 1] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
-        from: {mail: "owner@mysite.com", name: "Site OWner"}
-        to: {mail: "recepient_1@example.com", name: "Recepient 1"}
+        from: Site Owner <owner@mysite.com>
+        to: Recipient 1 <recepient_1@example.com>
         template: "email/base.html.twig"
       -
         subject: "[Custom Email 2] {{ form.value.name|e }}"
         body: "{% include 'forms/data.txt.twig' %}"
-        from: {mail: "owner@mysite.com", name: "Site OWner"}
-        to: {mail: "recepient_2@example.com", name: "Recepient 1"}
+        from: Site Owner <owner@mysite.com>
+        to: Recipient 2 <recepient_2@example.com>
         template: "email/base.html.twig"
 ```
 
@@ -379,7 +370,6 @@ To have more control over your generated email, you may also use the following a
 * `reply_to`: Set one or more addresses that should be used to reply to the message.
 * `cc` _(Carbon copy)_: Add one or more addresses to the delivery list. Many email clients will mark email in one's inbox differently depending on whether they are in the `To:` or `Cc:` list.
 * `bcc` _(Blind carbon copy)_: Add one or more addresses to the delivery list that should (usually) not be listed in the message data, remaining invisible to other recipients.
-* `charset`: Explicitly set a charset for the generated email body (only takes effect if `body` parameter is a string, defaults to `utf-8`)
 
 ### Specifying email addresses
 
@@ -391,6 +381,12 @@ Email-related parameters (`from`, `to`, `reply_to`, `cc`and `bcc`) allow differe
 to: mail@example.com
 ```
 
+#### `name-addr` RFC822 Formatted string
+
+```
+to: Joe Bloggs <maiil@example.com>
+```
+
 ####  Multiple email address strings
 
 ```
@@ -400,49 +396,64 @@ to:
   - mail+2@example.com
 ```
 
-#### Single email address with name
+or in `name-addr` format:
 
 ```
 to:
-  mail: mail@example.com
-  name: Human-readable name
+  - Joe Bloggs <mail@example.com>
+  - Jane Doe <mail+1@example.com>
+  - Jasper Jesperson <mail+2@example.com>
+```
+
+#### Simple array format with names
+
+```
+to: [mail@exmaple.com, Joe Bloggs]
+```
+
+#### Formatted email address with names
+
+```
+to:
+  email: mail@example.com
+  name: Joe Bloggs
 ```
 
 or inline:
 
 ```
-to: {mail: 'mail@example.com', name: 'Human-readable name'}
+to: {email: 'mail@example.com', name: 'Joe Bloggs'}
 ```
 
 #### Multiple email addresses (with and without names)
 
 ```
 to:
+  - [mail@example.com, Joe Bloggs]
+  - [mail+2@example.com, Jane Doe]
+```
+
+```
+to:
   -
-    mail: mail@example.com
-    name: Human-readable name
+    email: mail@example.com
+    name: Joe Bloggs
   -
-    mail: mail+2@example.com
-    name: Another human-readable name
-  -
-    mail+3@example.com
-  -
-    mail+4@example.com
+    email: mail+2@example.com
+    name: Jane Doe
 ```
 
 or inline:
 
 ```
 to:
-  - {mail: 'mail@example.com', name: 'Human-readable name'}
-  - {mail: 'mail+2@example.com', name: 'Another human-readable name'}
-  - mail+3@example.com
-  - mail+4@example.com
+  - {email: 'mail@example.com', name: 'Joe Bloggs'}
+  - {email: 'mail+2@example.com', name: 'Jane Doe'}
 ```
 
 ## Multi-part MIME messages
 
-Apart from a simple string, an email body may contain different MIME parts (e.g. HTML body with plain text fallback). You may even specify a different charset for each part (default to `utf-8`):
+Apart from a simple string, an email body may contain different MIME parts (e.g. HTML body with plain text fallback):
 
 ```
 body:
@@ -452,7 +463,7 @@ body:
   -
     content_type: 'text/plain'
     body: "{% include 'forms/default/data.txt.twig' %}"
-    charset: 'iso-8859-1'
+
 ```
 
 # Troubleshooting
