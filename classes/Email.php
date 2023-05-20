@@ -184,6 +184,9 @@ class Email
                             if (isset($body_part['content_type'])) {
                                 $params_part['content_type'] = $body_part['content_type'];
                             }
+                            if (isset($body_part['template'])) {
+                                $params_part['template'] = $body_part['template'];
+                            }
                             if (isset($body_part['body'])) {
                                 $this->processBody($message, $params_part, $vars, $twig, $body_part['body']);
                             }
