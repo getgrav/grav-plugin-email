@@ -1,3 +1,9 @@
+# v4.0.1
+## 05/20/2023
+
+1. [](#bugfix)
+   * Fixed a bug with Email 4.0 ignoring `template:` parameter when dealing with multiple body sections
+
 # v4.0.0
 ## 05/09/2023
 
