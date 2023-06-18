@@ -260,7 +260,7 @@ class Email
                             $list[] = $this->createAddress($recipient);
                         }
                     } else {
-                        if (!Utils::contains($recipients, ['<','>']) && ($params[$type."_name"])) {
+                        if (!Utils::contains($recipients, ['<','>']) && !empty($params[$type."_name"])) {
                             $recipients = [$recipients, $params[$type."_name"]];
                         }
                         $list[] = $this->createAddress($recipients);
