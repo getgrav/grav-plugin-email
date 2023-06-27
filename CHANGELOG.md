@@ -1,3 +1,10 @@
+# v4.0.2
+## 06/27/2023
+
+1. [](#bugfix)
+   * Some improvements to `bcc`/`bcc_name` format handling
+   * Allow overriding of defaults with a form configuration.  Use `null` to remove default email configuration
+
 # v4.0.1
 ## 05/20/2023
 
