@@ -2,7 +2,7 @@
 ## 06/27/2023
 
 1. [](#bugfix)
-   * Some improvements to `bcc`/`bcc_name` format handling
+   * some recipient handling improvements. e.g. missing `bcc_name` throwing error
    * Allow overriding of defaults with a form configuration.  Use `null` to remove default email configuration
 
 # v4.0.1
