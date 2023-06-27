@@ -138,8 +138,9 @@ class Email
         $email = $message->getEmail();
 
         // Extend parameters with defaults.
-        $params += [
+        $defaults = [
             'bcc' => $config->get('plugins.email.bcc', []),
+            'bcc_name' => $config->get('plugins.email.bcc_name'),
             'body' => $config->get('plugins.email.body', '{% include "forms/data.html.twig" %}'),
             'cc' => $config->get('plugins.email.cc', []),
             'cc_name' => $config->get('plugins.email.cc_name'),
@@ -156,6 +157,12 @@ class Email
             'template' => false,
             'message' => $message
         ];
+
+        foreach ($defaults as $key => $value) {
+            if (!key_exists($key, $params)) {
+                $params[$key] = $value;
+            }
+        }
 
         if (!$params['to']) {
             throw new \RuntimeException($language->translate('PLUGIN_EMAIL.PLEASE_CONFIGURE_A_TO_ADDRESS'));
@@ -237,6 +244,10 @@ class Email
      */
     protected function processRecipients(string $type, array $params): array
     {
+        if (array_key_exists($type, $params) && $params[$type] === null) {
+            return [];
+        }
+
         $recipients = $params[$type] ?? Grav::instance()['config']->get('plugins.email.'.$type) ?? [];
 
         $list = [];
@@ -260,7 +271,7 @@ class Email
                             $list[] = $this->createAddress($recipient);
                         }
                     } else {
-                        if (!Utils::contains($recipients, ['<','>']) && ($params[$type."_name"])) {
+                        if (!Utils::contains($recipients, ['<','>']) && (isset($params[$type."_name"]))) {
                             $recipients = [$recipients, $params[$type."_name"]];
                         }
                         $list[] = $this->createAddress($recipients);
