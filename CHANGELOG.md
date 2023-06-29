@@ -1,5 +1,5 @@
 # v4.0.3
-## mm/dd/2023
+## 06/29/2023
 
 1. [](#improved)
    * Simplified the `Email::processRecipients()` logic for readability
