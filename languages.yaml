@@ -134,6 +134,7 @@ fr:
     QUEUE_FLUSH_TIME_LIMIT_APPEND: "Secondes"
     EMAIL_FORMAT: "Utilisez le format `addr` : `email@adresse.org` ou le format `name-addr` : `Votre nom <email@adresse.org>`. Séparer par des virgules pour plusieurs adresses."
 
+
 hr:
   PLUGIN_EMAIL:
     EMAIL_NOT_CONFIGURED: "Email nije konfiguriran"
