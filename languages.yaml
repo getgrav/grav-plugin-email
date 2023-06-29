@@ -130,7 +130,7 @@ fr:
     QUEUE_FLUSH_MSG_LIMIT: "Messages par Flush"
     QUEUE_FLUSH_MSG_LIMIT_APPEND: "Messages"
     QUEUE_FLUSH_TIME_LIMIT: "Délai de Flush"
-    QUEUE_FLUSH_TIME_LIMIT_APPEND: "Seconds"
+    QUEUE_FLUSH_TIME_LIMIT_APPEND: "Secondes"
 
 hr:
   PLUGIN_EMAIL:
