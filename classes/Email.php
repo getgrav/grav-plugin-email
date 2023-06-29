@@ -253,32 +253,29 @@ class Email
         $list = [];
 
         if (!empty($recipients)) {
-            if (is_array($recipients) && Utils::isAssoc($recipients)) {
-                $list[] = $this->createAddress($recipients);
+            if (is_array($recipients)) {
+                if (Utils::isAssoc($recipients) || (count($recipients) ===2 && $this->isValidEmail($recipients[0]) && !$this->isValidEmail($recipients[1]))) {
+                    $list[] = $this->createAddress($recipients);
+                } else {
+                    foreach ($recipients as $recipient) {
+                        $list[] = $this->createAddress($recipient);
+                    }
+                }
             } else {
-                if (is_array($recipients)) {
-                    if (count($recipients) ===2 && $this->isValidEmail($recipients[0]) && is_string($recipients[1])) {
-                        $list[] = $this->createAddress($recipients);
-                    } else {
-                        foreach ($recipients as $recipient) {
-                            $list[] = $this->createAddress($recipient);
-                        }
+                if (is_string($recipients) && Utils::contains($recipients, ',')) {
+                    $recipients = array_map('trim', explode(',', $recipients));
+                    foreach ($recipients as $recipient) {
+                        $list[] = $this->createAddress($recipient);
                     }
                 } else {
-                    if (is_string($recipients) && Utils::contains($recipients, ',')) {
-                        $recipients = array_map('trim', explode(',', $recipients));
-                        foreach ($recipients as $recipient) {
-                            $list[] = $this->createAddress($recipient);
-                        }
-                    } else {
-                        if (!Utils::contains($recipients, ['<','>']) && (isset($params[$type."_name"]))) {
-                            $recipients = [$recipients, $params[$type."_name"]];
-                        }
-                        $list[] = $this->createAddress($recipients);
+                    if (!Utils::contains($recipients, ['<','>']) && (isset($params[$type."_name"]))) {
+                        $recipients = [$recipients, $params[$type."_name"]];
                     }
+                    $list[] = $this->createAddress($recipients);
                 }
             }
         }
+
 
         return $list;
     }

@@ -1,3 +1,12 @@
+# v4.0.3
+## 06/29/2023
+
+1. [](#improved)
+   * Simplified the `Email::processRecipients()` logic for readability
+1. [](#bugfix)
+   * Fix an issue with 2 email addresses provided with 'just' email and no name [#176](https://github.com/getgrav/grav-plugin-email/issues/176)
+   * Fix for blank subjectlines when using `Message::setSubject()` in Twig templates [getgrav/grav-plugin-login#299](https://github.com/getgrav/grav-plugin-login/issues/299)
+
 # v4.0.2
 ## 06/27/2023
 

@@ -18,6 +18,12 @@ class Message
         return $this;
     }
 
+    public function setSubject($subject): self
+    {
+        $this->subject($subject);
+        return $this;
+    }
+
     public function to($to): self
     {
         $this->email->to($to);
