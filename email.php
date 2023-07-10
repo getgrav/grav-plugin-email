@@ -125,6 +125,7 @@ class EmailPlugin extends Plugin
     {
         // Build message
         $message = $this->email->buildMessage($params, $vars);
+        $locator = $this->grav['locator'];
 
         if (isset($params['attachments'])) {
             $filesToAttach = (array)$params['attachments'];
@@ -135,8 +136,10 @@ class EmailPlugin extends Plugin
                     if (isset($fileValues['file'])) {
                         $filename = $fileValues['file'];
                     } else {
-                        $filename = ROOT_DIR . $fileValues['path'];
+                        $filename = $fileValues['path'];
                     }
+
+                    $filename = $locator->findResource($filename, true, true);
 
                     try {
                         $message->attachFromPath($filename);

@@ -1,3 +1,9 @@
+# v4.0.4
+## 07/10/2023
+
+1. [](#bugfix)
+   * Fix for email file attachments using stream
+
 # v4.0.3
 ## 06/29/2023
 
