@@ -1,7 +1,7 @@
 name: Email
 slug: email
 type: plugin
-version: 4.0.4
+version: 4.1.0
 testing: false
 description: Enables the emailing system for Grav
 icon: envelope

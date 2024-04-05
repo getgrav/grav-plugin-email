@@ -13,6 +13,7 @@ use \Monolog\Handler\StreamHandler;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use Symfony\Component\Mailer\Envelope;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Header\MetadataHeader;
 use Symfony\Component\Mailer\Header\TagHeader;
@@ -82,35 +83,36 @@ class Email
     /**
      * Send email.
      *
-     * @param Message $message
-     * @param Envelope|null $envelope
+     * @param  Message  $message
+     * @param  Envelope|null  $envelope
      * @return int
+     * @throws TransportException
      */
     public function send(Message $message, Envelope $envelope = null): int
     {
-        $status = '🛑 ';
-        $sent_msg = null;
-        $debug = null;
-
         try {
             $sent_msg = $this->transport->send($message->getEmail(), $envelope);
-            $return = 1;
-            $status = '✅';
+            $status = 1;
+            $msg = '✅';
             $debug = $sent_msg->getDebug();
         } catch (TransportExceptionInterface $e) {
-            $return = 0;
-            $status .= $e->getMessage();
+            $status = 0;
+            $msg = '🛑 ' . $e->getMessage();
             $debug = $e->getDebug();
         }
 
         if ($this->debug()) {
             $log_msg = "Email sent to %s at %s -> %s\n%s";
             $to = $this->jsonifyRecipients($message->getEmail()->getTo());
-            $msg = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $status, $debug);
-            $this->log->addInfo($msg);
+            $message = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $msg, $debug);
+            $this->log->addInfo($message);
         }
 
-        return $return;
+        if ($status < 1) {
+            throw new TransportException($msg);
+        }
+
+        return $status;
     }
 
     /**
