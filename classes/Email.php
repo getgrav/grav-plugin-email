@@ -32,6 +32,9 @@ class Email
 
     protected $log;
 
+    protected $message;
+    protected $debug;
+
     public function __construct()
     {
         $this->initMailer();
@@ -93,23 +96,19 @@ class Email
         try {
             $sent_msg = $this->transport->send($message->getEmail(), $envelope);
             $status = 1;
-            $msg = '✅';
-            $debug = $sent_msg->getDebug();
+            $this->message = '✅';
+            $this->debug = $sent_msg->getDebug();
         } catch (TransportExceptionInterface $e) {
             $status = 0;
-            $msg = '🛑 ' . $e->getMessage();
-            $debug = $e->getDebug();
+            $this->message = '🛑 ' . $e->getMessage();
+            $this->debug = $e->getDebug();
         }
 
         if ($this->debug()) {
             $log_msg = "Email sent to %s at %s -> %s\n%s";
             $to = $this->jsonifyRecipients($message->getEmail()->getTo());
-            $message = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $msg, $debug);
+            $message = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $this->message, $this->debug);
             $this->log->addInfo($message);
-        }
-
-        if ($status < 1) {
-            throw new TransportException($msg);
         }
 
         return $status;
@@ -453,6 +452,24 @@ class Email
         }
 
         return $transport;
+    }
+
+    /**
+     * Get any message from the last send attempt
+     * @return string|null
+     */
+    public function getLastSendMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    /**
+     * Get any debug information from the last send attempt
+     * @return string|null
+     */
+    public function getLastSendDebug(): ?string
+    {
+        return $this->debug;
     }
 
     /**

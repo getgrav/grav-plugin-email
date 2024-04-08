@@ -2,7 +2,7 @@
 ## mm/dd/2023
 
 1. [](#improved)
-   * Now throws a TransportException in `Email::send()` if the mail sending fails rather than just a status of 0 (which was not handled in most cases).
+   * When you send an email you can use `Email::getLastSendMessage()` and `Email::getLastSendDebug()` methods to get information about the email processing.
 
 # v4.0.4
 ## 07/10/2023

@@ -157,12 +157,13 @@ class EmailPlugin extends Plugin
         $this->grav->fireEvent('onEmailMessage', new Event(['message' => $message, 'params' => $params, 'form' => $form]));
 
         // Send e-mail
-        try {
-            $this->email->send($message);
-        } catch (TransportException $e) {
+
+         $status = $this->email->send($message);
+
+         if ($status < 1) {
             $this->grav->fireEvent('onFormValidationError', new Event([
                 'form' => $form,
-                'message' => $e->getMessage(),
+                'message' => $this->email->getLastSendMessage(),
             ]));
             $event->stopPropagation();
             return;
