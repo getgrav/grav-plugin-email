@@ -13,7 +13,6 @@ use \Monolog\Handler\StreamHandler;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use Symfony\Component\Mailer\Envelope;
-use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Header\MetadataHeader;
 use Symfony\Component\Mailer\Header\TagHeader;
@@ -89,7 +88,6 @@ class Email
      * @param  Message  $message
      * @param  Envelope|null  $envelope
      * @return int
-     * @throws TransportException
      */
     public function send(Message $message, Envelope $envelope = null): int
     {
