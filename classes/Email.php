@@ -31,6 +31,9 @@ class Email
 
     protected $log;
 
+    protected $message;
+    protected $debug;
+
     public function __construct()
     {
         $this->initMailer();
@@ -82,35 +85,31 @@ class Email
     /**
      * Send email.
      *
-     * @param Message $message
-     * @param Envelope|null $envelope
+     * @param  Message  $message
+     * @param  Envelope|null  $envelope
      * @return int
      */
     public function send(Message $message, Envelope $envelope = null): int
     {
-        $status = '🛑 ';
-        $sent_msg = null;
-        $debug = null;
-
         try {
             $sent_msg = $this->transport->send($message->getEmail(), $envelope);
-            $return = 1;
-            $status = '✅';
-            $debug = $sent_msg->getDebug();
+            $status = 1;
+            $this->message = '✅';
+            $this->debug = $sent_msg->getDebug();
         } catch (TransportExceptionInterface $e) {
-            $return = 0;
-            $status .= $e->getMessage();
-            $debug = $e->getDebug();
+            $status = 0;
+            $this->message = '🛑 ' . $e->getMessage();
+            $this->debug = $e->getDebug();
         }
 
         if ($this->debug()) {
             $log_msg = "Email sent to %s at %s -> %s\n%s";
             $to = $this->jsonifyRecipients($message->getEmail()->getTo());
-            $msg = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $status, $debug);
-            $this->log->addInfo($msg);
+            $message = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $this->message, $this->debug);
+            $this->log->addInfo($message);
         }
 
-        return $return;
+        return $status;
     }
 
     /**
@@ -451,6 +450,24 @@ class Email
         }
 
         return $transport;
+    }
+
+    /**
+     * Get any message from the last send attempt
+     * @return string|null
+     */
+    public function getLastSendMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    /**
+     * Get any debug information from the last send attempt
+     * @return string|null
+     */
+    public function getLastSendDebug(): ?string
+    {
+        return $this->debug;
     }
 
     /**

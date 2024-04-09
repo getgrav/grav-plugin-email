@@ -14,6 +14,7 @@ namespace Symfony\Component\Messenger\Bridge\Redis\Transport;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\LogicException;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
+use Symfony\Component\Messenger\Exception\TransportException;
 use Symfony\Component\Messenger\Transport\Receiver\ReceiverInterface;
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
@@ -27,7 +28,7 @@ class RedisReceiver implements ReceiverInterface
     private $connection;
     private $serializer;
 
-    public function __construct(Connection $connection, SerializerInterface $serializer = null)
+    public function __construct(Connection $connection, ?SerializerInterface $serializer = null)
     {
         $this->connection = $connection;
         $this->serializer = $serializer ?? new PhpSerializer();
@@ -42,6 +43,18 @@ class RedisReceiver implements ReceiverInterface
 
         if (null === $message) {
             return [];
+        }
+
+        if (null === $message['data']) {
+            try {
+                $this->connection->reject($message['id']);
+            } catch (TransportException $e) {
+                if ($e->getPrevious()) {
+                    throw $e;
+                }
+            }
+
+            return $this->get();
         }
 
         $redisEnvelope = json_decode($message['data']['message'] ?? '', true);

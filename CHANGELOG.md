@@ -1,3 +1,10 @@
+# v4.1.0
+## 04/09/2024
+
+1. [](#improved)
+   * Update vendor libraries for Mailer to latest `5.4` versions
+   * When you send an email you can use `Email::getLastSendMessage()` and `Email::getLastSendDebug()` methods to get information about the email processing.
+
 # v4.0.4
 ## 07/10/2023
 

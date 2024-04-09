@@ -57,8 +57,10 @@ class HandleMessageMiddleware implements MiddlewareInterface
         ];
 
         $exceptions = [];
+        $alreadyHandled = false;
         foreach ($this->handlersLocator->getHandlers($envelope) as $handlerDescriptor) {
             if ($this->messageHasAlreadyBeenHandled($envelope, $handlerDescriptor)) {
+                $alreadyHandled = true;
                 continue;
             }
 
@@ -68,7 +70,7 @@ class HandleMessageMiddleware implements MiddlewareInterface
 
                 /** @var AckStamp $ackStamp */
                 if ($batchHandler && $ackStamp = $envelope->last(AckStamp::class)) {
-                    $ack = new Acknowledger(get_debug_type($batchHandler), static function (\Throwable $e = null, $result = null) use ($envelope, $ackStamp, $handlerDescriptor) {
+                    $ack = new Acknowledger(get_debug_type($batchHandler), static function (?\Throwable $e = null, $result = null) use ($envelope, $ackStamp, $handlerDescriptor) {
                         if (null !== $e) {
                             $e = new HandlerFailedException($envelope, [$e]);
                         } else {
@@ -116,7 +118,7 @@ class HandleMessageMiddleware implements MiddlewareInterface
             }
         }
 
-        if (null === $handler) {
+        if (null === $handler && !$alreadyHandled) {
             if (!$this->allowNoHandlers) {
                 throw new NoHandlerForMessageException(sprintf('No handler for message "%s".', $context['class']));
             }

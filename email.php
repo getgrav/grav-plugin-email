@@ -3,11 +3,13 @@ namespace Grav\Plugin;
 
 use Composer\Autoload\ClassLoader;
 use Grav\Common\Data\Data;
+use Grav\Common\Data\ValidationException;
 use Grav\Common\Grav;
 use Grav\Common\Plugin;
 use Grav\Common\Utils;
 use Grav\Plugin\Email\Email;
 use RocketTheme\Toolbox\Event\Event;
+use Symfony\Component\Mailer\Exception\TransportException;
 
 class EmailPlugin extends Plugin
 {
@@ -110,10 +112,10 @@ class EmailPlugin extends Plugin
                 $this->grav->fireEvent('onEmailSend', new Event(['params' => &$params, 'vars' => &$vars]));
 
                 if (Utils::isAssoc($params)) {
-                    $this->sendFormEmail($form, $params, $vars);
+                    $this->sendFormEmail($form, $params, $vars, $event);
                 } else {
                     foreach ($params as $email) {
-                        $this->sendFormEmail($form, $email, $vars);
+                        $this->sendFormEmail($form, $email, $vars, $event);
                     }
                 }
 
@@ -121,7 +123,7 @@ class EmailPlugin extends Plugin
         }
     }
 
-    protected function sendFormEmail($form, $params, $vars)
+    protected function sendFormEmail($form, $params, $vars, $event)
     {
         // Build message
         $message = $this->email->buildMessage($params, $vars);
@@ -155,7 +157,17 @@ class EmailPlugin extends Plugin
         $this->grav->fireEvent('onEmailMessage', new Event(['message' => $message, 'params' => $params, 'form' => $form]));
 
         // Send e-mail
-        $this->email->send($message);
+
+         $status = $this->email->send($message);
+
+         if ($status < 1) {
+            $this->grav->fireEvent('onFormValidationError', new Event([
+                'form' => $form,
+                'message' => $this->email->getLastSendMessage(),
+            ]));
+            $event->stopPropagation();
+            return;
+        }
 
         //fire event after eMail was sent
         $this->grav->fireEvent('onEmailSent', new Event(['message' => $message, 'params' => $params, 'form' => $form]));
