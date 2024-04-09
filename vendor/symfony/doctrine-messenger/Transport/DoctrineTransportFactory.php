@@ -35,6 +35,9 @@ class DoctrineTransportFactory implements TransportFactoryInterface
         $this->registry = $registry;
     }
 
+    /**
+     * @param array $options You can set 'use_notify' to false to not use LISTEN/NOTIFY with postgresql
+     */
     public function createTransport(string $dsn, array $options, SerializerInterface $serializer): TransportInterface
     {
         $useNotify = ($options['use_notify'] ?? true);
@@ -45,7 +48,7 @@ class DoctrineTransportFactory implements TransportFactoryInterface
         try {
             $driverConnection = $this->registry->getConnection($configuration['connection']);
         } catch (\InvalidArgumentException $e) {
-            throw new TransportException(sprintf('Could not find Doctrine connection from Messenger DSN "%s".', $dsn), 0, $e);
+            throw new TransportException('Could not find Doctrine connection from Messenger DSN.', 0, $e);
         }
 
         if ($useNotify && $driverConnection->getDatabasePlatform() instanceof PostgreSQLPlatform) {
