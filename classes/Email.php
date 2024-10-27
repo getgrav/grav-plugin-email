@@ -106,7 +106,7 @@ class Email
             $log_msg = "Email sent to %s at %s -> %s\n%s";
             $to = $this->jsonifyRecipients($message->getEmail()->getTo());
             $message = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $this->message, $this->debug);
-            $this->log->addInfo($message);
+            $this->log->info($message);
         }
 
         return $status;
