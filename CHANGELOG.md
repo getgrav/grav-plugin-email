@@ -1,5 +1,5 @@
 # v4.1.1
-## mm/dd/2024
+## 10/28/2024
 
 1. [](#improved)
   * Updated logging methods to support Monolog2+
