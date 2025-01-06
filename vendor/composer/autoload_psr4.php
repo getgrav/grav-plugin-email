@@ -24,6 +24,6 @@ return array(
     'Grav\\Plugin\\Email\\' => array($baseDir . '/classes'),
     'Grav\\Plugin\\Console\\' => array($baseDir . '/cli'),
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/src'),
-    'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/lib/Doctrine/Deprecations'),
+    'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/src'),
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/src'),
 );

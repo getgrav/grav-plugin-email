@@ -121,7 +121,21 @@ class Connection
             return $redis;
         }
 
-        $redis->connect($host, $port);
+        @$redis->connect($host, $port);
+
+        $error = null;
+        set_error_handler(function ($type, $msg) use (&$error) { $error = $msg; });
+
+        try {
+            $isConnected = $redis->isConnected();
+        } finally {
+            restore_error_handler();
+        }
+
+        if (!$isConnected) {
+            throw new InvalidArgumentException('Redis connection failed: '.(preg_match('/^Redis::p?connect\(\): (.*)/', $error ?? $redis->getLastError() ?? '', $matches) ? \sprintf(' (%s)', $matches[1]) : ''));
+        }
+
         $redis->setOption(\Redis::OPT_SERIALIZER, $serializer);
 
         if (null !== $auth && !$redis->auth($auth)) {
@@ -304,7 +318,7 @@ class Connection
         try {
             // This could soon be optimized with https://github.com/antirez/redis/issues/5212 or
             // https://github.com/antirez/redis/issues/6256
-            $pendingMessages = $this->connection->xpending($this->stream, $this->group, '-', '+', 1);
+            $pendingMessages = $this->connection->xpending($this->stream, $this->group, '-', '+', 1) ?: [];
         } catch (\RedisException $e) {
             throw new TransportException($e->getMessage(), 0, $e);
         }
@@ -389,6 +403,7 @@ class Connection
                 $this->group,
                 $this->consumer,
                 [$this->stream => $messageId],
+                1,
                 1
             );
         } catch (\RedisException $e) {
