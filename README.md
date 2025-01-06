@@ -72,7 +72,9 @@ More plugins will be released soon to support `Gmail`, `Mailgun`, `Mailjet`, `Oh
 
 A popular option for sending email is to simply use your Google Accounts SMTP server.  To set this up you will need to do 2 things first:
 
-As Gmail no longer supports the "allow less secure apps" option, you now need to have 2FA enabled on the account and setup an "App Password" to create a specific password rather than your general account password.  Follow these instructions: [https://support.google.com/accounts/answer/185833](https://support.google.com/accounts/answer/185833)
+As Gmail no longer supports the "allow less secure apps" option, you now need to have 2FA enabled on the account and setup an "App Password" to create a specific password rather than your general account password.  Follow these instructions: [https://support.google.com/accounts/answer/185833](https://support.google.com/accounts/answer/185833).
+
+!! Important: When Google creates an app password for you it will look something like `pxzl vkxd xdap fomb`, you should make sure to remove the spaces when you store your password so it looks like `pxzlvkxdxdapfomb`. Also make sure you are sending from the same email address as the one you are using to authenticate with.
 
 Then configure the Email plugin:
 
