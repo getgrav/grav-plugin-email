@@ -8,7 +8,7 @@ The **email plugin** for [Grav](http://github.com/getgrav/grav) adds the ability
 
 The email plugin is easy to install with GPM.
 
-```
+```bash
 $ bin/gpm install email
 ```
 
@@ -16,7 +16,7 @@ $ bin/gpm install email
 
 The plugin uses `sendmail` binary as the default mail engine.
 
-```
+```yaml
 enabled: true
 from:
 to:
@@ -78,7 +78,7 @@ As Gmail no longer supports the "allow less secure apps" option, you now need to
 
 Then configure the Email plugin:
 
-```
+```yaml
 mailer:
   engine: smtp
   smtp:
@@ -96,7 +96,7 @@ A good way to test emails is to use a SMTP server service that's built for testi
 
 Setup the Email plugin to use that SMTP server with the fake inbox data. For example enter this configuration in `user/config/plugins/email.yaml` or through the Admin panel:
 
-```
+```yaml
 mailer:
   engine: smtp
   smtp:
@@ -113,9 +113,9 @@ You can try and fine tune the emails there while testing.
 
 ### Sparkpost
 
-Generous email sending limits even in the free tier, and simple setup, make [Sparkpost](https://www.sparkpost.com) a great option for email sending. You just need to create an account, then setup a verified sending domain.  Sparkpost does a nice job of making this process very easy and undertandable. Then just click on the SMTP Relay option to get your details for the configuration:
+Generous email sending limits even in the free tier, and simple setup, make [Sparkpost](https://www.sparkpost.com) a great option for email sending. You just need to create an account, then setup a verified sending domain.  Sparkpost does a nice job of making this process very easy and understandable. Then just click on the SMTP Relay option to get your details for the configuration:
 
-```
+```yaml
 mailer:
   engine: smtp
   smtp:
@@ -129,9 +129,9 @@ Then try sending a test email...
 
 ### Sendgrid
 
-[Sendgrid](https://sendgrid.com) offers a very easy-to-setup serivce with 100 emails/day for free.  The next level allows you to send 40k/email a day for just $10/month. Configuration is pretty simple, just create an account, then click SMTP integration and click the button to create an API key.  The configuration is as follows:
+[Sendgrid](https://sendgrid.com) offers a very easy-to-setup service with 100 emails/day for free.  The next level allows you to send 40k/email a day for just $10/month. Configuration is pretty simple, just create an account, then click SMTP integration and click the button to create an API key.  The configuration is as follows:
 
-```
+```yaml
 mailer:
   engine: smtp
   smtp:
@@ -145,7 +145,7 @@ mailer:
 
 [Mailgun is a great service](https://www.mailgun.com/) that offers 10k/emails per month for free.  Setup does require SPIF domain verification so that means you need to add at least a TXT entry in your DNS.  This is pretty standard for SMTP sending services and does provide verification for remote email servers and makes your email sending more reliable.  The Mailgun site, walks you through this process however, and the verification process is simple and fast.
 
-```
+```yaml
 mailer:
   engine: smtp
   smtp:
@@ -161,7 +161,7 @@ Adjust these configurations for your account.
 
 Mailjet is another great service that is easy to quickly setup and get started sending email.  The free account gives you 200 emails/day or 600 emails/month.  Just signup and setup your SPF and DKIM entries for your domain.  Then click on the SMTP settings and use those to configure the email plugin:
 
-```
+```yaml
 mailer:
   engine: smtp
   smtp:
@@ -179,7 +179,7 @@ In order to get ZOHO working with Grav, you need to send email via a user accoun
 
 NOTE: The SMTP host required can be found in `Settings -> Mail - > Mail Accounts -> POP/IMAP -> SMTP`.  This will provide the SMTP server for this account (it may not be `imap.zoho.com` depending on what region you are in)
 
-```
+```yaml
 mailer:
   engine: smtp
   smtp:
@@ -193,7 +193,7 @@ mailer:
 
 Although not as reliable as SMTP not providing as much debug information, sendmail is a simple option as long as your hosting provider is not blocking the default SMTP port `25`:
 
-```
+```yaml
 mailer:
   engine: sendmail
   sendmail:
@@ -218,13 +218,13 @@ If you are still unsure why should be using one in the first place, check out th
 
 You can test your email configuration with the following CLI Command:
 
-```
+```bash
 $ bin/plugin email test-email -t test@email.com
 ```
 
 You can also pass in a configuration environment:
 
-```
+```bash
 $ bin/plugin email test-email -t test@email.com --env=mysite.com
 ```
 
@@ -253,7 +253,7 @@ Add this code in your plugins:
 
 When executing email actions during form processing, action parameters are inherited from the global configuration but may also be overridden on a per-action basis.
 
-```
+```yaml
 title: Custom form
 
 form:
@@ -276,7 +276,7 @@ form:
 
 You can send multiple emails by creating an array of emails under the `process: email:` option in the form:
 
-```
+```yaml
 title: Custom form
 
 form:
@@ -341,7 +341,7 @@ You can specify a Twig template for HTML rendering, else Grav will use the defau
 You can add file inputs to your form, and send those files via Email.
 Just add an `attachments` field and list the file input fields names. You can have multiple file fields, and this will send all the files as attachments. Example:
 
-```
+```yaml
 form:
   name: custom_form
   fields:
@@ -379,19 +379,19 @@ Email-related parameters (`from`, `to`, `reply_to`, `cc`and `bcc`) allow differe
 
 #### Single email address string
 
-```
+```yaml
 to: mail@example.com
 ```
 
 #### `name-addr` RFC822 Formatted string
 
-```
+```yaml
 to: Joe Bloggs <maiil@example.com>
 ```
 
 ####  Multiple email address strings
 
-```
+```yaml
 to:
   - mail@example.com
   - mail+1@example.com
@@ -400,7 +400,7 @@ to:
 
 or in `name-addr` format:
 
-```
+```yaml
 to:
   - Joe Bloggs <mail@example.com>
   - Jane Doe <mail+1@example.com>
@@ -409,13 +409,13 @@ to:
 
 #### Simple array format with names
 
-```
-to: [mail@exmaple.com, Joe Bloggs]
+```yaml
+to: [mail@example.com, Joe Bloggs]
 ```
 
 #### Formatted email address with names
 
-```
+```yaml
 to:
   email: mail@example.com
   name: Joe Bloggs
@@ -423,19 +423,19 @@ to:
 
 or inline:
 
-```
+```yaml
 to: {email: 'mail@example.com', name: 'Joe Bloggs'}
 ```
 
 #### Multiple email addresses (with and without names)
 
-```
+```yaml
 to:
   - [mail@example.com, Joe Bloggs]
   - [mail+2@example.com, Jane Doe]
 ```
 
-```
+```yaml
 to:
   -
     email: mail@example.com
@@ -447,7 +447,7 @@ to:
 
 or inline:
 
-```
+```yaml
 to:
   - {email: 'mail@example.com', name: 'Joe Bloggs'}
   - {email: 'mail+2@example.com', name: 'Jane Doe'}
@@ -457,7 +457,7 @@ to:
 
 Apart from a simple string, an email body may contain different MIME parts (e.g. HTML body with plain text fallback):
 
-```
+```yaml
 body:
   -
     content_type: 'text/html'
@@ -478,9 +478,9 @@ The first step in determining why emails are not sent is to enable debugging.  T
 
 #### ISP Port 25 blocking
 
-By default, when sending via PHP or Sendmail the machine running the webserver will attempt to send mail using the SMTP protocol.  This uses port `25` which is often blocked by ISPs to protected against spamming.  You can determine if this port is blocked by running this command in your temrinal (mac/linux only):
+By default, when sending via PHP or Sendmail the machine running the webserver will attempt to send mail using the SMTP protocol.  This uses port `25` which is often blocked by ISPs to protected against spamming.  You can determine if this port is blocked by running this command in your terminal (mac/linux only):
 
-```
+```bash
 (echo >/dev/tcp/localhost/25) &>/dev/null && echo "TCP port 25 opened" || echo "TCP port 25 closed"
 ```
 
@@ -491,7 +491,7 @@ If it's blocked there are ways to configure relays to different ports, but the s
 
 If you get an exception when sending email but you cannot see what the error is, you need to enable more verbose exception messages. In the `user/config/system.yaml` file ensure your have the following configuration:
 
-```
+```yaml
 errors:
   display: 1
   log: true
