@@ -1,3 +1,11 @@
+# v4.2.0
+## 08/25/2025
+
+1. [](#new)
+    * PHP 8.4 compatibility
+1. [](#improved)
+    * Vendor library updates
+
 # v4.1.2
 ## 01/06/2025
 
