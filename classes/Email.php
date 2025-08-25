@@ -69,7 +69,7 @@ class Email
      * @param string|null $charset @deprecated
      * @return Message
      */
-    public function message(string $subject = null, string $body = null, string $contentType = null, string $charset = null): Message
+    public function message(?string $subject = null, ?string $body = null, ?string $contentType = null, ?string $charset = null): Message
     {
         $message = new Message();
         $message->subject($subject);
@@ -89,7 +89,7 @@ class Email
      * @param  Envelope|null  $envelope
      * @return int
      */
-    public function send(Message $message, Envelope $envelope = null): int
+    public function send(Message $message, ?Envelope $envelope = null): int
     {
         try {
             $sent_msg = $this->transport->send($message->getEmail(), $envelope);
