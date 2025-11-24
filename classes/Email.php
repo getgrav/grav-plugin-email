@@ -13,6 +13,7 @@ use \Monolog\Handler\StreamHandler;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use Symfony\Component\Mailer\Envelope;
+use Symfony\Component\Mailer\Exception\HttpTransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Header\MetadataHeader;
 use Symfony\Component\Mailer\Header\TagHeader;
@@ -100,6 +101,30 @@ class Email
             $status = 0;
             $this->message = '🛑 ' . $e->getMessage();
             $this->debug = $e->getDebug();
+
+            // Capture HTTP transport errors with the raw response body for easier debugging (e.g., MailerSend 4xx/5xx).
+            if ($e instanceof HttpTransportException) {
+                try {
+                    $response = $e->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    $body = $response->getContent(false);
+
+                    if (!empty($body)) {
+                        $decoded = json_decode($body, true);
+                        if (json_last_error() === JSON_ERROR_NONE) {
+                            $body = json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                        }
+                        $this->debug = trim((string)$this->debug) . "\n-- HTTP response body (status {$statusCode}) --\n" . $body;
+
+                        // If the exception message was empty, include a short summary in the user-facing message.
+                        if (trim($e->getMessage()) === '') {
+                            $this->message = sprintf('🛑 HTTP %d error while sending email. See debug for response body.', $statusCode);
+                        }
+                    }
+                } catch (\Throwable $httpError) {
+                    $this->debug = trim((string)$this->debug) . "\n-- Failed to read HTTP error response --\n" . $httpError->getMessage();
+                }
+            }
         }
 
         if ($this->debug()) {
