@@ -1,3 +1,10 @@
+# v4.2.1
+## 11/24/2025
+
+1. [](#improved)
+    * Added more details for HTTP error logs when using API-based email providers
+    * Addressed a compatibility issue with Grav 1.8beta
+
 # v4.2.0
 ## 08/25/2025
 
