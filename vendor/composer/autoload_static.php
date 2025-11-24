@@ -31,7 +31,6 @@ class ComposerStaticInit73924571ea6ee98bb12d10ff20aff2ab
         ),
         'P' => 
         array (
-            'Psr\\Log\\' => 8,
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
         ),
@@ -99,10 +98,6 @@ class ComposerStaticInit73924571ea6ee98bb12d10ff20aff2ab
         'Symfony\\Component\\EventDispatcher\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
-        ),
-        'Psr\\Log\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
         'Psr\\EventDispatcher\\' => 
         array (

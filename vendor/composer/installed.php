@@ -3,11 +3,11 @@
         'name' => 'getgrav/grav-plugin-email',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => 'ae1a8e9e23373a3fd9d6f6b8c05021cde6ad44e4',
+        'reference' => '42a1f4f58bd1ad05dba198602c589cc61ef01a83',
         'type' => 'grav-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'doctrine/deprecations' => array(
@@ -40,7 +40,7 @@
         'getgrav/grav-plugin-email' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => 'ae1a8e9e23373a3fd9d6f6b8c05021cde6ad44e4',
+            'reference' => '42a1f4f58bd1ad05dba198602c589cc61ef01a83',
             'type' => 'grav-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -71,13 +71,10 @@
             ),
         ),
         'psr/log' => array(
-            'pretty_version' => '1.1.4',
-            'version' => '1.1.4.0',
-            'reference' => 'd49695b909c3b7628b6289db5479a1c204601f11',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../psr/log',
-            'aliases' => array(),
             'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
         ),
         'symfony/amqp-messenger' => array(
             'pretty_version' => 'v5.4.45',

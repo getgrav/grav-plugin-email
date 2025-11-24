@@ -27,7 +27,8 @@
     "replace": {
         "symfony/polyfill-iconv": "*",
         "symfony/polyfill-mbstring": "*",
-        "symfony/polyfill-php72": "*"
+        "symfony/polyfill-php72": "*",
+        "psr/log": "*"
     },
     "autoload": {
         "psr-4": {
