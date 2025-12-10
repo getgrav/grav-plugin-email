@@ -279,36 +279,47 @@ class Email
         if (!empty($recipients)) {
             if (is_array($recipients)) {
                 if (Utils::isAssoc($recipients) || (count($recipients) ===2 && $this->isValidEmail($recipients[0]) && !$this->isValidEmail($recipients[1]))) {
-                    $list[] = $this->createAddress($recipients);
+                    $address = $this->createAddress($recipients);
+                    if ($address !== null) {
+                        $list[] = $address;
+                    }
                 } else {
                     foreach ($recipients as $recipient) {
-                        $list[] = $this->createAddress($recipient);
+                        $address = $this->createAddress($recipient);
+                        if ($address !== null) {
+                            $list[] = $address;
+                        }
                     }
                 }
             } else {
                 if (is_string($recipients) && Utils::contains($recipients, ',')) {
                     $recipients = array_map('trim', explode(',', $recipients));
                     foreach ($recipients as $recipient) {
-                        $list[] = $this->createAddress($recipient);
+                        $address = $this->createAddress($recipient);
+                        if ($address !== null) {
+                            $list[] = $address;
+                        }
                     }
                 } else {
                     if (!Utils::contains($recipients, ['<','>']) && (isset($params[$type."_name"]))) {
                         $recipients = [$recipients, $params[$type."_name"]];
                     }
-                    $list[] = $this->createAddress($recipients);
+                    $address = $this->createAddress($recipients);
+                    if ($address !== null) {
+                        $list[] = $address;
+                    }
                 }
             }
         }
-
 
         return $list;
     }
 
     /**
      * @param $data
-     * @return Address
+     * @return Address|null
      */
-    protected function createAddress($data): Address
+    protected function createAddress($data): ?Address
     {
         if (is_string($data)) {
             preg_match('/^(.*)\<(.*)\>$/', $data, $matches);
@@ -332,6 +343,12 @@ class Email
             $email = $data[0] ?? '';
             $name = $data[1] ?? '';
         }
+
+        // Skip empty or invalid email addresses
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return null;
+        }
+
         return new Address($email, $name);
     }
 
@@ -372,12 +389,46 @@ class Email
     protected function processParams(array $params, array $vars = []): array
     {
         $twig = Grav::instance()['twig'];
+        $twig->init();
+
+        // Add twig vars to the context
+        $vars += $twig->twig_vars;
+
         array_walk_recursive($params, function(&$value) use ($twig, $vars) {
             if (is_string($value)) {
-                $value = $twig->processString($value, $vars);
+                // Process Twig strings WITHOUT security filtering
+                // Email params come from trusted YAML config, not user input
+                $value = $this->processTwigString($twig, $value, $vars);
             }
         });
         return $params;
+    }
+
+    /**
+     * Process a Twig string without security filtering.
+     * Used for trusted email configuration strings.
+     *
+     * @param Twig $twig
+     * @param string $string
+     * @param array $vars
+     * @return string
+     */
+    protected function processTwigString(Twig $twig, string $string, array $vars): string
+    {
+        // Skip if no Twig syntax
+        if (strpos($string, '{{') === false && strpos($string, '{%') === false) {
+            return $string;
+        }
+
+        try {
+            // Use Grav's setTemplate method which uses the loaderArray
+            $name = '@EmailVar:' . md5($string);
+            $twig->setTemplate($name, $string);
+
+            return $twig->twig->render($name, $vars);
+        } catch (\Exception $e) {
+            return $string;
+        }
     }
 
     /**
