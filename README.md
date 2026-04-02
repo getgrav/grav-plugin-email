@@ -502,3 +502,46 @@ errors:
 As explained above in the Configuration section, if you're using the default settings, set the Plugin configuration to use a SMTP server. It can be [Gmail](https://www.digitalocean.com/community/tutorials/how-to-use-google-s-smtp-server) or another SMTP server you have at your disposal.
 
 This is the first thing to check. The reason is that PHP Mail, the default system used by the Plugin, is not 100% reliable and emails might not arrive.
+
+## REST API Integration
+
+When the [Grav API plugin](https://github.com/getgrav/grav-plugin-api) is installed and enabled, the email plugin automatically registers two API endpoints:
+
+### POST /api/v1/email/send
+
+Send an ad-hoc email. Requires `api.system.write` permission.
+
+```bash
+curl -X POST "https://yoursite.com/api/v1/email/send" \
+  -H "X-API-Key: grav_your_key" \
+  -H "X-Grav-Environment: localhost" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "recipient@example.com",
+    "subject": "Hello from Grav API",
+    "body": "<h1>Hello</h1><p>Sent via the Grav API.</p>",
+    "content_type": "text/html"
+  }'
+```
+
+**Required fields**: `to`, `subject`, `body`
+
+**Optional fields**: `from` (defaults to plugin config), `cc`, `bcc`, `reply_to`, `content_type` (default: `text/html`)
+
+### POST /api/v1/email/test
+
+Send a test email to verify your email configuration.
+
+```bash
+curl -X POST "https://yoursite.com/api/v1/email/test" \
+  -H "X-API-Key: grav_your_key" \
+  -H "X-Grav-Environment: localhost" \
+  -H "Content-Type: application/json" \
+  -d '{"to": "your@email.com"}'
+```
+
+**Optional fields**: `to` (defaults to plugin's configured recipient)
+
+### API Documentation Pages
+
+Helios-compatible API documentation pages are included in the `api-docs/` directory. Copy them into your Grav Learn site's API reference section to include them in your documentation.

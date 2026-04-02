@@ -29,7 +29,18 @@ class EmailPlugin extends Plugin
             'onTwigTemplatePaths'       => ['onTwigTemplatePaths', 0],
             'onSchedulerInitialized'    => ['onSchedulerInitialized', 0],
             'onAdminSave'               => ['onAdminSave', 0],
+            'onApiRegisterRoutes'       => ['onApiRegisterRoutes', 0],
         ];
+    }
+
+    /**
+     * Register API routes for sending emails via the Grav API plugin.
+     */
+    public function onApiRegisterRoutes(Event $event): void
+    {
+        $routes = $event['routes'];
+        $routes->post('/email/send', [\Grav\Plugin\Email\EmailApiController::class, 'send']);
+        $routes->post('/email/test', [\Grav\Plugin\Email\EmailApiController::class, 'test']);
     }
 
     /**
