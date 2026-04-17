@@ -1,0 +1,216 @@
+{
+	"info": {
+		"_postman_id": "grav-email-api-v1",
+		"name": "Grav Email API",
+		"description": "API endpoints for the Grav Email plugin.\n\nRequires the Grav CMS API plugin to be installed and enabled.\n\nUses the same environment variables as the core Grav CMS API collection:\n- `base_url` - Your Grav site URL\n- `api_prefix` - API version prefix (default: /api/v1)\n- `api_key` - A valid API key with api.system.write permission\n- `grav_environment` - Grav environment (default: localhost)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Send Email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"const res = pm.response.json();",
+							"pm.test('Status is 200', () => pm.response.to.have.status(200));",
+							"pm.test('Has success message', () => pm.expect(res.data.message).to.include('successfully'));"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "X-Grav-Environment",
+						"value": "{{grav_environment}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"to\": \"recipient@example.com\",\n    \"subject\": \"Hello from Grav API\",\n    \"body\": \"<h1>Hello</h1><p>This email was sent via the Grav API.</p>\",\n    \"content_type\": \"text/html\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}{{api_prefix}}/email/send",
+					"host": ["{{base_url}}{{api_prefix}}"],
+					"path": ["email", "send"]
+				},
+				"description": "Send an ad-hoc email.\n\n**Required fields**: `to`, `subject`, `body`\n\n**Optional fields**: `from` (defaults to plugin config), `cc`, `bcc`, `reply_to`, `content_type` (default: `text/html`)"
+			}
+		},
+		{
+			"name": "Send Email (Plain Text)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "X-Grav-Environment",
+						"value": "{{grav_environment}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"to\": \"recipient@example.com\",\n    \"subject\": \"Plain text message\",\n    \"body\": \"This is a plain text email.\\n\\nNo HTML formatting.\",\n    \"content_type\": \"text/plain\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}{{api_prefix}}/email/send",
+					"host": ["{{base_url}}{{api_prefix}}"],
+					"path": ["email", "send"]
+				},
+				"description": "Send a plain text email by setting content_type to text/plain."
+			}
+		},
+		{
+			"name": "Send Email (with CC/BCC)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "X-Grav-Environment",
+						"value": "{{grav_environment}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"to\": \"recipient@example.com\",\n    \"subject\": \"Team Update\",\n    \"body\": \"<p>Hello team, here is the latest update.</p>\",\n    \"cc\": \"manager@example.com\",\n    \"bcc\": \"archive@example.com\",\n    \"reply_to\": \"noreply@example.com\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}{{api_prefix}}/email/send",
+					"host": ["{{base_url}}{{api_prefix}}"],
+					"path": ["email", "send"]
+				},
+				"description": "Send an email with CC, BCC, and Reply-To fields."
+			}
+		},
+		{
+			"name": "Send Email (custom from)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "X-Grav-Environment",
+						"value": "{{grav_environment}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"to\": \"recipient@example.com\",\n    \"from\": \"Custom Sender <custom@example.com>\",\n    \"subject\": \"Custom From Address\",\n    \"body\": \"<p>This email has a custom from address.</p>\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}{{api_prefix}}/email/send",
+					"host": ["{{base_url}}{{api_prefix}}"],
+					"path": ["email", "send"]
+				},
+				"description": "Send an email with a custom from address, overriding the plugin's configured default."
+			}
+		},
+		{
+			"name": "Test Email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"const res = pm.response.json();",
+							"pm.test('Status is 200', () => pm.response.to.have.status(200));",
+							"pm.test('Has success message', () => pm.expect(res.data.message).to.include('successfully'));"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "X-Grav-Environment",
+						"value": "{{grav_environment}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"to\": \"your@email.com\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}{{api_prefix}}/email/test",
+					"host": ["{{base_url}}{{api_prefix}}"],
+					"path": ["email", "test"]
+				},
+				"description": "Send a test email to verify your email configuration is working. If `to` is omitted, sends to the plugin's configured default recipient."
+			}
+		},
+		{
+			"name": "Test Email (default recipient)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					},
+					{
+						"key": "X-Grav-Environment",
+						"value": "{{grav_environment}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{base_url}}{{api_prefix}}/email/test",
+					"host": ["{{base_url}}{{api_prefix}}"],
+					"path": ["email", "test"]
+				},
+				"description": "Send a test email to the plugin's configured default recipient. No body fields required."
+			}
+		}
+	]
+}
