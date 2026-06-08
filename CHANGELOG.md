@@ -1,3 +1,9 @@
+# v5.0.2
+## 06/08/2026
+
+1. [](#improved)
+    * Button links in HTML emails now keep their white text in email clients that force their own link color, by targeting the `a.btn-primary` and `a.btn-secondary` selectors with `!important`.
+
 # v5.0.1
 ## 04/17/2026
 

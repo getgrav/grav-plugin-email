@@ -30,9 +30,13 @@
         a {
             color: #348eda;
         }
-        .btn-primary {
+        /* Use the `a.btn-*` selector (and !important) so the white button
+           text isn't overridden by the generic `a` link color above or by
+           email clients that force their own link color. */
+        .btn-primary,
+        a.btn-primary {
             text-decoration: none;
-            color: #FFF;
+            color: #FFF !important;
             background-color: #348eda;
             border: solid #348eda;
             border-width: 10px 20px;
@@ -44,9 +48,10 @@
             display: inline-block;
             border-radius: 25px;
         }
-        .btn-secondary {
+        .btn-secondary,
+        a.btn-secondary {
             text-decoration: none;
-            color: #FFF;
+            color: #FFF !important;
             background-color: #aaa;
             border: solid #aaa;
             border-width: 10px 20px;
