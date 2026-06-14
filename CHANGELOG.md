@@ -1,3 +1,9 @@
+# v5.0.3
+## 06/14/2026
+
+1. [](#improved)
+    * Email templates that fail to render (a Twig syntax error, or an unresolved include or extends) are now logged to the email and Grav logs instead of failing silently, so a broken template is much easier to track down.
+
 # v5.0.2
 ## 06/08/2026
 

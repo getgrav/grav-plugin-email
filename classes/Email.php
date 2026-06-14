@@ -427,6 +427,20 @@ class Email
 
             return $twig->twig->render($name, $vars);
         } catch (\Exception $e) {
+            // A trusted email string (body, subject, recipient, etc.) failed to
+            // render. This is almost always a Twig syntax error or an
+            // unresolved {% extends %}/{% include %} in the template. We keep
+            // sending so one bad string doesn't block the whole notification,
+            // but the failure used to be completely silent, which made it very
+            // hard to trace (the raw, unrendered Twig just dropped into the
+            // email). Log it loudly to both the email log and the main Grav log
+            // with the Twig error and a snippet of the offending string.
+            $snippet = strlen($string) > 200 ? substr($string, 0, 200) . '…' : $string;
+            $report = sprintf('Twig render failed, sending raw string: %s | source: %s', $e->getMessage(), $snippet);
+
+            $this->log->error($report);
+            Grav::instance()['log']->error('plugin-email: ' . $report);
+
             return $string;
         }
     }
