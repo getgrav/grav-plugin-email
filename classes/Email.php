@@ -424,13 +424,19 @@ class Email
         // Add twig vars to the context
         $vars += $twig->twig_vars;
 
-        // The sandbox replaces `config` with a facade that denies everything
-        // unless the operator opted into config access, which would break the
-        // documented `{{ config.site.emails.sales }}` and
+        // On Grav 2.0 the sandbox replaces `config` with a facade that denies
+        // everything unless the operator opted into config access, which would
+        // break the documented `{{ config.site.emails.sales }}` and
         // `{{ config.plugins.email.to }}` idioms. Supply the narrow slice those
-        // idioms need instead. Twig::processString() and the sandbox both leave
-        // a caller-supplied `config` alone.
-        $vars['config'] = $this->buildParamConfig();
+        // idioms need instead; the sandbox leaves a caller-supplied `config`
+        // alone.
+        //
+        // Grav 1.7 has no Twig content sandbox, so nothing replaces `config`
+        // there and narrowing it ourselves would only take away access those
+        // sites already have. Leave 1.7 exactly as it was.
+        if ($this->sandboxAvailable()) {
+            $vars['config'] = $this->buildParamConfig();
+        }
 
         array_walk_recursive($params, function(&$value) use ($twig, $vars) {
             if (is_string($value)) {
@@ -438,6 +444,29 @@ class Email
             }
         });
         return $params;
+    }
+
+    /**
+     * Is Grav's Twig content sandbox available and switched on?
+     *
+     * True on Grav 2.0 with `security.twig_sandbox.enabled`, false on Grav 1.7,
+     * which has no content sandbox at all, and false when an operator has
+     * turned it off. When false this plugin renders email parameters exactly
+     * as it always has, which is also why the 1.7 line is out of scope for
+     * GHSA-gh8j-q67c-j53f: reaching those parameters there needs a
+     * publisher-level account.
+     *
+     * @return bool
+     */
+    protected function sandboxAvailable(): bool
+    {
+        if (!class_exists(SandboxExtension::class) || !class_exists(SandboxConfig::class)) {
+            return false;
+        }
+
+        $twig = Grav::instance()['twig'];
+
+        return isset($twig->twig) && $twig->twig->hasExtension(SandboxExtension::class);
     }
 
     /**
@@ -500,11 +529,13 @@ class Email
             return $string;
         }
 
-        $env = $twig->twig;
-        $sandbox = $env->hasExtension(SandboxExtension::class)
-            ? $env->getExtension(SandboxExtension::class)
-            : null;
-        $policy = $sandbox ? $sandbox->getSecurityPolicy() : null;
+        $sandbox = null;
+        $policy = null;
+
+        if ($this->sandboxAvailable()) {
+            $sandbox = $twig->twig->getExtension(SandboxExtension::class);
+            $policy = $sandbox->getSecurityPolicy();
+        }
 
         if ($sandbox && $policy) {
             // Same restrictions as page content, plus the filters an email
