@@ -2,8 +2,9 @@
 ## 08/04/2026
 
 1. [](#bugfix)
-    * [security] Twig in a form's email settings now runs under Grav's content sandbox, so someone who can only edit pages can no longer use an email action to run commands on the server ([GHSA-gh8j-q67c-j53f](https://github.com/getgrav/grav/security/advisories/GHSA-gh8j-q67c-j53f)).
+    * [security] On Grav 2.0, Twig in a form's email settings now runs under Grav's content sandbox, so someone who can only edit pages can no longer use an email action to run commands on the server ([GHSA-gh8j-q67c-j53f](https://github.com/getgrav/grav/security/advisories/GHSA-gh8j-q67c-j53f)). Requires Grav 2.0.16 or later.
     * Email settings can still read your site configuration and this plugin's own address settings, so `{{ config.site.emails.sales }}` and `{{ config.plugins.email.to }}` keep working, but they can no longer read your mail server password or any other plugin's settings.
+    * Grav 1.7 has no Twig content sandbox, so email settings behave there exactly as they did before, and the plugin still runs on the PHP versions that line supports.
 
 # v5.0.3
 ## 06/14/2026

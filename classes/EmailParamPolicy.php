@@ -22,22 +22,32 @@ use Twig\Sandbox\SecurityPolicyInterface;
  * and only removes the extra filters from the filter check. Every class,
  * method and property restriction is inherited untouched, including any added
  * later, so this cannot drift out of sync with the sandbox it wraps.
+ *
+ * Only ever instantiated on Grav 2.0, which is the line that has a Twig
+ * content sandbox. The syntax stays PHP 7.3 compatible like the rest of the
+ * plugin, which still supports Grav 1.7.
  */
 final class EmailParamPolicy implements SecurityPolicyInterface
 {
+    /** @var SecurityPolicyInterface The live content sandbox policy. */
+    private $inner;
+
     /**
-     * @param SecurityPolicyInterface $inner The live content sandbox policy.
-     * @param list<string> $extraFilters Filters permitted for email parameters
-     *                                   on top of the content allowlist. Keep
-     *                                   this list short and deliberate: each
-     *                                   entry is a judgement that the filter is
-     *                                   harmless when the output is an email
-     *                                   rather than a web page.
+     * @var array Filters permitted for email parameters on top of the content
+     *            allowlist. Keep this list short and deliberate: each entry is
+     *            a judgement that the filter is harmless when the output is an
+     *            email rather than a web page.
      */
-    public function __construct(
-        private readonly SecurityPolicyInterface $inner,
-        private readonly array $extraFilters = []
-    ) {
+    private $extraFilters;
+
+    /**
+     * @param SecurityPolicyInterface $inner
+     * @param array $extraFilters
+     */
+    public function __construct(SecurityPolicyInterface $inner, array $extraFilters = [])
+    {
+        $this->inner = $inner;
+        $this->extraFilters = $extraFilters;
     }
 
     /**
