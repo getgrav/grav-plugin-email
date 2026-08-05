@@ -1,3 +1,9 @@
+# v5.0.5
+## 08/05/2026
+
+1. [](#bugfix)
+    * [security] On Grav 2.0, email settings can no longer read your site, system or theme configuration directly, which was a way around the restriction added in 5.0.4 that already stopped them reading it through `config` ([GHSA-p597-crqc-m349](https://github.com/getgrav/grav/security/advisories/GHSA-p597-crqc-m349)). Requires Grav 2.0.16 or later, which is also where the underlying protection for email settings lives.
+
 # v5.0.4
 ## 08/04/2026
 
