@@ -436,6 +436,7 @@ class Email
         // sites already have. Leave 1.7 exactly as it was.
         if ($this->sandboxAvailable()) {
             $vars['config'] = $this->buildParamConfig();
+            $vars = $this->filterParamVars($vars);
         }
 
         array_walk_recursive($params, function(&$value) use ($twig, $vars) {
@@ -505,6 +506,45 @@ class Email
             'site' => $filtered->get('site', []),
             'plugins' => ['email' => $email],
         ];
+    }
+
+    /**
+     * Filter the raw `system`, `site` and `theme` variables inherited from
+     * `Twig::$twig_vars`.
+     *
+     * Narrowing `config` is not enough on its own. Those three are also
+     * exposed as top-level variables, they are plain PHP arrays, and Twig's
+     * sandbox has no jurisdiction over array key access, so
+     * `{{ system.cache.redis.password }}` in a form's `process.email.subject`
+     * renders the live value no matter how strict the policy is
+     * (GHSA-p597-crqc-m349).
+     *
+     * Grav 2.0.16 does this for page content and `@Var:` strings inside
+     * `Twig::processPage()` / `processString()`. This render calls
+     * `$twig->twig->render()` directly, so it has to apply the same filter
+     * itself, driven by the same `security.twig_sandbox.config_denied_paths`
+     * list so operators only maintain one.
+     *
+     * @param array $vars
+     * @return array
+     */
+    protected function filterParamVars(array $vars): array
+    {
+        /** @var Config $config */
+        $config = Grav::instance()['config'];
+
+        $filter = new SandboxConfig(
+            $config,
+            (array) $config->get('security.twig_sandbox.config_denied_paths', [])
+        );
+
+        foreach (['system', 'site', 'theme'] as $key) {
+            if (array_key_exists($key, $vars)) {
+                $vars[$key] = $filter->get($key, []);
+            }
+        }
+
+        return $vars;
     }
 
     /**
