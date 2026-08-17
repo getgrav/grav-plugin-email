@@ -1,3 +1,10 @@
+# v5.0.6
+## 08/17/2026
+
+1. [](#bugfix)
+    * Email addresses with a stray space around them are no longer thrown away, so a `from`, `to`, `cc`, `bcc` or `reply_to` setting that ends in a space keeps working instead of failing with a confusing "An email must have a From or a Sender header" error.
+    * An address setting containing nothing but spaces now tells you that address needs configuring, rather than failing later with that same confusing error.
+
 # v5.0.5
 ## 08/05/2026
 

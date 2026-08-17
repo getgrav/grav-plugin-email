@@ -210,6 +210,15 @@ class Email
             }
         }
 
+        // Trim the address parameters up front so a value that is nothing but whitespace is
+        // caught by the checks below, rather than passing them and failing much later with
+        // an unhelpful "email must have a From or a Sender header" from the mailer.
+        foreach (['to', 'from', 'cc', 'bcc', 'reply_to'] as $address_key) {
+            if (isset($params[$address_key]) && is_string($params[$address_key])) {
+                $params[$address_key] = trim($params[$address_key]);
+            }
+        }
+
         if (!$params['to']) {
             throw new \RuntimeException($language->translate('PLUGIN_EMAIL.PLEASE_CONFIGURE_A_TO_ADDRESS'));
         }
@@ -344,17 +353,20 @@ class Email
     protected function createAddress($data): ?Address
     {
         if (is_string($data)) {
+            // Trim before matching, or a trailing space defeats the anchored pattern and the
+            // whole "Name <address>" string gets treated as the address itself.
+            $data = trim($data);
             preg_match('/^(.*)\<(.*)\>$/', $data, $matches);
             if (isset($matches[2])) {
-                $email = trim($matches[2]);
-                $name = trim($matches[1]);
+                $email = $matches[2];
+                $name = $matches[1];
             } else {
                 $email = $data;
                 $name = '';
             }
         } elseif (Utils::isAssoc($data)) {
             $first_key = array_key_first($data);
-            if (filter_var($first_key, FILTER_VALIDATE_EMAIL)) {
+            if ($this->isValidEmail($first_key)) {
                 $email = $first_key;
                 $name = $data[$first_key];
             } else {
@@ -365,6 +377,12 @@ class Email
             $email = $data[0] ?? '';
             $name = $data[1] ?? '';
         }
+
+        // Addresses routinely arrive with stray whitespace: a trailing space left in a YAML
+        // value, or a space after a comma in a list. Trim before validating, otherwise the
+        // address is dropped below and the message goes out missing that header entirely.
+        $email = is_string($email) ? trim($email) : '';
+        $name = is_string($name) ? trim($name) : '';
 
         // Skip empty or invalid email addresses
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -745,7 +763,7 @@ class Email
 
     protected function isValidEmail($email): bool
     {
-        return is_string($email) && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        return is_string($email) && filter_var(trim($email), FILTER_VALIDATE_EMAIL) !== false;
     }
 
     /**
