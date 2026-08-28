@@ -1,3 +1,9 @@
+# v5.0.7
+## 08/28/2026
+
+1. [](#improved)
+    * The Spanish translation now covers every string, up from two, and the messages asking you to configure a 'to' or 'from' address no longer name the opposite one. Thanks to @pmoreno-rodriguez
+
 # v5.0.6
 ## 08/17/2026
 
