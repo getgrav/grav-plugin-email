@@ -1,3 +1,9 @@
+# v5.0.8
+## 09/04/2026
+
+1. [](#bugfix)
+    * The help text under the From, To, CC, BCC and Reply-to fields showed the name-addr example as "Your Name `" in the new admin, which renders help as sanitised HTML and dropped `<email@address.org>` as an unknown tag. The example's angle brackets are now written as entities so the format the field accepts is actually shown
+
 # v5.0.7
 ## 08/28/2026
 

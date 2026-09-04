@@ -56,7 +56,7 @@ en:
     QUEUE_FLUSH_MSG_LIMIT_APPEND: "Messages"
     QUEUE_FLUSH_TIME_LIMIT: "Flush time limit"
     QUEUE_FLUSH_TIME_LIMIT_APPEND: "Seconds"
-    EMAIL_FORMAT: "Use the `addr` format: `email@address.org` or `name-addr` format: `Your Name <email@address.org>`. Comma separated for multiple addresses"
+    EMAIL_FORMAT: "Use the `addr` format: `email@address.org` or `name-addr` format: `Your Name &lt;email@address.org&gt;`. Comma separated for multiple addresses"
 
 da:
   PLUGIN_EMAIL:
@@ -127,7 +127,7 @@ es:
     QUEUE_FLUSH_MSG_LIMIT_APPEND: "Mensajes"
     QUEUE_FLUSH_TIME_LIMIT: "Límite de tiempo de vaciado"
     QUEUE_FLUSH_TIME_LIMIT_APPEND: "Segundos"
-    EMAIL_FORMAT: "Utilice el formato `addr`: `email@direccion.org` o formato `name-addr`: `Su nombre <email@direccion.org>`. Separados por comas para múltiples direcciones"
+    EMAIL_FORMAT: "Utilice el formato `addr`: `email@direccion.org` o formato `name-addr`: `Su nombre &lt;email@direccion.org&gt;`. Separados por comas para múltiples direcciones"
 
 fr:
   PLUGIN_EMAIL:
@@ -187,7 +187,7 @@ fr:
     QUEUE_FLUSH_MSG_LIMIT_APPEND: "Messages"
     QUEUE_FLUSH_TIME_LIMIT: "Délai de Flush"
     QUEUE_FLUSH_TIME_LIMIT_APPEND: "Secondes"
-    EMAIL_FORMAT: "Utilisez le format `addr` : `email@adresse.org` ou le format `name-addr` : `Votre nom <email@adresse.org>`. Séparer par des virgules pour plusieurs adresses."
+    EMAIL_FORMAT: "Utilisez le format `addr` : `email@adresse.org` ou le format `name-addr` : `Votre nom &lt;email@adresse.org&gt;`. Séparer par des virgules pour plusieurs adresses."
 
 
 hr:
