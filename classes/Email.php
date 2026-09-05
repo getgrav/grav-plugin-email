@@ -22,6 +22,7 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Header\Headers;
 use Twig\Extension\SandboxExtension;
 
 class Email
@@ -45,6 +46,35 @@ class Email
      * rejects. Harmless here because the output is an email, not a DOM.
      */
     private const PARAM_EXTRA_FILTERS = ['raw'];
+
+    /**
+     * Optional `buildMessage()` parameters that go on the message as headers
+     * rather than as addresses, a subject or a body.
+     *
+     * A calling plugin asks about these through {@see supportsParameter()}
+     * rather than comparing version numbers, so it can pass the parameter on a
+     * plugin that understands it and keep its own fallback on one that does not.
+     */
+    private const HEADER_PARAMS = ['tags', 'metadata', 'headers'];
+
+    /**
+     * A header name as RFC 5322 defines one: one or more printable US-ASCII
+     * characters, colon excluded. Anything else cannot be written on the wire.
+     */
+    private const HEADER_NAME_PATTERN = '/^[!-9;-~]+$/';
+
+    /**
+     * The provider contract under `classes/Providers/`, asked for by name
+     * through {@see supportsFeature()}.
+     */
+    public const FEATURE_PROVIDERS = 'providers';
+
+    /**
+     * The providers collected on `onEmailProviders`, once per request.
+     *
+     * @var Providers\ProviderRegistry|null
+     */
+    protected static $providers;
 
     /** @var Mailer */
     protected $mailer;
@@ -81,6 +111,136 @@ class Email
     public static function debug(): bool
     {
         return Grav::instance()['config']->get('plugins.email.debug') == 'true';
+    }
+
+    /**
+     * Does this copy of the plugin understand the given optional message
+     * parameter?
+     *
+     * Another plugin that wants to pass `headers`, `tags` or `metadata` has to
+     * know whether the Email plugin the site actually has installed will act on
+     * it or quietly drop it, and a version comparison is the wrong tool for
+     * that: it hard-codes a release number into every caller and gets it wrong
+     * the moment a fix is backported. Ask instead:
+     *
+     *     if (method_exists($email, 'supportsParameter') && $email::supportsParameter('headers')) {
+     *         // hand the headers over
+     *     } else {
+     *         // whatever you were doing before
+     *     }
+     *
+     * @param  string  $name
+     * @return bool
+     */
+    public static function supportsParameter(string $name): bool
+    {
+        return in_array($name, self::HEADER_PARAMS, true);
+    }
+
+    /**
+     * Does this copy of the plugin have the given extension point?
+     *
+     * The same question as {@see supportsParameter()} and asked the same way,
+     * about a whole feature rather than one message parameter. `providers` is
+     * the provider contract under `classes/Providers/`: the registry, the
+     * `onEmailProviders` event and the three lookups below.
+     *
+     *     if (method_exists($email, 'supportsFeature') && $email::supportsFeature('providers')) {
+     *         $provider = $email::providerFor($engine);
+     *     } else {
+     *         // whatever you were doing before
+     *     }
+     *
+     * The PHP check is not decoration. The provider classes use readonly
+     * promoted properties, which is PHP 8.1, while this plugin still installs
+     * on the 7.3 that Grav 1.7 allows. On such a site the honest answer to
+     * "does this copy have providers" is no, and answering it here means a
+     * caller never reaches a file it cannot parse.
+     *
+     * @param  string  $name
+     * @return bool
+     */
+    public static function supportsFeature(string $name): bool
+    {
+        if ($name === self::FEATURE_PROVIDERS) {
+            return PHP_VERSION_ID >= 80100;
+        }
+
+        return false;
+    }
+
+    /**
+     * Every provider a transport plugin registered, collected once.
+     *
+     * `onEmailProviders` is fired the first time this is asked and the answer
+     * is kept for the rest of the request: the plugins that listen build a
+     * value object each and the event is not free, and every screen that asks
+     * this asks it several times.
+     *
+     * @return Providers\ProviderRegistry
+     */
+    public static function providers(): Providers\ProviderRegistry
+    {
+        if (self::$providers !== null) {
+            return self::$providers;
+        }
+
+        $registry = new Providers\ProviderRegistry();
+        self::$providers = $registry;
+
+        Grav::instance()->fireEvent('onEmailProviders', new Event(['providers' => $registry]));
+
+        return $registry;
+    }
+
+    /**
+     * The provider that answers for an engine, or null when no plugin
+     * registered one for it.
+     *
+     * Null is a normal answer with a plain meaning: this transport cannot
+     * report deliveries. Say that rather than showing an address nothing will
+     * ever post to.
+     *
+     * @param  string  $engine
+     * @return Providers\Provider|null
+     */
+    public static function providerFor(string $engine): ?Providers\Provider
+    {
+        return self::providers()->forEngine($engine);
+    }
+
+    /**
+     * The provider with this key, or null.
+     *
+     * @param  string  $key
+     * @return Providers\Provider|null
+     */
+    public static function providerByKey(string $key): ?Providers\Provider
+    {
+        return self::providers()->byKey($key);
+    }
+
+    /**
+     * A mailer for a named engine, rather than for the one this site is
+     * configured with.
+     *
+     * The same transport building the configured mailer uses — the same switch,
+     * the same `onEmailTransportDsn` event, the same Symfony `Transport::fromDsn()`
+     * — with the engine passed in instead of read from the config. Everything
+     * else about how the transport is built is untouched, which is the point:
+     * the configured engine has to keep behaving exactly as it did.
+     *
+     * Nothing sends through this yet. It exists so that a store which one day
+     * wants to send some of its mail through a second provider has somewhere to
+     * ask for that mailer, without that day being the day the transport builder
+     * gets rewritten.
+     *
+     * @param  string  $engine
+     * @return Mailer
+     */
+    public static function buildMailerFor(string $engine): Mailer
+    {
+        return new Mailer(static::getTransport($engine));
     }
 
     /**
@@ -161,6 +321,10 @@ class Email
 
     /**
      * Build e-mail message.
+     *
+     * Besides the address, subject and body parameters, `tags` and `metadata`
+     * add the headers the API transports read, and `headers` writes arbitrary
+     * headers by name; see {@see applyHeaders()}.
      *
      * @param array $params
      * @param array $vars
@@ -289,7 +453,116 @@ class Email
             }
         }
 
+        // Custom headers go on last, after the addresses, the subject, the tags
+        // and the metadata, so a caller that deliberately sets one of those by
+        // name gets the value it asked for rather than losing to a default.
+        if (isset($params['headers'])) {
+            $this->applyHeaders($message, $params['headers']);
+        }
+
         return $message;
+    }
+
+    /**
+     * Write arbitrary headers onto a built message.
+     *
+     * `$headers` is a map of header name to value. A value that is a list writes
+     * the header once per entry, which only the headers allowed to repeat will
+     * take. Setting a header that is already on the message replaces it, so
+     * calling this twice with the same name leaves one header rather than two
+     * that clients will disagree about.
+     *
+     * The one this exists for is RFC 8058 one-click unsubscribe, which is a pair:
+     *
+     *     $email->applyHeaders($message, [
+     *         'List-Unsubscribe' => '<mailto:leave@example.com>, <https://example.com/u/abc>',
+     *         'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+     *     ]);
+     *
+     * Nothing is filtered by name: a plugin sending bulk mail needs
+     * `List-Unsubscribe`, `Precedence` and its own `X-` headers, and there is no
+     * list of "approved" headers that would not be wrong within a year. A name
+     * that is not a valid RFC 5322 field name is skipped and logged, as is a
+     * value Symfony refuses for that particular header, so one bad entry costs
+     * you a header rather than the whole email.
+     *
+     * Public because `buildMessage()` is only one of the two ways a message gets
+     * built here: a plugin that used `message()` can hand its headers over the
+     * same way instead of reaching into the Symfony message itself.
+     *
+     * @param  Message  $message
+     * @param  array  $headers  header name => string value, or a list of values
+     * @return Message
+     */
+    public function applyHeaders(Message $message, array $headers): Message
+    {
+        $bag = $message->getEmail()->getHeaders();
+
+        foreach ($headers as $name => $value) {
+            if (!is_string($name) || !preg_match(self::HEADER_NAME_PATTERN, $name)) {
+                $this->logHeaderSkipped($name, 'that is not a valid header name');
+                continue;
+            }
+
+            $values = is_array($value) ? array_values($value) : [$value];
+            $bad = false;
+            foreach ($values as $line) {
+                if (!is_string($line) && !is_numeric($line)) {
+                    $this->logHeaderSkipped($name, 'the value is a ' . gettype($line) . ', not a string');
+                    $bad = true;
+                    break;
+                }
+            }
+            if ($bad || $values === []) {
+                continue;
+            }
+
+            // Build the header (or headers, when the value was a list) in a bag
+            // of its own first. `addHeader()` picks the class the name calls
+            // for, so a Message-ID becomes an identification header rather than
+            // failing as loose text, and a name that will not take this value —
+            // or a repeat of a name that has to be unique — throws here, where
+            // nothing has been changed yet.
+            $staged = new Headers();
+            try {
+                foreach ($values as $line) {
+                    $staged->addHeader($name, (string) $line);
+                }
+            } catch (\Throwable $e) {
+                $this->logHeaderSkipped($name, $e->getMessage());
+                continue;
+            }
+
+            // Replace rather than append. Symfony refuses a second Message-ID or
+            // Subject outright, and a second List-Unsubscribe is worse than
+            // refused: it goes out, and clients pick whichever one they like.
+            $bag->remove($name);
+            foreach ($staged->all($name) as $header) {
+                $bag->add($header);
+            }
+        }
+
+        return $message;
+    }
+
+    /**
+     * Say in both logs that a header was dropped.
+     *
+     * Loudly, and in both places, for the same reason a failed Twig render is:
+     * a header that silently did not go out is close to impossible to work back
+     * from when the only evidence is mail landing in spam a week later.
+     *
+     * @param  mixed  $name
+     * @param  string  $reason
+     * @return void
+     */
+    protected function logHeaderSkipped($name, string $reason): void
+    {
+        $label = is_string($name) || is_numeric($name) ? (string) $name : gettype($name);
+        $report = sprintf('Skipped the "%s" email header: %s', $label, $reason);
+
+        $this->log->warning($report);
+        Grav::instance()['log']->warning('plugin-email: ' . $report);
     }
 
     /**
@@ -661,21 +934,69 @@ class Email
     }
 
     /**
+     * The transport for an engine.
+     *
+     * With no engine named it builds the one this site is configured with,
+     * which is what it has always done and what {@see initMailer()} still asks
+     * for. Naming one is how {@see buildMailerFor()} gets a mailer for a
+     * provider that is not the configured one, and it changes nothing about the
+     * configured path: same switch, same `onEmailTransportDsn` event, same
+     * `Transport::fromDsn()`.
+     *
+     * @param  string|null  $engine
      * @return TransportInterface
      */
-    protected static function getTransport(): Transport\TransportInterface
+    protected static function getTransport(?string $engine = null): Transport\TransportInterface
     {
         /** @var Config $config */
         $config = Grav::instance()['config'];
-        $engine = $config->get('plugins.email.mailer.engine');
-        $dsn = 'null://default';
+        $engine = $engine !== null && trim($engine) !== ''
+            ? trim($engine)
+            : $config->get('plugins.email.mailer.engine');
+        $dsn = static::dsnForEngine((string)$engine, (array)$config->get('plugins.email.mailer'));
 
+        // An engine this plugin does not ship is a transport plugin's, and it
+        // names its own DSN — or hands back a whole transport object, which is
+        // how a plugin using a Symfony bridge registers one.
+        if ($dsn === null) {
+            $dsn = 'null://default';
 
-        // Create the Transport and initialize it.
+            $e = new Event(['engine' => $engine, ]);
+            Grav::instance()->fireEvent('onEmailTransportDsn', $e);
+            if (isset($e['dsn'])) {
+                $dsn = $e['dsn'];
+            }
+        }
+
+        if ($dsn instanceof TransportInterface) {
+            $transport = $dsn;
+        } else {
+           $transport = Transport::fromDsn($dsn) ;
+        }
+
+        return $transport;
+    }
+
+    /**
+     * The DSN for one of the engines this plugin ships, or null for one it
+     * does not.
+     *
+     * Lifted out of {@see getTransport()} unchanged, line for line, so that the
+     * one part of building a transport that is pure arithmetic on the config
+     * can be read and tested without a booted Grav. Null means "not mine", and
+     * is what sends `getTransport()` to `onEmailTransportDsn` to ask the
+     * plugins.
+     *
+     * @param  string  $engine
+     * @param  array   $mailer  the `plugins.email.mailer` config block
+     * @return string|null
+     */
+    protected static function dsnForEngine(string $engine, array $mailer): ?string
+    {
         switch ($engine) {
             case 'smtps':
             case 'smtp':
-                $options = $config->get('plugins.email.mailer.smtp');
+                $options = $mailer['smtp'] ?? [];
                 $dsn = $engine . '://';
                 $auth = '';
 
@@ -700,34 +1021,22 @@ class Email
                 if (isset($options['options'])) {
                     $dsn .= '?' . http_build_query($options['options']);
                 }
-                break;
+
+                return $dsn;
             case 'mail':
             case 'native':
-                $dsn = 'native://default';
-                break;
+                return 'native://default';
             case 'sendmail':
                 $dsn = 'sendmail://default';
-                $bin = $config->get('plugins.email.mailer.sendmail.bin');
+                $bin = $mailer['sendmail']['bin'] ?? null;
                 if (isset($bin)) {
                     $dsn .= '?command=' . urlencode($bin);
                 }
-                break;
-            default:
-                $e = new Event(['engine' => $engine, ]);
-                Grav::instance()->fireEvent('onEmailTransportDsn', $e);
-                if (isset($e['dsn'])) {
-                    $dsn = $e['dsn'];
-                }
-                break;
+
+                return $dsn;
         }
 
-        if ($dsn instanceof TransportInterface) {
-            $transport = $dsn;
-        } else {
-           $transport = Transport::fromDsn($dsn) ;
-        }
-
-        return $transport;
+        return null;
     }
 
     /**

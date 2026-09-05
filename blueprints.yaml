@@ -1,7 +1,7 @@
 name: Email
 slug: email
 type: plugin
-version: 5.0.8
+version: 5.1.0
 testing: false
 description: Enables the emailing system for Grav
 icon: envelope
@@ -172,3 +172,16 @@ form:
         0: PLUGIN_ADMIN.DISABLED
       validate:
         type: bool
+
+    providers_section:
+      type: section
+      title: PLUGIN_EMAIL.PROVIDERS_SECTION
+      underline: true
+      text: PLUGIN_EMAIL.PROVIDERS_SECTION_DESC
+
+    providers.send_header:
+      type: text
+      size: medium
+      label: PLUGIN_EMAIL.SEND_HEADER
+      placeholder: 'X-Grav-Send-Id'
+      help: PLUGIN_EMAIL.SEND_HEADER_HELP

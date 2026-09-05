@@ -372,6 +372,46 @@ To have more control over your generated email, you may also use the following a
 * `reply_to`: Set one or more addresses that should be used to reply to the message.
 * `cc` _(Carbon copy)_: Add one or more addresses to the delivery list. Many email clients will mark email in one's inbox differently depending on whether they are in the `To:` or `Cc:` list.
 * `bcc` _(Blind carbon copy)_: Add one or more addresses to the delivery list that should (usually) not be listed in the message data, remaining invisible to other recipients.
+* `tags`: One or more strings the API-based sending services (Postmark, Mailgun, SendGrid, Mailjet and friends) group and report on. Ignored by plain SMTP.
+* `metadata`: A map of name to string value that those same services carry alongside the message and hand back on their webhooks.
+* `headers`: A map of header name to value, written onto the message itself. See below.
+
+### Custom headers
+
+`headers` puts headers on the message that this plugin has no parameter of its own for. It takes a map of header name to value:
+
+```yaml
+form:
+  name: newsletter
+  process:
+    email:
+      subject: 'This month at Example'
+      body: '{% include "forms/data.html.twig" %}'
+      headers:
+        List-Unsubscribe: '<mailto:leave@example.com>, <https://example.com/newsletter/u/{{ form.value.token }}>'
+        List-Unsubscribe-Post: 'List-Unsubscribe=One-Click'
+        Precedence: 'bulk'
+```
+
+That pair is the reason the parameter exists. Together they are RFC 8058 one-click unsubscribe, which is what puts the unsubscribe button next to your name in Gmail and Outlook, and bulk senders are now expected to have it. Without a button to press, the thing people reach for instead is the spam button, which costs you every other message you send.
+
+A few details worth knowing:
+
+* Values are rendered as Twig with the same variables as every other email parameter, so a per-recipient token can be built inline as above.
+* Setting a header that is already on the message replaces it rather than adding a second one.
+* A value may be a list, which writes the header once per entry. Only headers that are allowed to repeat will take that; `Subject` or `Message-ID` will not.
+* Headers are applied last, after the addresses, the subject, the tags and the metadata, so a header you set by name is the one that goes out.
+* A name that is not a valid header name, or a value the header in question will not take, is skipped and written to `logs/email.log` and to Grav's own log. The rest of the email still goes.
+
+Plugins building a message in PHP can pass the same thing to `buildMessage()`, or hand a list of headers to `applyHeaders()` on a message built with `message()`. A plugin that has to work on older releases too can ask first rather than comparing version numbers:
+
+```php
+$email = $this->grav['Email'];
+
+if (method_exists($email, 'supportsParameter') && $email::supportsParameter('headers')) {
+    $email->applyHeaders($message, ['List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click']);
+}
+```
 
 ### Specifying email addresses
 
