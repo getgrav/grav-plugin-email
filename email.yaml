@@ -13,3 +13,5 @@ mailer:
     bin: '/usr/sbin/sendmail -bs'
 content_type: text/html
 debug: false
+providers:
+  send_header: ''

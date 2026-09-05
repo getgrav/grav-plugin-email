@@ -59,7 +59,7 @@ new Capabilities(
     customHeaders: true,        // an X- header set on the message reaches the wire
     unsubscribeHeaders: true,   // List-Unsubscribe and List-Unsubscribe-Post survive
     echoesHeaders: true,        // the provider hands a registered custom header back in its webhooks
-    echoNote: 'Add X-KahunaCart-Send to the webhook\'s own header list, or press Set up.',
+    echoNote: 'Add the send id header to the webhook\'s own header list, or press Set up.',
 );
 ```
 
@@ -78,7 +78,7 @@ interface DeliveryReports
     public function verificationKeys(): array;  // ['signing_key'] — config keys under your own plugin's config
     public function verify(WebhookRequest $request, array $config): Verdict;
     public function parse(WebhookRequest $request): Payload;
-    public function sendHeader(): string;       // the header the store stamps its send id into
+    public function sendHeader(): string;       // SendHeader::name(), all but always
 }
 ```
 
@@ -89,6 +89,38 @@ Three rules, and they are not style preferences — each one is a real failure t
 **Never throw from `parse()`.** Truncated JSON, an XML error page from somebody's proxy, an empty body, a documented field that turned out to be a list — all of them are `Payload::unreadable('what went wrong')`. The caller logs the first few hundred bytes and answers 200 anyway, because every one of these providers treats a 4xx as a reason to retry for days and some treat it as a reason to drop the event outright. `parse()` runs on a public address anybody can post to.
 
 **An unrecognised event is skipped, not refused.** Every provider sends more event types than any store acts on — `processed`, `deferred`, `unsubscribed`, `delivery_delayed`. A merchant who ticked every box in your dashboard should get a 200 and a quiet log line, not a refusal. Skip it and carry on with the rest of the batch; `Payload::nothing('an event type this store does not act on')` when the whole batch was skippable.
+
+#### `sendHeader()` answers `SendHeader::name()`
+
+Do not hard-code a name here, and do not invent one of your own. `Grav\Plugin\Email\Providers\SendHeader::name()` is the header a store stamps its send id into, it is `X-Grav-Send-Id` unless the site says otherwise, and the whole point of it living in one place is that the end that writes the header and the end that reads it cannot disagree about it.
+
+```php
+public function sendHeader(): string
+{
+    return SendHeader::name();
+}
+```
+
+A site changes it with `providers.send_header` in the Email plugin's own configuration, and an add-on that decides at runtime calls `SendHeader::override()`. Either way your provider answers the same string as everything else on the site, and a screen that prints "add this header to your webhook" prints the one that is actually being sent.
+
+There is exactly one reason to answer anything else, and it is Postmark: it echoes no headers on any webhook and hands back `Metadata` instead, so the header that has to go on the message is `SendHeader::metadataHeader()` — the same name under the `X-PM-Metadata-` prefix that is the only way to put something into Postmark's metadata over SMTP. That is a different spelling of the same name rather than a name of your own, and it is still derived from `SendHeader::name()`.
+
+Read it back with the same class, whichever place your provider decided to put echoed headers:
+
+```php
+SendHeader::idIn($event['user-variables'] ?? null);   // a map keyed by header name
+SendHeader::idInList($mail['headers'] ?? null);       // a {name, value} list
+SendHeader::idInTags($mail['tags'] ?? null);          // SES message tags, {name: [value]}
+SendHeader::idFrom($row['X-Grav-Send-Id'] ?? null);   // one value you already found
+```
+
+All of them answer a string or null, both spellings of the name are tried, and nothing throws. `Event::$sendId` is a string because this plugin has no idea what a store's send id looks like: a store keeping row ids turns it into one at its own end, and a store using a UUID keeps a UUID.
+
+#### A message the provider refused to send
+
+`Event::DROPPED` is the sixth word and it means the provider never handed the message to a receiving server — the address was on the provider's own suppression list, or it decided the message was spam or carried a virus before it left. It is not a bounce: nothing bounced, because nothing was sent.
+
+Report it wherever your provider has one. SMTP2GO's `reject`, SendGrid's `dropped`, SES's `Reject`, Resend's `email.failed` and `email.suppressed`, and Mailgun's `failed` with a `suppress-` reason are all this. What a store does with it is the store's business — most treat it as permanent — but it is a different fact from a bounce and reporting it as a bounce loses that.
 
 `verify()` answers a `Verdict`: `verified()` when the signature checked out, `unsigned()` when your provider signs nothing and the URL secret was the whole check, `refused('why')` when it did not, and `confirm($url)` when this request was the provider asking you to fetch a URL to prove the address is yours — Amazon's SNS subscriptions begin that way. Name the URL and check it is really the provider's own host; the caller makes the request, because a provider is a pure function of a request and fetching a URL is not.
 
@@ -126,6 +158,19 @@ The selector itself is deliberately not here. Selectors are per domain and per a
 ### A transport with no delivery API
 
 Do nothing. Do not register a provider that answers null from everything; that is worse than registering none, because a store then draws a card for a provider that can say nothing about anything. Leave `onEmailProviders` unimplemented and the store will say the transport cannot report deliveries, which is true and is the more useful sentence.
+
+## The send id header
+
+One name, owned by this plugin, answered by `SendHeader::name()`, and used by both ends.
+
+It is `X-Grav-Send-Id`. It used to be `X-KahunaCart-Send`, because KahunaCart's newsletter add-on was the only thing that had ever stamped one, and a Team Grav transport plugin carrying another product's name in a string a merchant reads is not something to keep.
+
+Two ways to change it, and a store needs neither in the ordinary case:
+
+- `providers.send_header` in the Email plugin's configuration, which is what a merchant has. It is worth setting only when the site's mail already carries a header of that name, or when the provider account is shared with something else that reads one.
+- `SendHeader::override('X-Something-Else')`, which is what code has. It wins over the config and lasts for the request, so an add-on that decides the name itself never has to write to anybody's config file.
+
+Whatever it ends up as, it is the same string in three places that would otherwise drift: the header an add-on puts on the message, the name a provider's setup registers with the provider, and the name every `parse()` looks for on the way back. A provider that only echoes a header you have registered with it — SMTP2GO is one — has to have its webhook set up again after a change, because a header that is not registered is a header that is never echoed. Say so where a merchant will read it.
 
 ## Where the credentials live
 
