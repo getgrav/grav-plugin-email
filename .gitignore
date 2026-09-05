@@ -1,0 +1,6 @@
+.DS_Store
+tests/vendor/
+
+# phpunit.xml's cacheDirectory is relative to the config file, so this lands at
+# the repo root when the suite runs from there, which is the documented command
+.phpunit.cache/

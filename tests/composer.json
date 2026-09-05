@@ -1,0 +1,19 @@
+{
+    "name": "getgrav/grav-plugin-email-tests",
+    "description": "Test harness for the Email plugin. Kept out of the plugin's own composer.json so that the vendor directory shipped with the plugin stays free of development packages.",
+    "type": "project",
+    "license": "MIT",
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Grav\\Plugin\\Email\\Tests\\": "./"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "platform-check": false,
+        "vendor-dir": "vendor"
+    }
+}
