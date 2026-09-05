@@ -120,7 +120,25 @@ All of them answer a string or null, both spellings of the name are tried, and n
 
 `Event::DROPPED` is the sixth word and it means the provider never handed the message to a receiving server — the address was on the provider's own suppression list, or it decided the message was spam or carried a virus before it left. It is not a bounce: nothing bounced, because nothing was sent.
 
-Report it wherever your provider has one. SMTP2GO's `reject`, SendGrid's `dropped`, SES's `Reject`, Resend's `email.failed` and `email.suppressed`, and Mailgun's `failed` with a `suppress-` reason are all this. What a store does with it is the store's business — most treat it as permanent — but it is a different fact from a bounce and reporting it as a bounce loses that.
+Report it wherever your provider has one. SMTP2GO's `reject`, SendGrid's `dropped`, SES's `Reject`, Resend's `email.failed` and `email.suppressed`, and Mailgun's `failed` with a `suppress-` reason are all this. It is a different fact from a bounce and reporting it as a bounce loses that.
+
+**Set `hard` on every drop, because a refused message is not a refused address.** This is the second meaning of `Event::$hard` and it decides whether somebody comes off a mailing list:
+
+- `hard = true` — the provider refused **the address**. It is on that provider's suppression list, bounced there before, complained there before, unsubscribed there, or is not a deliverable address at all. A store may treat that as permanent.
+- `hard = false` — the provider refused **this message**. A daily quota, a virus scan, content it did not like, a header it would not write. The address is fine, and a store that suppressed on it would take a customer off its list for something the customer did not do.
+
+`null` reads as `false`. `Event::isRefusedAddress()` is the question a suppression list should ask, and it is true only for a drop whose `hard` is true.
+
+Where the provider gives you a reason, match on the words rather than on the whole sentence, case-insensitively, and let anything you cannot place be `false` — a store losing a subscriber it should have kept is a worse mistake than one queueing a message that will be refused again. What each provider answers today:
+
+| Provider | The address (`true`) | The message (`false`) |
+|---|---|---|
+| SMTP2GO `reject` | a reason naming the suppression list, a previous bounce, a complaint or an unsubscribe | an unverified sender, and anything else |
+| SES `Reject` | never | always — Amazon's `Reject` is content, "Bad content" or a virus |
+| SendGrid `dropped` | `Unsubscribed Address`, `Bounced Address`, `Spam Reporting Address`, `Invalid` | `Invalid SMTPAPI header`, `Spam Content`, `Recipient List over Package Quota` |
+| Mailgun `failed` with a `suppress-` reason | always — that is what the prefix means | never |
+| Resend | `email.suppressed` | `email.failed` |
+| Postmark, MailerSend | neither: they report no drop at all | |
 
 `verify()` answers a `Verdict`: `verified()` when the signature checked out, `unsigned()` when your provider signs nothing and the URL secret was the whole check, `refused('why')` when it did not, and `confirm($url)` when this request was the provider asking you to fetch a URL to prove the address is yours — Amazon's SNS subscriptions begin that way. Name the URL and check it is really the provider's own host; the caller makes the request, because a provider is a pure function of a request and fetching a URL is not.
 

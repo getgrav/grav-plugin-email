@@ -78,6 +78,25 @@ final class EventTest extends TestCase
         $this->assertFalse(Event::of(Event::DROPPED, hard: true)->isHardBounce());
     }
 
+    public function testARefusedAddressIsOnlyADropTheProviderCalledPermanent(): void
+    {
+        // The provider refused the address: it is on their suppression list,
+        // or it bounced or complained there before.
+        $this->assertTrue(Event::of(Event::DROPPED, hard: true)->isRefusedAddress());
+
+        // The provider refused this message: a quota, a virus, bad content.
+        // The address is fine and nobody should come off a list for it.
+        $this->assertFalse(Event::of(Event::DROPPED, hard: false)->isRefusedAddress());
+
+        // A provider that would not say reads as the message, not the address.
+        $this->assertFalse(Event::of(Event::DROPPED, hard: null)->isRefusedAddress());
+
+        // A bounce is a bounce however permanent it was; the two questions are
+        // asked separately because a store may answer them differently.
+        $this->assertFalse(Event::of(Event::BOUNCED, hard: true)->isRefusedAddress());
+        $this->assertFalse(Event::of(Event::COMPLAINED, hard: true)->isRefusedAddress());
+    }
+
     public function testATimestampIsOnlyStampedOnAnEventThatHadNone(): void
     {
         $this->assertSame(1757030400, Event::of(Event::OPENED)->at(1757030400)->at);

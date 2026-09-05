@@ -22,10 +22,12 @@ namespace Grav\Plugin\Email\Providers;
  *   An event whose type a provider cannot name is not an event: it is skipped,
  *   not refused.
  * - **`hard`** is true for a permanent failure, false for a temporary one, and
- *   null for anything that is not a bounce — and also for a bounce whose
+ *   null for anything that is not a bounce or a drop — and also for a bounce whose
  *   provider would not say. Amazon's `Undetermined` lands on null, and a null
  *   should be read as soft, because suppressing an address on a maybe is how a
- *   store loses a customer who was behind a full mailbox for an afternoon.
+ *   store loses a customer who was behind a full mailbox for an afternoon. On a
+ *   {@see DROPPED} it means something else, and the two meanings are set out
+ *   under "A refused message is not a refused address" below.
  * - **`email`** is the recipient. Several providers report a bounce with the
  *   address and nothing else, and that is still enough to suppress on.
  * - **`messageId`** is *our* `Message-ID`, angle brackets taken off, where the
@@ -44,6 +46,29 @@ namespace Grav\Plugin\Email\Providers;
  *   {@see DeliveryReports::sendHeader()}, where the provider echoes custom
  *   headers or metadata. This is the correlation path for every provider that
  *   mints its own message id and never repeats ours.
+ *
+ * ## A refused message is not a refused address
+ *
+ * `hard` has a second meaning on {@see DROPPED}, and it is the difference
+ * between a subscriber who is gone and a subscriber who happened to be on the
+ * list the morning the store ran out of quota.
+ *
+ * - **`hard === true`** — the provider refused **the address**. It is on that
+ *   provider's own suppression list: it bounced there, complained there,
+ *   unsubscribed there, or is not a deliverable address at all. A store may
+ *   treat that as permanent, because nothing sent to that address through this
+ *   transport is ever going to arrive.
+ * - **`hard === false` or `null`** — the provider refused **this message**. A
+ *   daily quota, a virus scan, content it did not like, a header it would not
+ *   write. The address is fine and the next message to it may well go out. A
+ *   store that suppressed on this would take a customer off its list for
+ *   something the customer did not do.
+ *
+ * A provider that reports a drop says which one it is: SendGrid's
+ * `Unsubscribed Address` is the address and its `Spam Content` is the message,
+ * Mailgun's `suppress-*` is always the address, and Amazon's `Reject` is always
+ * the message. {@see isRefusedAddress()} is the question a suppression list
+ * should be asking.
  */
 final class Event
 {
@@ -58,6 +83,8 @@ final class Event
      * suppression list, or it decided the message was spam before it left.
      * Distinct from a bounce because nothing was ever handed to a receiving
      * server, and a store may reasonably treat it differently.
+     *
+     * `hard` says which of the two refusals it was; see the class note.
      */
     public const DROPPED = 'dropped';
 
@@ -128,6 +155,19 @@ final class Event
     public function isHardBounce(): bool
     {
         return $this->type === self::BOUNCED && $this->hard === true;
+    }
+
+    /**
+     * A drop where the provider refused the address rather than the message.
+     *
+     * True only for a {@see DROPPED} whose `hard` is true. Everything else is
+     * false, including a drop the provider would not classify — a store should
+     * not take somebody off its list on a maybe, and a provider that knows the
+     * address is finished says so.
+     */
+    public function isRefusedAddress(): bool
+    {
+        return $this->type === self::DROPPED && $this->hard === true;
     }
 
     /** The same event with a moment on it, for a payload that carried none. */
