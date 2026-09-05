@@ -31,6 +31,10 @@ namespace Grav\Plugin\Email\Providers;
  *   never echoes a header at all and hands back metadata instead. `echoNote`
  *   is where that is said, in plain words, for a screen to show beside the
  *   answer.
+ * - **`signsWebhooks`** — optional, for the one case where "has a verification
+ *   key" and "signs" disagree: SES signs every notification with a published
+ *   certificate and asks the merchant for nothing, so its answer is true with
+ *   no key. Left null, a screen derives it from the keys.
  */
 final class Capabilities
 {
@@ -42,6 +46,14 @@ final class Capabilities
         /** The provider echoes a registered custom header back in its webhooks, and what must be done for that. */
         public readonly bool $echoesHeaders,
         public readonly string $echoNote = '',
+        /**
+         * Whether the provider signs its webhooks, for a screen that says so.
+         * Null means "work it out from DeliveryReports::verificationKeys()":
+         * a provider with a key signs, one with none does not. Set it only
+         * where that rule is wrong, as for SES, which signs every message with
+         * a certificate it publishes and needs no key from the merchant.
+         */
+        public readonly ?bool $signsWebhooks = null,
     ) {
     }
 }

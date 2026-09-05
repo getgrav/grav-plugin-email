@@ -65,7 +65,7 @@ new Capabilities(
 
 A store sets `List-Unsubscribe`, an API transport turns the message into a JSON body and drops every header it does not recognise, the mail goes out looking perfectly fine, and a year later Gmail is filing it as spam because a bulk sender with no unsubscribe button is what a spammer looks like. Nothing on any screen would say so. Answering `unsubscribeHeaders: false` honestly is what lets a screen say so.
 
-`echoNote` is where you say what a merchant has to do for `echoesHeaders` to be true — register the header in a dashboard, or press your setup button — in plain words, because "configure header passthrough" is not instructions.
+`signsWebhooks` is optional and almost always left out: a screen works out whether you sign from `verificationKeys()`, and only a provider that signs with a published certificate and asks the merchant for no key, like SES, needs to say `signsWebhooks: true` itself. `echoNote` is where you say what a merchant has to do for `echoesHeaders` to be true — register the header in a dashboard, or press your setup button — in plain words, because "configure header passthrough" is not instructions.
 
 ### `reports()`
 
