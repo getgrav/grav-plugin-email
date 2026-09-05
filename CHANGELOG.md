@@ -1,5 +1,5 @@
 # v5.1.0
-## 09/04/2026
+## 09/05/2026
 
 1. [](#new)
     * Email actions and plugins can now set custom headers on a message with a `headers` parameter, a map of header name to value, applied after everything else. The pair this was added for is `List-Unsubscribe` and `List-Unsubscribe-Post`, which together are RFC 8058 one-click unsubscribe: the unsubscribe button next to the sender name in Gmail and Outlook, and the thing a bulk sender is now expected to have. Setting a header that is already there replaces it, a value may be a list for a header that is allowed to repeat, and a name or value that cannot be written is skipped and logged rather than failing the whole send. Plugins building their own message can pass the same list to `applyHeaders()`, and can ask `Email::supportsParameter('headers')` first instead of comparing version numbers
