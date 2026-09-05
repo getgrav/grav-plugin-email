@@ -63,6 +63,19 @@ class Email
      */
     private const HEADER_NAME_PATTERN = '/^[!-9;-~]+$/';
 
+    /**
+     * The provider contract under `classes/Providers/`, asked for by name
+     * through {@see supportsFeature()}.
+     */
+    public const FEATURE_PROVIDERS = 'providers';
+
+    /**
+     * The providers collected on `onEmailProviders`, once per request.
+     *
+     * @var Providers\ProviderRegistry|null
+     */
+    protected static $providers;
+
     /** @var Mailer */
     protected $mailer;
 
@@ -122,6 +135,112 @@ class Email
     public static function supportsParameter(string $name): bool
     {
         return in_array($name, self::HEADER_PARAMS, true);
+    }
+
+    /**
+     * Does this copy of the plugin have the given extension point?
+     *
+     * The same question as {@see supportsParameter()} and asked the same way,
+     * about a whole feature rather than one message parameter. `providers` is
+     * the provider contract under `classes/Providers/`: the registry, the
+     * `onEmailProviders` event and the three lookups below.
+     *
+     *     if (method_exists($email, 'supportsFeature') && $email::supportsFeature('providers')) {
+     *         $provider = $email::providerFor($engine);
+     *     } else {
+     *         // whatever you were doing before
+     *     }
+     *
+     * The PHP check is not decoration. The provider classes use readonly
+     * promoted properties, which is PHP 8.1, while this plugin still installs
+     * on the 7.3 that Grav 1.7 allows. On such a site the honest answer to
+     * "does this copy have providers" is no, and answering it here means a
+     * caller never reaches a file it cannot parse.
+     *
+     * @param  string  $name
+     * @return bool
+     */
+    public static function supportsFeature(string $name): bool
+    {
+        if ($name === self::FEATURE_PROVIDERS) {
+            return PHP_VERSION_ID >= 80100;
+        }
+
+        return false;
+    }
+
+    /**
+     * Every provider a transport plugin registered, collected once.
+     *
+     * `onEmailProviders` is fired the first time this is asked and the answer
+     * is kept for the rest of the request: the plugins that listen build a
+     * value object each and the event is not free, and every screen that asks
+     * this asks it several times.
+     *
+     * @return Providers\ProviderRegistry
+     */
+    public static function providers(): Providers\ProviderRegistry
+    {
+        if (self::$providers !== null) {
+            return self::$providers;
+        }
+
+        $registry = new Providers\ProviderRegistry();
+        self::$providers = $registry;
+
+        Grav::instance()->fireEvent('onEmailProviders', new Event(['providers' => $registry]));
+
+        return $registry;
+    }
+
+    /**
+     * The provider that answers for an engine, or null when no plugin
+     * registered one for it.
+     *
+     * Null is a normal answer with a plain meaning: this transport cannot
+     * report deliveries. Say that rather than showing an address nothing will
+     * ever post to.
+     *
+     * @param  string  $engine
+     * @return Providers\Provider|null
+     */
+    public static function providerFor(string $engine): ?Providers\Provider
+    {
+        return self::providers()->forEngine($engine);
+    }
+
+    /**
+     * The provider with this key, or null.
+     *
+     * @param  string  $key
+     * @return Providers\Provider|null
+     */
+    public static function providerByKey(string $key): ?Providers\Provider
+    {
+        return self::providers()->byKey($key);
+    }
+
+    /**
+     * A mailer for a named engine, rather than for the one this site is
+     * configured with.
+     *
+     * The same transport building the configured mailer uses — the same switch,
+     * the same `onEmailTransportDsn` event, the same Symfony `Transport::fromDsn()`
+     * — with the engine passed in instead of read from the config. Everything
+     * else about how the transport is built is untouched, which is the point:
+     * the configured engine has to keep behaving exactly as it did.
+     *
+     * Nothing sends through this yet. It exists so that a store which one day
+     * wants to send some of its mail through a second provider has somewhere to
+     * ask for that mailer, without that day being the day the transport builder
+     * gets rewritten.
+     *
+     * @param  string  $engine
+     * @return Mailer
+     */
+    public static function buildMailerFor(string $engine): Mailer
+    {
+        return new Mailer(static::getTransport($engine));
     }
 
     /**
@@ -815,21 +934,69 @@ class Email
     }
 
     /**
+     * The transport for an engine.
+     *
+     * With no engine named it builds the one this site is configured with,
+     * which is what it has always done and what {@see initMailer()} still asks
+     * for. Naming one is how {@see buildMailerFor()} gets a mailer for a
+     * provider that is not the configured one, and it changes nothing about the
+     * configured path: same switch, same `onEmailTransportDsn` event, same
+     * `Transport::fromDsn()`.
+     *
+     * @param  string|null  $engine
      * @return TransportInterface
      */
-    protected static function getTransport(): Transport\TransportInterface
+    protected static function getTransport(?string $engine = null): Transport\TransportInterface
     {
         /** @var Config $config */
         $config = Grav::instance()['config'];
-        $engine = $config->get('plugins.email.mailer.engine');
-        $dsn = 'null://default';
+        $engine = $engine !== null && trim($engine) !== ''
+            ? trim($engine)
+            : $config->get('plugins.email.mailer.engine');
+        $dsn = static::dsnForEngine((string)$engine, (array)$config->get('plugins.email.mailer'));
 
+        // An engine this plugin does not ship is a transport plugin's, and it
+        // names its own DSN — or hands back a whole transport object, which is
+        // how a plugin using a Symfony bridge registers one.
+        if ($dsn === null) {
+            $dsn = 'null://default';
 
-        // Create the Transport and initialize it.
+            $e = new Event(['engine' => $engine, ]);
+            Grav::instance()->fireEvent('onEmailTransportDsn', $e);
+            if (isset($e['dsn'])) {
+                $dsn = $e['dsn'];
+            }
+        }
+
+        if ($dsn instanceof TransportInterface) {
+            $transport = $dsn;
+        } else {
+           $transport = Transport::fromDsn($dsn) ;
+        }
+
+        return $transport;
+    }
+
+    /**
+     * The DSN for one of the engines this plugin ships, or null for one it
+     * does not.
+     *
+     * Lifted out of {@see getTransport()} unchanged, line for line, so that the
+     * one part of building a transport that is pure arithmetic on the config
+     * can be read and tested without a booted Grav. Null means "not mine", and
+     * is what sends `getTransport()` to `onEmailTransportDsn` to ask the
+     * plugins.
+     *
+     * @param  string  $engine
+     * @param  array   $mailer  the `plugins.email.mailer` config block
+     * @return string|null
+     */
+    protected static function dsnForEngine(string $engine, array $mailer): ?string
+    {
         switch ($engine) {
             case 'smtps':
             case 'smtp':
-                $options = $config->get('plugins.email.mailer.smtp');
+                $options = $mailer['smtp'] ?? [];
                 $dsn = $engine . '://';
                 $auth = '';
 
@@ -854,34 +1021,22 @@ class Email
                 if (isset($options['options'])) {
                     $dsn .= '?' . http_build_query($options['options']);
                 }
-                break;
+
+                return $dsn;
             case 'mail':
             case 'native':
-                $dsn = 'native://default';
-                break;
+                return 'native://default';
             case 'sendmail':
                 $dsn = 'sendmail://default';
-                $bin = $config->get('plugins.email.mailer.sendmail.bin');
+                $bin = $mailer['sendmail']['bin'] ?? null;
                 if (isset($bin)) {
                     $dsn .= '?command=' . urlencode($bin);
                 }
-                break;
-            default:
-                $e = new Event(['engine' => $engine, ]);
-                Grav::instance()->fireEvent('onEmailTransportDsn', $e);
-                if (isset($e['dsn'])) {
-                    $dsn = $e['dsn'];
-                }
-                break;
+
+                return $dsn;
         }
 
-        if ($dsn instanceof TransportInterface) {
-            $transport = $dsn;
-        } else {
-           $transport = Transport::fromDsn($dsn) ;
-        }
-
-        return $transport;
+        return null;
     }
 
     /**
