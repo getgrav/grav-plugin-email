@@ -1137,9 +1137,32 @@ class Email
             return null;
         }
 
-        $ours = trim((string)$sent->getOriginalMessage()->getHeaders()->getHeaderBody('Message-ID'));
+        // `Message-ID` is an identification header, and Symfony answers those
+        // with a *list* of ids rather than a string — so this was casting an
+        // array and comparing against the word "Array", which no id has ever
+        // equalled. The guard has therefore never once fired, and every
+        // transport that answers its send with the message's own id has been
+        // recording that id as the provider's.
+        $ours = $sent->getOriginalMessage()->getHeaders()->getHeaderBody('Message-ID');
+        $ours = \is_array($ours) ? (string)($ours[0] ?? '') : (string)$ours;
 
-        return $id === trim($ours, '<>') ? null : $id;
+        // Compared without the angle brackets, because whether they are there
+        // is the transport's habit rather than a difference in the id. Mailgun
+        // answers its send with `<the-message-id@domain>` — the same id the
+        // message left with, in its wire form — and only one side of this was
+        // being unwrapped, so it read as a new id from the provider and got
+        // stored as one. What that produced was a `provider_message_id` column
+        // holding the store's own Message-ID, which then matched no event: the
+        // id Mailgun names in a webhook is a different string again.
+        return self::bare($id) === self::bare($ours) ? null : $id;
+    }
+
+    /**
+     * A message id without the angle brackets a header carries it in.
+     */
+    private static function bare(string $id): string
+    {
+        return trim(trim($id), '<>');
     }
 
     /**
