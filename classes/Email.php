@@ -991,19 +991,38 @@ class Email
             $dsn = 'null://default';
 
             $e = new Event(['engine' => $engine, ]);
-            Grav::instance()->fireEvent('onEmailTransportDsn', $e);
-            if (isset($e['dsn'])) {
-                $dsn = $e['dsn'];
+
+            // Everything from here to the transport is somebody else's code
+            // running on every request of the site, long before anything has
+            // decided whether this request sends mail: a provider plugin
+            // naming its DSN, and then Symfony parsing it. Either can throw on
+            // a store that has saved its settings form with one field still
+            // empty — and a throw here is not a failed send, it is a white
+            // screen on every page including the admin, which is where the
+            // field would have been filled in. See UnusableTransport.
+            try {
+                Grav::instance()->fireEvent('onEmailTransportDsn', $e);
+                if (isset($e['dsn'])) {
+                    $dsn = $e['dsn'];
+                }
+
+                return $dsn instanceof TransportInterface ? $dsn : Transport::fromDsn($dsn);
+            } catch (\Throwable $error) {
+                $reason = sprintf('The %s transport could not be set up: %s', $engine, $error->getMessage());
+                Grav::instance()['log']->error('email: ' . $reason);
+
+                return new UnusableTransport($reason);
             }
         }
 
-        if ($dsn instanceof TransportInterface) {
-            $transport = $dsn;
-        } else {
-           $transport = Transport::fromDsn($dsn) ;
-        }
+        try {
+            return Transport::fromDsn($dsn);
+        } catch (\Throwable $error) {
+            $reason = sprintf('The %s transport could not be set up: %s', $engine, $error->getMessage());
+            Grav::instance()['log']->error('email: ' . $reason);
 
-        return $transport;
+            return new UnusableTransport($reason);
+        }
     }
 
     /**
