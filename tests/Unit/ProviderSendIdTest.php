@@ -54,8 +54,68 @@ final class ProviderSendIdTest extends TestCase
         self::assertNull($this->idFor('   '));
     }
 
+    /**
+     * An SMTP send: the id is in the transcript, because Symfony throws away
+     * the line that carries it.
+     *
+     * `SmtpTransport` reads the server's answer to the message, checks the
+     * response code and discards it — but it also appends the whole
+     * conversation to the `SentMessage`, so the answer survives. On a
+     * provider's own relay that id is the provider's, and for MailerSend it is
+     * the only handle a store will ever get: their webhooks carry no headers,
+     * no metadata, and not the `Message-ID` either.
+     */
+    public function testTheIdTheServerQueuedTheMessageUnderIsReadOffTheTranscript(): void
+    {
+        $transcripts = [
+            // MailerSend's own relay.
+            "< 250 2.0.0 Ok\r\n> DATA\r\n< 354 End data\r\n< 250 Message queued as 68bf1ca9e0d2f\r\n"
+                => '68bf1ca9e0d2f',
+            // SMTP2GO and SendGrid both answer this way.
+            "< 250 Ok\r\n< 250 2.0.0 Ok: queued as 4hfXtY2Sbpz9vNQX\r\n" => '4hfXtY2Sbpz9vNQX',
+            // Exim names it differently.
+            "< 250 OK id=1x44gZ-000000006Ap-2AVp\r\n" => '1x44gZ-000000006Ap-2AVp',
+        ];
+
+        foreach ($transcripts as $debug => $expected) {
+            self::assertSame($expected, $this->idFor('', $debug));
+        }
+    }
+
+    /**
+     * A server that accepted the message without naming it answers null rather
+     * than something invented from the line.
+     */
+    public function testAnAcceptanceWithNoIdInItIsNoId(): void
+    {
+        self::assertNull($this->idFor('', "< 250 2.0.0 Ok\r\n"));
+        self::assertNull($this->idFor('', ''));
+    }
+
+    /**
+     * The earlier `250`s are answers about an address, not about the message,
+     * and one of them can carry an id-looking word.
+     */
+    public function testTheAnswerAboutTheMessageWinsOverTheAnswersAboutAddresses(): void
+    {
+        $debug = "> MAIL FROM:<shop@example.com>\r\n< 250 2.1.0 Ok id=not-the-one\r\n"
+            . "> RCPT TO:<somebody@example.com>\r\n< 250 2.1.5 Ok\r\n"
+            . "> DATA\r\n< 354 End data\r\n< 250 Message queued as the-real-one\r\n";
+
+        self::assertSame('the-real-one', $this->idFor('', $debug));
+    }
+
+    /** A transport that named an id of its own is not second-guessed. */
+    public function testATransportsOwnIdBeatsTheTranscript(): void
+    {
+        self::assertSame(
+            'from-the-api',
+            $this->idFor('from-the-api', "< 250 Message queued as from-the-relay\r\n")
+        );
+    }
+
     /** What `idOf()` makes of a transport that answered `$answered`. */
-    private function idFor(string $answered): ?string
+    private function idFor(string $answered, string $debug = ''): ?string
     {
         $message = (new MimeEmail())
             ->from('shop@example.com')
@@ -69,6 +129,9 @@ final class ProviderSendIdTest extends TestCase
             [new \Symfony\Component\Mime\Address('somebody@example.com')]
         ));
         $sent->setMessageId($answered);
+        if ($debug !== '') {
+            $sent->appendDebug($debug);
+        }
 
         $email = new class extends Email {
             public function __construct()

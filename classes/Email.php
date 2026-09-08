@@ -1134,7 +1134,12 @@ class Email
     {
         $id = trim((string)$sent->getMessageId());
         if ($id === '') {
-            return null;
+            // Nothing from the transport, which is every SMTP send: Symfony's
+            // `SmtpTransport` reads the server's answer to the message, checks
+            // the response code and drops the line. But it also appends the
+            // whole conversation to the `SentMessage`, so the answer is still
+            // here to be read. See queuedIdIn().
+            return self::queuedIdIn((string)$sent->getDebug());
         }
 
         // `Message-ID` is an identification header, and Symfony answers those
@@ -1163,6 +1168,68 @@ class Email
     private static function bare(string $id): string
     {
         return trim(trim($id), '<>');
+    }
+
+    /**
+     * The id the receiving server gave the message, out of the SMTP transcript.
+     *
+     * `250 Message queued as 68bf1c…` — the last thing a server says after the
+     * message body, and on a provider's own relay it is that provider's id for
+     * the message. MailerSend documents the id in this line as the same one
+     * their webhooks report events under, and since their webhooks carry no
+     * headers, no metadata and not the `Message-ID` either, it is the only
+     * handle a store on SMTP will ever get from them. SMTP2GO and SendGrid
+     * answer the same way in `queued as`, and an Exim relay in `id=`.
+     *
+     * On a plain relay that is not a provider — a store's own Postfix — the id
+     * belongs to that server and no webhook will ever name it. That costs
+     * nothing: the id is only ever used to look an event up by, and one nothing
+     * reports simply never matches.
+     *
+     * The final response only. Everything before it is the answer to `MAIL
+     * FROM` and each `RCPT TO`, which are about an address rather than about
+     * the message.
+     */
+    private static function queuedIdIn(string $debug): ?string
+    {
+        if ($debug === '') {
+            return null;
+        }
+
+        // Their own words, in the order servers use them.
+        $patterns = [
+            '/\bqueued as\s+([^\s<>]+)/i',
+            '/\bid=([^\s<>]+)/i',
+        ];
+
+        // Read from the end, because a transcript holds one line per command
+        // and the message's own answer is the last of them.
+        $lines = array_reverse(preg_split('/\r\n|\r|\n/', $debug) ?: []);
+
+        foreach ($lines as $line) {
+            // Symfony writes the transcript as a dialogue — `> ` for what was
+            // sent and `< ` for what came back — so the response code is not
+            // at the start of the line.
+            $line = ltrim($line, " \t<>");
+
+            if (!str_starts_with($line, '250')) {
+                continue;
+            }
+
+            foreach ($patterns as $pattern) {
+                if (preg_match($pattern, $line, $found) === 1) {
+                    $id = trim($found[1], " \t.,;");
+
+                    return $id === '' ? null : $id;
+                }
+            }
+
+            // A `250` with nothing nameable in it — "250 2.0.0 Ok" — is a
+            // server that accepted the message without giving it a name.
+            return null;
+        }
+
+        return null;
     }
 
     /**
