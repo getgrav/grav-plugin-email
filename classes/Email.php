@@ -329,9 +329,19 @@ class Email
         }
 
         if ($this->debug()) {
-            $log_msg = "Email sent to %s at %s -> %s\n%s";
+            $log_msg = "Email sent to %s at %s -> %s [provider id: %s]\n%s";
             $to = $this->jsonifyRecipients($message->getEmail()->getTo());
-            $message = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $this->message, $this->debug);
+            $message = sprintf(
+                $log_msg,
+                $to,
+                date('Y-m-d H:i:s'),
+                $this->message,
+                // What the provider called it, which is what a delivery webhook
+                // will name and therefore the first thing worth knowing when
+                // one cannot be matched to the message it is about.
+                $this->sendId ?? 'none',
+                $this->debug
+            );
             $this->log->info($message);
         }
 
