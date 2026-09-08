@@ -19,6 +19,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Header\MetadataHeader;
 use Symfony\Component\Mailer\Header\TagHeader;
 use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
@@ -86,6 +87,22 @@ class Email
 
     protected $message;
     protected $debug;
+
+    /**
+     * The provider's own id for the last message sent, or null.
+     *
+     * Every API transport answers one — Resend, Postmark, SES, SendGrid,
+     * Mailgun and MailerSend all call `SentMessage::setMessageId()` with
+     * whatever their API returned — and it is the same string that provider
+     * then names in its delivery webhooks. It was being collected and dropped,
+     * which left anything wanting to join an event back to a send relying on
+     * the sending domain's own `Message-ID` surviving the trip. It frequently
+     * does not: Resend runs on Amazon SES, SES mints its own on the way out,
+     * and the webhook reports that one. See getLastSendId().
+     *
+     * @var string|null
+     */
+    protected $sendId;
 
     public function __construct()
     {
@@ -279,8 +296,10 @@ class Email
             $status = 1;
             $this->message = '✅';
             $this->debug = $sent_msg->getDebug();
+            $this->sendId = $this->idOf($sent_msg);
         } catch (TransportExceptionInterface $e) {
             $status = 0;
+            $this->sendId = null;
             $this->message = '🛑 ' . $e->getMessage();
             $this->debug = $e->getDebug();
 
@@ -1055,6 +1074,43 @@ class Email
     public function getLastSendDebug(): ?string
     {
         return $this->debug;
+    }
+
+    /**
+     * The provider's own id for the last message sent, or null.
+     *
+     * Null on a failed send, on a transport that answers no id, and on SMTP,
+     * where the id belongs to the receiving server rather than to a provider's
+     * API. A caller storing this can join a delivery webhook to the message it
+     * is about without depending on the provider echoing a header or repeating
+     * the `Message-ID` it was given — neither of which every provider does.
+     *
+     * @return string|null
+     */
+    public function getLastSendId(): ?string
+    {
+        return $this->sendId;
+    }
+
+    /**
+     * The id off a SentMessage, where there is one worth keeping.
+     *
+     * Symfony's SMTP transports put the message's own `Message-ID` here, which
+     * the caller already knows and which is not what a webhook will name, so
+     * only an id that differs from the one on the message is an answer. An
+     * empty string is not an id either: a transport that sets one from a
+     * missing response field answers `''` rather than null.
+     */
+    protected function idOf(SentMessage $sent): ?string
+    {
+        $id = trim((string)$sent->getMessageId());
+        if ($id === '') {
+            return null;
+        }
+
+        $ours = trim((string)$sent->getOriginalMessage()->getHeaders()->getHeaderBody('Message-ID'));
+
+        return $id === trim($ours, '<>') ? null : $id;
     }
 
     /**

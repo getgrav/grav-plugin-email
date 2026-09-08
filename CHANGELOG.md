@@ -1,3 +1,9 @@
+# v5.2.0
+## 09/08/2026
+
+1. [](#new)
+    * **`getLastSendId()` answers the provider's own id for the message just sent.** Every API transport already hands one back — Symfony's Resend, Postmark, SES, SendGrid, Mailgun and MailerSend transports all call `SentMessage::setMessageId()` with whatever their API returned — and this plugin was collecting it and dropping it on the floor, keeping only the debug string beside it. It matters because it is the same id that provider then names in its delivery webhooks, so it is the one string both ends are certain to agree on. Anything storing it can join a bounce or a delivery report back to the message it is about without needing the provider to echo a custom header, and without needing the `Message-ID` the message left with to survive the trip — which it often does not: a provider running on Amazon SES mints its own on the way out and reports that one. Null on a failed send, on a transport that answers no id, and on SMTP, where the id is the receiving server's rather than a provider's
+
 # v5.1.0
 ## 09/05/2026
 
