@@ -19,6 +19,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Header\MetadataHeader;
 use Symfony\Component\Mailer\Header\TagHeader;
 use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
@@ -86,6 +87,22 @@ class Email
 
     protected $message;
     protected $debug;
+
+    /**
+     * The provider's own id for the last message sent, or null.
+     *
+     * Every API transport answers one — Resend, Postmark, SES, SendGrid,
+     * Mailgun and MailerSend all call `SentMessage::setMessageId()` with
+     * whatever their API returned — and it is the same string that provider
+     * then names in its delivery webhooks. It was being collected and dropped,
+     * which left anything wanting to join an event back to a send relying on
+     * the sending domain's own `Message-ID` surviving the trip. It frequently
+     * does not: Resend runs on Amazon SES, SES mints its own on the way out,
+     * and the webhook reports that one. See getLastSendId().
+     *
+     * @var string|null
+     */
+    protected $sendId;
 
     public function __construct()
     {
@@ -279,8 +296,10 @@ class Email
             $status = 1;
             $this->message = '✅';
             $this->debug = $sent_msg->getDebug();
+            $this->sendId = $this->idOf($sent_msg);
         } catch (TransportExceptionInterface $e) {
             $status = 0;
+            $this->sendId = null;
             $this->message = '🛑 ' . $e->getMessage();
             $this->debug = $e->getDebug();
 
@@ -310,9 +329,19 @@ class Email
         }
 
         if ($this->debug()) {
-            $log_msg = "Email sent to %s at %s -> %s\n%s";
+            $log_msg = "Email sent to %s at %s -> %s [provider id: %s]\n%s";
             $to = $this->jsonifyRecipients($message->getEmail()->getTo());
-            $message = sprintf($log_msg, $to, date('Y-m-d H:i:s'), $this->message, $this->debug);
+            $message = sprintf(
+                $log_msg,
+                $to,
+                date('Y-m-d H:i:s'),
+                $this->message,
+                // What the provider called it, which is what a delivery webhook
+                // will name and therefore the first thing worth knowing when
+                // one cannot be matched to the message it is about.
+                $this->sendId ?? 'none',
+                $this->debug
+            );
             $this->log->info($message);
         }
 
@@ -962,19 +991,38 @@ class Email
             $dsn = 'null://default';
 
             $e = new Event(['engine' => $engine, ]);
-            Grav::instance()->fireEvent('onEmailTransportDsn', $e);
-            if (isset($e['dsn'])) {
-                $dsn = $e['dsn'];
+
+            // Everything from here to the transport is somebody else's code
+            // running on every request of the site, long before anything has
+            // decided whether this request sends mail: a provider plugin
+            // naming its DSN, and then Symfony parsing it. Either can throw on
+            // a store that has saved its settings form with one field still
+            // empty — and a throw here is not a failed send, it is a white
+            // screen on every page including the admin, which is where the
+            // field would have been filled in. See UnusableTransport.
+            try {
+                Grav::instance()->fireEvent('onEmailTransportDsn', $e);
+                if (isset($e['dsn'])) {
+                    $dsn = $e['dsn'];
+                }
+
+                return $dsn instanceof TransportInterface ? $dsn : Transport::fromDsn($dsn);
+            } catch (\Throwable $error) {
+                $reason = sprintf('The %s transport could not be set up: %s', $engine, $error->getMessage());
+                Grav::instance()['log']->error('email: ' . $reason);
+
+                return new UnusableTransport($reason);
             }
         }
 
-        if ($dsn instanceof TransportInterface) {
-            $transport = $dsn;
-        } else {
-           $transport = Transport::fromDsn($dsn) ;
-        }
+        try {
+            return Transport::fromDsn($dsn);
+        } catch (\Throwable $error) {
+            $reason = sprintf('The %s transport could not be set up: %s', $engine, $error->getMessage());
+            Grav::instance()['log']->error('email: ' . $reason);
 
-        return $transport;
+            return new UnusableTransport($reason);
+        }
     }
 
     /**
@@ -1055,6 +1103,133 @@ class Email
     public function getLastSendDebug(): ?string
     {
         return $this->debug;
+    }
+
+    /**
+     * The provider's own id for the last message sent, or null.
+     *
+     * Null on a failed send, on a transport that answers no id, and on SMTP,
+     * where the id belongs to the receiving server rather than to a provider's
+     * API. A caller storing this can join a delivery webhook to the message it
+     * is about without depending on the provider echoing a header or repeating
+     * the `Message-ID` it was given — neither of which every provider does.
+     *
+     * @return string|null
+     */
+    public function getLastSendId(): ?string
+    {
+        return $this->sendId;
+    }
+
+    /**
+     * The id off a SentMessage, where there is one worth keeping.
+     *
+     * Symfony's SMTP transports put the message's own `Message-ID` here, which
+     * the caller already knows and which is not what a webhook will name, so
+     * only an id that differs from the one on the message is an answer. An
+     * empty string is not an id either: a transport that sets one from a
+     * missing response field answers `''` rather than null.
+     */
+    protected function idOf(SentMessage $sent): ?string
+    {
+        $id = trim((string)$sent->getMessageId());
+        if ($id === '') {
+            // Nothing from the transport, which is every SMTP send: Symfony's
+            // `SmtpTransport` reads the server's answer to the message, checks
+            // the response code and drops the line. But it also appends the
+            // whole conversation to the `SentMessage`, so the answer is still
+            // here to be read. See queuedIdIn().
+            return self::queuedIdIn((string)$sent->getDebug());
+        }
+
+        // `Message-ID` is an identification header, and Symfony answers those
+        // with a *list* of ids rather than a string — so this was casting an
+        // array and comparing against the word "Array", which no id has ever
+        // equalled. The guard has therefore never once fired, and every
+        // transport that answers its send with the message's own id has been
+        // recording that id as the provider's.
+        $ours = $sent->getOriginalMessage()->getHeaders()->getHeaderBody('Message-ID');
+        $ours = \is_array($ours) ? (string)($ours[0] ?? '') : (string)$ours;
+
+        // Compared without the angle brackets, because whether they are there
+        // is the transport's habit rather than a difference in the id. Mailgun
+        // answers its send with `<the-message-id@domain>` — the same id the
+        // message left with, in its wire form — and only one side of this was
+        // being unwrapped, so it read as a new id from the provider and got
+        // stored as one. What that produced was a `provider_message_id` column
+        // holding the store's own Message-ID, which then matched no event: the
+        // id Mailgun names in a webhook is a different string again.
+        return self::bare($id) === self::bare($ours) ? null : $id;
+    }
+
+    /**
+     * A message id without the angle brackets a header carries it in.
+     */
+    private static function bare(string $id): string
+    {
+        return trim(trim($id), '<>');
+    }
+
+    /**
+     * The id the receiving server gave the message, out of the SMTP transcript.
+     *
+     * `250 Message queued as 68bf1c…` — the last thing a server says after the
+     * message body, and on a provider's own relay it is that provider's id for
+     * the message. MailerSend documents the id in this line as the same one
+     * their webhooks report events under, and since their webhooks carry no
+     * headers, no metadata and not the `Message-ID` either, it is the only
+     * handle a store on SMTP will ever get from them. SMTP2GO and SendGrid
+     * answer the same way in `queued as`, and an Exim relay in `id=`.
+     *
+     * On a plain relay that is not a provider — a store's own Postfix — the id
+     * belongs to that server and no webhook will ever name it. That costs
+     * nothing: the id is only ever used to look an event up by, and one nothing
+     * reports simply never matches.
+     *
+     * The final response only. Everything before it is the answer to `MAIL
+     * FROM` and each `RCPT TO`, which are about an address rather than about
+     * the message.
+     */
+    private static function queuedIdIn(string $debug): ?string
+    {
+        if ($debug === '') {
+            return null;
+        }
+
+        // Their own words, in the order servers use them.
+        $patterns = [
+            '/\bqueued as\s+([^\s<>]+)/i',
+            '/\bid=([^\s<>]+)/i',
+        ];
+
+        // Read from the end, because a transcript holds one line per command
+        // and the message's own answer is the last of them.
+        $lines = array_reverse(preg_split('/\r\n|\r|\n/', $debug) ?: []);
+
+        foreach ($lines as $line) {
+            // Symfony writes the transcript as a dialogue — `> ` for what was
+            // sent and `< ` for what came back — so the response code is not
+            // at the start of the line.
+            $line = ltrim($line, " \t<>");
+
+            if (!str_starts_with($line, '250')) {
+                continue;
+            }
+
+            foreach ($patterns as $pattern) {
+                if (preg_match($pattern, $line, $found) === 1) {
+                    $id = trim($found[1], " \t.,;");
+
+                    return $id === '' ? null : $id;
+                }
+            }
+
+            // A `250` with nothing nameable in it — "250 2.0.0 Ok" — is a
+            // server that accepted the message without giving it a name.
+            return null;
+        }
+
+        return null;
     }
 
     /**
