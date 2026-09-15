@@ -1,5 +1,5 @@
 # v5.2.1
-## 09/14/2026
+## 09/15/2026
 
 1. [](#bugfix)
     * **A form that drops every one of its recipients no longer does it in silence.** An address the plugin cannot parse is discarded, and when the `to` parameter produced nothing at all, `buildMessage()` skipped the call that sets the To header entirely — so the message left with no recipients, the form told the visitor it had been sent, and not one line was written to any log. Every discarded address is now reported to both `logs/email.log` and `logs/grav.log`, naming the parameter it came from, the value that could not be read (truncated, so a mailing list cannot fill the log) and whether anything usable was left. The report also names the cause, because in practice there is only one: a `Name <address>` value that has been through Twig's escape filter, written as `|e` or applied by autoescape, arrives as `John Doe &lt;john@example.com&gt;`, which is not an email address by any reading. Address parameters want `|raw`. Addresses that do parse are handled exactly as before, including a partial failure — those go out to whoever was left, and are logged too, since half a send is every bit as quiet as none of one. Reported by @thekenshow ([grav#3905](https://github.com/getgrav/grav/issues/3905))
