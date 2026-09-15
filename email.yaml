@@ -12,6 +12,7 @@ mailer:
   sendmail:
     bin: '/usr/sbin/sendmail -bs'
 content_type: text/html
+error_message: ''
 debug: false
 providers:
   send_header: ''

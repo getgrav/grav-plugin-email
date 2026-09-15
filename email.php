@@ -174,7 +174,7 @@ class EmailPlugin extends Plugin
          if ($status < 1) {
             $this->grav->fireEvent('onFormValidationError', new Event([
                 'form' => $form,
-                'message' => $this->email->getLastSendMessage(),
+                'message' => $this->sendFailureMessage($params),
             ]));
             $event->stopPropagation();
             return;
@@ -182,6 +182,49 @@ class EmailPlugin extends Plugin
 
         //fire event after eMail was sent
         $this->grav->fireEvent('onEmailSent', new Event(['message' => $message, 'params' => $params, 'form' => $form]));
+    }
+
+    /**
+     * What to tell the visitor when a form's email could not be sent.
+     *
+     * The transport's own words used to go straight onto the page. They are
+     * written for whoever configured the mail account, not for whoever filled in
+     * the contact form, and they routinely name the mail server, the login being
+     * used and exactly why it was refused — which is ugly and is more than an
+     * anonymous visitor has any business reading. The detail goes to the Grav
+     * log instead, where the site owner will actually look for it.
+     *
+     * What the visitor gets, in order: an `error_message` on the email action,
+     * then the plugin's own `error_message` setting, then a translated default.
+     * With Grav's debugger switched on the transport's text is appended anyway,
+     * because at that point the person reading the form is the person
+     * configuring it.
+     *
+     * @param  array  $params  the email action's parameters
+     * @return string
+     */
+    protected function sendFailureMessage(array $params): string
+    {
+        $detail = trim((string) $this->email->getLastSendMessage());
+
+        // The site owner's copy, with everything in it.
+        $this->grav['log']->error('plugin-email: could not send the form email: ' . ($detail !== '' ? $detail : 'no reason reported by the transport'));
+
+        $message = $params['error_message'] ?? $this->grav['config']->get('plugins.email.error_message');
+
+        if (!is_string($message) || trim($message) === '') {
+            $message = 'PLUGIN_EMAIL.FORM_SEND_FAILURE';
+        }
+
+        // Run it through the translator either way, so a site may configure a
+        // literal sentence or a language key of its own and both work.
+        $message = $this->grav['language']->translate($message);
+
+        if ($detail !== '' && $this->grav['config']->get('system.debugger.enabled')) {
+            $message .= ' (' . $detail . ')';
+        }
+
+        return $message;
     }
 
     /**

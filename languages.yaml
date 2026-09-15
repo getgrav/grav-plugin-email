@@ -61,6 +61,9 @@ en:
     SEND_HEADER: "Send id header"
     SEND_HEADER_HELP: "The header an add-on stamps on a message so the provider can hand it back on a bounce or an open, which is what ties a report to the exact message it came from. Leave it empty and `X-Grav-Send-Id` is used. Change it only if your mail already carries a header of that name, and remember that some providers only echo a header you have registered with them, so a change means setting the webhook up again."
     EMAIL_FORMAT: "Use the `addr` format: `email@address.org` or `name-addr` format: `Your Name &lt;email@address.org&gt;`. Comma separated for multiple addresses"
+    FORM_ERROR_MESSAGE: "Form send failure message"
+    FORM_ERROR_MESSAGE_HELP: "Shown to the visitor when a form's email cannot be sent. Leave it empty for the default. The reason the send failed always goes to the Grav log instead, and is only added to this message when the debugger is enabled."
+    FORM_SEND_FAILURE: "Your message could not be sent right now. Please try again in a few minutes."
 
 da:
   PLUGIN_EMAIL:

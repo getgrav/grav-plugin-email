@@ -375,6 +375,7 @@ To have more control over your generated email, you may also use the following a
 * `tags`: One or more strings the API-based sending services (Postmark, Mailgun, SendGrid, Mailjet and friends) group and report on. Ignored by plain SMTP.
 * `metadata`: A map of name to string value that those same services carry alongside the message and hand back on their webhooks.
 * `headers`: A map of header name to value, written onto the message itself. See below.
+* `error_message`: What to show the visitor if this email cannot be sent. Without it the plugin uses the **Form send failure message** setting, and without that a translated default. The mail server's own explanation of the failure always goes to the Grav log rather than onto the page, and is only added to the visitor's message when Grav's debugger is enabled.
 
 ### Custom headers
 
@@ -515,6 +516,12 @@ body:
 #### Debugging
 
 The first step in determining why emails are not sent is to enable debugging.  This can be done via the `user/config/email.yaml` file or via the plugin settings in the admin.  Just enable this and then try sending an email again.  Then inspect the `logs/email.log` file for potential problems.
+
+#### An email arrives with no recipients, or never arrives at all
+
+An address the plugin cannot parse is dropped, and if every address in a parameter is dropped the message goes out with that header missing entirely. Look in `logs/email.log` or `logs/grav.log` for a line beginning `plugin-email:` that names the parameter and the value it could not read.
+
+Nearly always the value has been HTML-escaped on the way in. `to: "{{ form.value.recipient|e }}"` turns `John Doe <john@example.com>` into `John Doe &lt;john@example.com&gt;`, which is not an email address, and Twig autoescape does the same thing without being asked. Use `|raw` on address parameters.
 
 #### ISP Port 25 blocking
 
