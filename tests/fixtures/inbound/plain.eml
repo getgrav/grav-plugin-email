@@ -1,0 +1,26 @@
+Return-Path: <anna@example.net>
+Delivered-To: support+t8f2kq@helpdesk.example.com
+Received: from mx.example.net (mx.example.net [203.0.113.10])
+	by mx.helpdesk.example.com with ESMTPS id 4cX2p81z
+	for <support+t8f2kq@helpdesk.example.com>; Wed, 23 Sep 2026 09:14:02 +0000 (UTC)
+Authentication-Results: mx.helpdesk.example.com;
+	dkim=pass header.d=example.net header.s=s1 header.b=AbCd1234;
+	spf=pass (mx.helpdesk.example.com: domain of anna@example.net designates 203.0.113.10 as permitted sender) smtp.mailfrom=anna@example.net;
+	dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=example.net
+Authentication-Results: forged.example.org; spf=fail smtp.mailfrom=anna@example.net
+From: Anna Berg <anna@example.net>
+To: Support <support@helpdesk.example.com>
+Subject: Printer on the second floor is jammed
+Date: Wed, 23 Sep 2026 11:13:58 +0200
+Message-ID: <CAF7a1b2c3D4E5@Mail.Example.NET>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: 0.4
+
+Hi,
+
+The printer on the second floor has jammed again and shows error E-42.
+Could someone take a look before noon? Danke schön!
+
+Anna

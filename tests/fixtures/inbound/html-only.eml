@@ -1,0 +1,13 @@
+From: "Marketing Team" <news@shop.example.org>
+To: support@helpdesk.example.com
+Subject: Your order #10042 has shipped
+Date: Tue, 22 Sep 2026 18:00:00 -0400
+Message-Id: <20260922220000.GA10042@shop.example.org>
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><body><p style=3D"font-family:Arial">Your order <strong=
+>#10042</strong> has shipped &mdash; it will arrive on Thursday.</p><p>Tracki=
+ng: <a href=3D"https://track.example.org/10042">10042</a></p><p>Caf=C3=A9 =
+au lait included.</p></body></html>

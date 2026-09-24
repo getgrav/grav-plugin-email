@@ -1,0 +1,74 @@
+Received: from AM9PR01MB1234.eurprd01.prod.outlook.com (2603:10a6:20b:3a1::15)
+ by DB9PR01MB5678.eurprd01.prod.outlook.com with HTTPS; Wed, 23 Sep 2026
+ 07:45:12 +0000
+Authentication-Results: spf=pass (sender IP is 40.107.22.55)
+ smtp.mailfrom=contoso.example; dkim=pass (signature was verified)
+ header.d=contoso.example;dmarc=pass action=none
+ header.from=contoso.example;compauth=pass reason=100
+From: "Lee, Morgan" <Morgan.Lee@contoso.example>
+To: "support@helpdesk.example.com" <support@helpdesk.example.com>
+CC: "Nguyen, Bao" <bao.nguyen@contoso.example>
+Subject: RE: [#1002] VPN access for new starter
+Thread-Topic: [#1002] VPN access for new starter
+Thread-Index: AQHcLc3p0Xy1l2mJ0kqf7e1a2b3c4d==
+Date: Wed, 23 Sep 2026 07:45:10 +0000
+Message-ID: <AM9PR01MB1234ABCD5678EF90@AM9PR01MB1234.eurprd01.prod.outlook.com>
+References: <hd.1002.cc33@helpdesk.example.com>
+In-Reply-To: <hd.1002.cc33@helpdesk.example.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: <AM9PR01MB1234ABCD5678EF90@AM9PR01MB1234.eurprd01.prod.outlook.com>
+Content-Type: multipart/mixed;
+	boundary="_000_AM9PR01MB1234ABCD5678EF90AM9PR01MB1234eurp_"
+MIME-Version: 1.0
+
+--_000_AM9PR01MB1234ABCD5678EF90AM9PR01MB1234eurp_
+Content-Type: multipart/alternative;
+	boundary="_001_AM9PR01MB1234ABCD5678EF90AM9PR01MB1234eurp_"
+
+--_001_AM9PR01MB1234ABCD5678EF90AM9PR01MB1234eurp_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+The new starter begins on Monday; please enable VPN for bao.nguyen.
+
+Kind regards,
+Morgan
+
+-----Original Message-----
+From: Helpdesk <support@helpdesk.example.com>=20
+Sent: 22 September 2026 16:00
+To: Lee, Morgan <Morgan.Lee@contoso.example>
+Subject: [#1002] VPN access for new starter
+
+We need the start date before we can enable access.
+
+--_001_AM9PR01MB1234ABCD5678EF90AM9PR01MB1234eurp_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office"><head><meta http-e=
+quiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"></head><body=
+ lang=3D"EN-GB"><div class=3D"WordSection1"><p class=3D"MsoNormal">Hi,<o:p><=
+/o:p></p><p class=3D"MsoNormal">The new starter begins on Monday; please ena=
+ble VPN for bao.nguyen.<o:p></o:p></p><div id=3D"divRplyFwdMsg"><b>From:</b>=
+ Helpdesk</div></div></body></html>
+
+--_001_AM9PR01MB1234ABCD5678EF90AM9PR01MB1234eurp_--
+
+--_000_AM9PR01MB1234ABCD5678EF90AM9PR01MB1234eurp_
+Content-Type: application/ms-tnef; name="winmail.dat"
+Content-Description: winmail.dat
+Content-Disposition: attachment; filename="winmail.dat"; size=120;
+	creation-date="Wed, 23 Sep 2026 07:45:10 GMT";
+	modification-date="Wed, 23 Sep 2026 07:45:10 GMT"
+Content-Transfer-Encoding: base64
+
+eJ8+IgEAAQaQCAAEAAAAAAABAAEAAQeQBgAIAAAA5AQAAAAAAADoAHifPiIBAAEGkAgABAAAAAAA
+AQABAAEHkAYACAAAAOQEAAAAAAAA6AB4nz4iAQABBpAIAAQAAAAAAAEAAQABB5AGAAgAAADkBAAA
+AAAAAOgA
+
+--_000_AM9PR01MB1234ABCD5678EF90AM9PR01MB1234eurp_--
