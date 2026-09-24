@@ -509,6 +509,17 @@ body:
 
 ```
 
+# Receiving email
+
+The plugin can also read mail sent *to* a site, for plugins that need it (a helpdesk turning replies into ticket updates, for example). It does nothing on its own: another plugin calls it. What it provides, on PHP 8.1 and later:
+
+- `InboundGateway`, the one class a plugin calls to verify and read an inbound webhook request, whichever provider it came from.
+- Two built-in receivers that need no provider account: `cloudflare`, for a free Cloudflare Email Routing Worker, and `generic`, for any script or mail server that can sign and post a raw message. [docs/inbound-cloudflare.md](docs/inbound-cloudflare.md) has the Worker source and a ready-made shell sender.
+- Receivers from provider plugins (Postmark, Mailgun, SendGrid, Amazon SES and others) as those plugins add them.
+- A small IMAP client, for mailboxes with no webhook (Gmail with an app password, most hosting mailboxes). It doesn't need PHP's imap extension.
+
+Plugin authors will find the details in [docs/providers.md](docs/providers.md#receiving-mail).
+
 # Troubleshooting
 
 ## Emails are not sent
