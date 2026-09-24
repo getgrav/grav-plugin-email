@@ -1,0 +1,60 @@
+Delivered-To: support@helpdesk.example.com
+Received: by 2002:a05:6a10:1234:b0:5a1:2b3c:4d5e with SMTP id h20csp123456pxb;
+        Wed, 23 Sep 2026 02:31:10 -0700 (PDT)
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20230601 header.b=Xy12Ab34;
+       spf=pass (google.com: domain of sam.customer@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=sam.customer@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+Return-Path: <sam.customer@gmail.com>
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20230601 header.b=Xy12Ab34;
+       dkim=neutral (body hash did not verify) header.i=@forwarder.example header.s=old header.b=Zz;
+       spf=pass (google.com: domain of sam.customer@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=sam.customer@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1758619870; x=1759224670; darn=helpdesk.example.com;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+        b=Xy12Ab34
+MIME-Version: 1.0
+References: <hd.1001.aa11@helpdesk.example.com>
+ <CAGmail0001=x+yz@mail.gmail.com>
+	<hd.1001.bb22@helpdesk.example.com>
+In-Reply-To: <HD.1001.BB22@helpdesk.example.com>
+From: Sam Customer <sam.customer@gmail.com>
+Date: Wed, 23 Sep 2026 10:31:02 +0100
+X-Gm-Features: AS18NWBxyz
+Message-ID: <CAGmail0002+AbC=dEf@mail.gmail.com>
+Subject: Re: [#1001] Cannot log in to the portal
+To: Helpdesk <support+t9zz1@helpdesk.example.com>
+Content-Type: multipart/alternative; boundary="000000000000a1b2c3d4e5f60718"
+
+--000000000000a1b2c3d4e5f60718
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Thanks, that worked! I can log in now.
+
+On Tue, 22 Sept 2026 at 17:05, Helpdesk <support@helpdesk.example.com> wrot=
+e:
+
+> Hi Sam,
+>
+> Please try resetting your password from the sign-in page.
+>
+> =E2=80=94 The support team
+>
+
+--000000000000a1b2c3d4e5f60718
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Thanks, that worked! I can log in now.</div><br><div class=
+=3D"gmail_quote gmail_quote_container"><div dir=3D"ltr" class=3D"gmail_attr=
+">On Tue, 22 Sept 2026 at 17:05, Helpdesk &lt;<a href=3D"mailto:support@help=
+desk.example.com">support@helpdesk.example.com</a>&gt; wrote:<br></div><bloc=
+kquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex">Hi Sam,<br>P=
+lease try resetting your password from the sign-in page.<br>=E2=80=94 The su=
+pport team</blockquote></div>
+
+--000000000000a1b2c3d4e5f60718--

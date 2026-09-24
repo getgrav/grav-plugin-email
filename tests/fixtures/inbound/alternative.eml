@@ -1,0 +1,31 @@
+From: =?UTF-8?Q?J=C3=BCrgen_M=C3=BCller?= <juergen@example.de>
+To: support@helpdesk.example.com, "Ops, Team" <ops@helpdesk.example.com>
+Cc: undisclosed-recipients:;
+Subject: =?UTF-8?B?UsO8Y2tmcmFnZSB6dXIgUmVjaG51bmc=?=
+Date: Wed, 23 Sep 2026 08:01:00 +0200
+Message-ID: <alt-1@example.de>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b1_alt"
+
+This is a multi-part message in MIME format.
+
+--b1_alt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Hallo,
+
+ich habe eine Frage zur Rechnung 2026-117. Der Betrag scheint doppelt berech=
+net worden zu sein.
+
+Gr=C3=BC=C3=9Fe
+J=C3=BCrgen
+--b1_alt
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div>Hallo,</div><div>ich habe eine Frage zur Rechnung 2026-117.</div><div>Gr=
+=C3=BC=C3=9Fe<br>J=C3=BCrgen</div>
+--b1_alt--
+
+Epilogue text that is not part of any body.

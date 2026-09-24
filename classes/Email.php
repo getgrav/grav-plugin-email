@@ -71,6 +71,13 @@ class Email
     public const FEATURE_PROVIDERS = 'providers';
 
     /**
+     * The inbound mail contract under `classes/Providers/Inbound/` and the IMAP
+     * client under `classes/Inbound/Imap/`, asked for by name through
+     * {@see supportsFeature()}.
+     */
+    public const FEATURE_INBOUND = 'inbound';
+
+    /**
      * The providers collected on `onEmailProviders`, once per request.
      *
      * @var Providers\ProviderRegistry|null
@@ -160,7 +167,10 @@ class Email
      * The same question as {@see supportsParameter()} and asked the same way,
      * about a whole feature rather than one message parameter. `providers` is
      * the provider contract under `classes/Providers/`: the registry, the
-     * `onEmailProviders` event and the three lookups below.
+     * `onEmailProviders` event and the three lookups below. `inbound` is the
+     * inbound mail contract: `Providers\Inbound\InboundGateway`, the built-in
+     * `cloudflare` and `generic` receivers, and the IMAP client in
+     * `Inbound\Imap\ImapMailbox`.
      *
      *     if (method_exists($email, 'supportsFeature') && $email::supportsFeature('providers')) {
      *         $provider = $email::providerFor($engine);
@@ -179,7 +189,7 @@ class Email
      */
     public static function supportsFeature(string $name): bool
     {
-        if ($name === self::FEATURE_PROVIDERS) {
+        if ($name === self::FEATURE_PROVIDERS || $name === self::FEATURE_INBOUND) {
             return PHP_VERSION_ID >= 80100;
         }
 

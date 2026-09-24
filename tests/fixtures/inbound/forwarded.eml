@@ -1,0 +1,36 @@
+From: Alex Manager <alex@example.com>
+To: support@helpdesk.example.com
+Subject: Fwd: Refund request from a customer
+Date: Wed, 23 Sep 2026 11:00:00 +0000
+Message-ID: <fwd-0001@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="fwd_outer"
+
+--fwd_outer
+Content-Type: text/plain; charset=utf-8
+
+Please handle the message below.
+
+--fwd_outer
+Content-Type: message/rfc822
+Content-Disposition: inline
+
+From: Customer Name <customer@example.net>
+To: alex@example.com
+Subject: Refund request
+Date: Tue, 22 Sep 2026 09:00:00 +0000
+Message-ID: <inner-0001@example.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="fwd_inner"
+
+--fwd_inner
+Content-Type: text/plain; charset=utf-8
+
+I would like a refund for order 5521, INNER-BODY-MARKER.
+--fwd_inner
+Content-Type: text/html; charset=utf-8
+
+<p>I would like a refund for order 5521, INNER-BODY-MARKER.</p>
+--fwd_inner--
+
+--fwd_outer--
