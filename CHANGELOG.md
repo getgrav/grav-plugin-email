@@ -1,5 +1,5 @@
 # v5.3.0
-## 09/23/2026
+## 09/24/2026
 
 1. [](#new)
     * **Inbound mail.** A plugin that wants to read mail sent *to* a site — a helpdesk turning replies into ticket updates, a forum taking posts by email — now has one place to ask. `Providers\Inbound\InboundGateway::receive()` takes a receiver key, the request and that receiver's config, and runs the same four steps for every provider in the same order: find the receiver (404), check the size against the receiver's limit and the caller's (413, before any verification work), verify (401), and parse, which never throws. What comes back is an `InboundResult` holding the verdict, the HTTP status to answer with, and the messages. Each message is an `InboundMessage` with every field a consumer needs already normalised: message ids without brackets and lower-cased, the envelope recipient kept apart from the visible `To` so a `support+token@` address survives, the receiving server's SPF, DKIM and DMARC verdicts read from `Authentication-Results`, and attachments with their inline `cid:` ids. Ask `Email::supportsFeature('inbound')` first; it is true on PHP 8.1 and later, like the rest of the provider contract
