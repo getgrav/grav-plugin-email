@@ -1,0 +1,39 @@
+From: =?utf-8?B?5bGx55Sw?= =?utf-8?B?IOWkqumDjg==?= <yamada@example.jp>
+To: "Doe, Jane (Sales)" <jane@example.com>, Team: alpha@example.com, "Beta \"B\" Person" <beta@example.com>;
+Cc: =?utf-8?Q?Zo=C3=AB?= <zoe@example.com>, plain@example.com (Plain Person)
+Reply-To: <replies@example.jp>
+Subject: =?UTF-8?B?44GK5ZWP44GE5ZCI44KP44Gb?= =?UTF-8?B?8J+Ygg==?=
+ =?UTF-8?Q?_and_more?= text
+Date: Wed, 23 Sep 2026 17:00:00 +0900
+Message-ID: <ew-0001@example.jp>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="ew_mixed"
+
+--ew_mixed
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+44GT44KT44Gr44Gh44Gv44CC6KuL5rGC5pu444KS6YCB44KK44G+44GZ44CCCg==
+--ew_mixed
+Content-Type: application/pdf; name="=?UTF-8?B?6KaL56mN5pu4LnBkZg==?="
+Content-Disposition: attachment; filename="=?UTF-8?B?6KaL56mN5pu4LnBkZg==?="
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJcOkw7zDtsOfCjEgMCBvYmoKPDwvVHlwZS9DYXRhbG9nPj4KZW5kb2JqCg==
+--ew_mixed
+Content-Type: text/csv; charset=utf-8
+Content-Disposition: attachment;
+ filename*0*=utf-8''Quartalsbericht%20%C3%BCber;
+ filename*1*=sicht%20Q3;
+ filename*2=".csv"
+Content-Transfer-Encoding: 7bit
+
+quarter,total
+Q3,1200
+--ew_mixed
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="../../etc/passwd"
+Content-Transfer-Encoding: base64
+
+cm9vdDp4OjA6MA==
+--ew_mixed--
