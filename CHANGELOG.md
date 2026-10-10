@@ -1,5 +1,5 @@
 # v5.3.1
-## 10/07/2026
+## 10/09/2026
 
 1. [](#improved)
     * Updated the bundled Symfony Mailer and Mime to 5.4.52 and the IDN polyfill to 1.43.0, which include the fixes for their published security advisories. Thanks @bago [#196](https://github.com/getgrav/grav-plugin-email/issues/196)
