@@ -1,3 +1,9 @@
+# v5.3.2
+## 10/21/2026
+
+1. [](#new)
+    * **A provider can name a test address.** A transport plugin's provider class may now have `testRecipient(): ?string`, answering an address the provider's own documentation names as accepted, delivered to nobody and reported back as delivered, such as Resend's `delivered@resend.dev` or the SES mailbox simulator. A store testing its delivery webhook sends there, so the test reaches no real inbox and still produces the event it waits for. It is deliberately not on the `Provider` interface, because a new interface method would be a fatal error in every transport plugin not updated in the same release: consumers ask `method_exists()`, a plugin that has it still loads beside an older Email plugin, and a plugin without it simply has none. Written up in `docs/providers.md`, with the rule that only an address the provider documents counts
+
 # v5.3.1
 ## 10/09/2026
 

@@ -55,6 +55,17 @@ namespace Grav\Plugin\Email\Providers;
  *   delivery API answers null from {@see reports()}. A provider with no way to
  *   create a webhook answers null from {@see setup()}. Both are complete
  *   answers and a store says so plainly.
+ *
+ * ## One optional method that is not on this interface
+ *
+ * `public function testRecipient(): ?string` — an address the provider's own
+ * documentation names as accepted, delivered to nobody and reported back as
+ * delivered (Resend's `delivered@resend.dev`, the SES mailbox simulator), for
+ * a store testing its webhook. It is not declared here on purpose: a method
+ * added to this interface is a fatal error in every transport plugin not
+ * updated in the same release. A consumer asks `method_exists()`, so a plugin
+ * that has it still loads beside an older copy of this one, and a plugin
+ * without it has no test address. See `docs/providers.md`.
  */
 interface Provider
 {
