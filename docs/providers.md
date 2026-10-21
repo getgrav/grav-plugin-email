@@ -48,6 +48,8 @@ interface Provider
 }
 ```
 
+One more method is optional and is not on the interface: `testRecipient()`, below.
+
 `engines()` is a list because a provider that has offered its transport under more than one name over the years should answer for all of them. `key()` is separate from the engine because it is what a route and a config block are addressed by, and only one of those can exist per provider however many engines there are.
 
 ### `capabilities()`
@@ -172,6 +174,31 @@ new DomainFacts(
 The selector itself is deliberately not here. Selectors are per domain and per account — one provider uses `s` plus the account's numeric id, another generates three random tokens, a third uses a date — so there is nothing to guess and no way to walk a zone to find one. What is here is the convention: the zone a selector points into, which is enough to tell a real selector from a name that happens to resolve, and enough to spot the store that changed provider and left last year's record behind.
 
 `lookup` is the way out of that when your API will say. It is handed a domain and answers `['selectors' => [...], 'return_paths' => [...]]`, either key absent meaning "could not say". It must never throw and it must have a short timeout: a provider's API being slow is an unanswered question, not a broken settings screen. Callers cache the answer.
+
+### `testRecipient()`, optional
+
+An address your provider documents for testing: one its API accepts, that is delivered to nobody, and that it reports back as delivered through the same webhook as real mail. A store sends its "is the webhook working?" test there, so the test reaches no real inbox and still produces the event it is waiting for. Without one, the store sends the test to its own From address instead.
+
+```php
+/**
+ * Resend's own test address: accepted, delivered to nobody, reported as delivered.
+ * https://resend.com/docs/dashboard/emails/send-test-emails
+ */
+public function testRecipient(): ?string
+{
+    return 'delivered@resend.dev';
+}
+```
+
+It is a method on your provider class, not on the `Provider` interface, and it is optional both ways round. A new method on the interface would be a fatal error in every transport plugin not updated in the same release, so it is not there: a consumer asks `method_exists($provider, 'testRecipient')` and treats anything other than one valid address as no answer. That means a driver that has it still loads beside an Email plugin from before it existed (the method is just a method), and a driver from before it existed simply has no test address.
+
+The rules:
+
+- **Only an address the provider's own documentation names**, and only one it says produces a delivery event. Do not invent one, and do not answer an address that bounces or is suppressed on purpose: the test is waiting for a delivery. Put the link to the page in the docblock.
+- **A constant, with no I/O.** It is read every time a settings screen is drawn, like `capabilities()`.
+- **Null when there is none.** Most providers have none, or have only bounce and complaint addresses, and null is the honest answer.
+
+Today: Resend answers `delivered@resend.dev` and Amazon SES answers `success@simulator.amazonses.com` (the mailbox simulator). Postmark, Mailgun, SendGrid, MailerSend and SMTP2GO document no address that is delivered and reported as delivered, so they have none.
 
 ### A transport with no delivery API
 
