@@ -1,3 +1,9 @@
+# v5.3.3
+## 10/21/2026
+
+1. [](#new)
+    * **A provider can say it is for transactional mail only.** `Capabilities` takes an optional `transactionalOnly`, for a provider whose terms allow receipts, password resets and notifications but not newsletters or other bulk mail, as Cloudflare Email Service's do. A newsletter add-on reads it and refuses to send a campaign through that transport. A transport plugin checks `property_exists()` before passing it, so it still loads beside an older Email plugin. Written up in `docs/providers.md`
+
 # v5.3.2
 ## 10/21/2026
 
