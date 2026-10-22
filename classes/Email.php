@@ -111,10 +111,59 @@ class Email
      */
     protected $sendId;
 
+    /** The newsletter engine's transport, built the first time a marketing message is sent. */
+    protected ?TransportInterface $marketingTransport = null;
+
     public function __construct()
     {
         $this->initMailer();
         $this->initLog();
+    }
+
+    /**
+     * The engine marketing mail goes through.
+     *
+     * `mailer.marketing_engine`, or the site's own `mailer.engine` when that
+     * is empty, so a site that never set one sends everything as before.
+     */
+    public static function marketingEngine(): string
+    {
+        return static::marketingEngineIn((array)Grav::instance()['config']->get('plugins.email.mailer', []));
+    }
+
+    /**
+     * The same answer out of a `plugins.email.mailer` block, for a caller that
+     * already has one.
+     *
+     * @param array<string, mixed> $mailer
+     */
+    public static function marketingEngineIn(array $mailer): string
+    {
+        $marketing = trim((string)($mailer['marketing_engine'] ?? ''));
+
+        return $marketing !== '' ? $marketing : trim((string)($mailer['engine'] ?? ''));
+    }
+
+    /** The engine the rest of the site's mail goes through. */
+    protected static function siteEngine(): string
+    {
+        return trim((string)Grav::instance()['config']->get('plugins.email.mailer.engine'));
+    }
+
+    /** Whether marketing mail goes through a different engine from the rest. */
+    public static function splitEngines(): bool
+    {
+        return static::marketingEngine() !== static::siteEngine();
+    }
+
+    /** The transport a message goes out through: the newsletter engine's for marketing mail. */
+    protected function transportFor(Message $message): ?TransportInterface
+    {
+        if (!$message->isMarketing() || !static::splitEngines()) {
+            return $this->transport;
+        }
+
+        return $this->marketingTransport ??= static::getTransport(static::marketingEngine());
     }
 
     /**
@@ -302,7 +351,7 @@ class Email
     public function send(Message $message, ?Envelope $envelope = null): int
     {
         try {
-            $sent_msg = $this->transport->send($message->getEmail(), $envelope);
+            $sent_msg = $this->transportFor($message)->send($message->getEmail(), $envelope);
             $status = 1;
             $this->message = '✅';
             $this->debug = self::redact($sent_msg->getDebug());

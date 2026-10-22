@@ -42,6 +42,14 @@ form:
       description: PLUGIN_EMAIL.MAIL_ENGINE_DESC
       data-options@: '\Grav\Plugin\EmailPlugin::getEngines'
 
+    mailer.marketing_engine:
+      type: select
+      label: PLUGIN_EMAIL.MARKETING_ENGINE
+      size: medium
+      default: ''
+      help: PLUGIN_EMAIL.MARKETING_ENGINE_HELP
+      data-options@: '\Grav\Plugin\EmailPlugin::getMarketingEngines'
+
     smtp_config:
       type: section
       title: PLUGIN_EMAIL.SMTP_CONFIGURATION

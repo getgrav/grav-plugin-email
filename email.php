@@ -246,6 +246,19 @@ class EmailPlugin extends Plugin
     }
 
     /**
+     * The choices for newsletter mail: the site's own engine first, then every
+     * engine except Disabled, because newsletters that cannot be sent are
+     * switched off in the newsletter add-on, not here.
+     */
+    public static function getMarketingEngines(): array
+    {
+        $engines = static::getEngines();
+        unset($engines['none']);
+
+        return ['' => 'PLUGIN_EMAIL.MARKETING_ENGINE_SAME'] + $engines;
+    }
+
+    /**
      * @deprecated 4.0 Switched from Swiftmailer to Symfony/Mailer - No longer supported
      */
     public function onSchedulerInitialized(Event $e)
