@@ -305,13 +305,13 @@ class Email
             $sent_msg = $this->transport->send($message->getEmail(), $envelope);
             $status = 1;
             $this->message = '✅';
-            $this->debug = $sent_msg->getDebug();
+            $this->debug = self::redact($sent_msg->getDebug());
             $this->sendId = $this->idOf($sent_msg);
         } catch (TransportExceptionInterface $e) {
             $status = 0;
             $this->sendId = null;
             $this->message = '🛑 ' . $e->getMessage();
-            $this->debug = $e->getDebug();
+            $this->debug = self::redact($e->getDebug());
 
             // Capture HTTP transport errors with the raw response body for easier debugging (e.g., MailerSend 4xx/5xx).
             if ($e instanceof HttpTransportException) {
@@ -1214,6 +1214,38 @@ class Email
     public function getLastSendMessage(): ?string
     {
         return $this->message;
+    }
+
+    /**
+     * The transport's debug output with every credential taken out.
+     *
+     * Symfony's HTTP transports record the whole request, headers included, and
+     * the SMTP transport records the AUTH exchange, so with debug on every API
+     * key, token and password the site sends with went into `logs/email.log`.
+     * What is replaced: the value of an `Authorization` header and of the
+     * header-borne tokens providers use (Postmark's server token, `X-Api-Key`,
+     * `Api-Key`), and the client's side of SMTP AUTH, which is the password in
+     * base64.
+     */
+    public static function redact(?string $debug): string
+    {
+        $debug = (string)$debug;
+        if ($debug === '') {
+            return '';
+        }
+
+        $patterns = [
+            // Authorization: Bearer x / Basic x / Token x / anything else
+            '/(\bauthorization:\s*(?:[A-Za-z-]+\s+)?)[^\s"]+/i',
+            '/(\bx-postmark-(?:server|account)-token:\s*)[^\s"]+/i',
+            '/(\b(?:x-)?api-key:\s*)[^\s"]+/i',
+            '/(\bx-auth-token:\s*)[^\s"]+/i',
+            // SMTP: AUTH PLAIN <b64>, AUTH XOAUTH2 <b64>, and the line after "334 Password:"
+            '/(>\s*AUTH\s+(?:PLAIN|XOAUTH2|LOGIN)\s+)\S+/i',
+            '/(334 UGFzc3dvcmQ6\s*(?:\r?\n|\s)\s*>\s*)\S+/',
+        ];
+
+        return (string)preg_replace($patterns, '$1<redacted>', $debug);
     }
 
     /**
