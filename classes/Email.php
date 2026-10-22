@@ -111,8 +111,14 @@ class Email
      */
     protected $sendId;
 
-    /** The newsletter engine's transport, built the first time a marketing message is sent. */
-    protected ?TransportInterface $marketingTransport = null;
+    /**
+     * The newsletter engine's transport, built the first time a marketing
+     * message is sent. Untyped, like the rest of this class, because it still
+     * loads on PHP 7.3.
+     *
+     * @var TransportInterface|null
+     */
+    protected $marketingTransport;
 
     public function __construct()
     {
@@ -163,7 +169,11 @@ class Email
             return $this->transport;
         }
 
-        return $this->marketingTransport ??= static::getTransport(static::marketingEngine());
+        if ($this->marketingTransport === null) {
+            $this->marketingTransport = static::getTransport(static::marketingEngine());
+        }
+
+        return $this->marketingTransport;
     }
 
     /**
@@ -1283,18 +1293,45 @@ class Email
             return '';
         }
 
-        $patterns = [
-            // Authorization: Bearer x / Basic x / Token x / anything else
-            '/(\bauthorization:\s*(?:[A-Za-z-]+\s+)?)[^\s"]+/i',
-            '/(\bx-postmark-(?:server|account)-token:\s*)[^\s"]+/i',
-            '/(\b(?:x-)?api-key:\s*)[^\s"]+/i',
-            '/(\bx-auth-token:\s*)[^\s"]+/i',
-            // SMTP: AUTH PLAIN <b64>, AUTH XOAUTH2 <b64>, and the line after "334 Password:"
-            '/(>\s*AUTH\s+(?:PLAIN|XOAUTH2|LOGIN)\s+)\S+/i',
-            '/(334 UGFzc3dvcmQ6\s*(?:\r?\n|\s)\s*>\s*)\S+/',
-        ];
+        $lines = preg_split('/(\r\n|\n|\r)/', $debug, -1, PREG_SPLIT_DELIM_CAPTURE) ?: [$debug];
 
-        return (string)preg_replace($patterns, '$1<redacted>', $debug);
+        // Client lines still owed to an SMTP AUTH exchange, which carry the
+        // user name and password in base64 whatever the server's prompt says.
+        $owed = 0;
+
+        foreach ($lines as $i => $line) {
+            if ($i % 2 === 1) {
+                continue; // a line break
+            }
+
+            // A header whose whole value is a credential, to the end of the
+            // line: Authorization (Bearer, Basic, AWS SigV4 and the rest) and
+            // the token headers providers use.
+            $line = (string)preg_replace(
+                '/(\b(?:(?:proxy-)?authorization\s*:\s*(?:(?:bearer|basic|token|digest|apikey|key)\s+)?|(?:x-postmark-(?:server|account)-token|x-api-key|api-key|x-auth-token|x-amz-security-token)\s*:\s*))\S.*$/i',
+                '$1<redacted>',
+                $line
+            );
+
+            if (preg_match('/^(\s*>\s*)AUTH\s+(PLAIN|LOGIN|XOAUTH2|OAUTHBEARER|CRAM-MD5)\b(.*)$/i', $line, $m) === 1) {
+                $inline = trim($m[3]) !== '';
+                $line = $m[1] . 'AUTH ' . strtoupper($m[2]) . ($inline ? ' <redacted>' : '');
+                if (strtoupper($m[2]) === 'LOGIN') {
+                    $owed = $inline ? 1 : 2;
+                } else {
+                    $owed = $inline ? 0 : 1;
+                }
+            } elseif ($owed > 0 && preg_match('/^(\s*>\s*)\S/', $line, $m) === 1) {
+                $line = $m[1] . '<redacted>';
+                $owed--;
+            } elseif ($owed > 0 && preg_match('/^\s*<\s*(?:235|[45]\d\d)\b/', $line) === 1) {
+                $owed = 0;
+            }
+
+            $lines[$i] = $line;
+        }
+
+        return implode('', $lines);
     }
 
     /**

@@ -8,8 +8,8 @@ class Message
     /** @var SymfonyEmail  */
     protected $email;
 
-    /** Whether this is marketing mail (a newsletter), sent through the newsletter engine. */
-    protected bool $marketing = false;
+    /** @var bool whether this is marketing mail (a newsletter), sent through the newsletter engine */
+    protected $marketing = false;
 
     public function __construct() {
         $this->email = new SymfonyEmail();
