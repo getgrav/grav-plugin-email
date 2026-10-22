@@ -8,6 +8,9 @@ class Message
     /** @var SymfonyEmail  */
     protected $email;
 
+    /** @var bool whether this is marketing mail (a newsletter), sent through the newsletter engine */
+    protected $marketing = false;
+
     public function __construct() {
         $this->email = new SymfonyEmail();
     }
@@ -94,6 +97,24 @@ class Message
     {
         $this->to($to);
         return $this;
+    }
+
+    /**
+     * Mark this as marketing mail: a newsletter, an automation, or anything
+     * else a newsletter add-on sends. {@see Email::send()} then uses the
+     * newsletter mail engine, which falls back to the site's own when none is
+     * set. A caller supporting older Email plugins checks `method_exists()`.
+     */
+    public function marketing(bool $marketing = true): self
+    {
+        $this->marketing = $marketing;
+
+        return $this;
+    }
+
+    public function isMarketing(): bool
+    {
+        return $this->marketing;
     }
 
     public function getEmail(): SymfonyEmail

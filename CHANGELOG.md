@@ -1,3 +1,12 @@
+# v5.3.3
+## 10/21/2026
+
+1. [](#new)
+    * **Newsletters can go through a different provider from the rest of the site.** A new **Newsletter Mail Engine** setting (`mailer.marketing_engine`) beside the mail engine: site mail such as order confirmations and password resets keeps using the mail engine, and anything marked as marketing goes through the newsletter engine instead. Left on "Same as the mail engine", which is the default, everything goes one way as before. A sender marks a message with `$message->marketing()`; `Email::marketingEngine()` answers the engine it will use and `Email::splitEngines()` whether the two differ. Built for a site that sends its own mail through Cloudflare Email Service, which allows transactional mail only, and its newsletters through Resend or SES
+    * **A provider can say it is for transactional mail only.** `Capabilities` takes an optional `transactionalOnly`, for a provider whose terms allow receipts, password resets and notifications but not newsletters or other bulk mail, as Cloudflare Email Service's do. A newsletter add-on reads it and refuses to send a campaign through that transport. A transport plugin checks `property_exists()` before passing it, so it still loads beside an older Email plugin. Written up in `docs/providers.md`
+1. [](#bugfix)
+    * **The debug log no longer records credentials.** With debug on, the HTTP transports' whole request, headers included, and the SMTP AUTH exchange went into `logs/email.log`, which put every API key, token and SMTP password the site sends with into a log file. The `Authorization` header, the header-borne tokens providers use and the SMTP password are now replaced with `<redacted>` before anything is logged or returned by `getLastSendDebug()`
+
 # v5.3.2
 ## 10/21/2026
 

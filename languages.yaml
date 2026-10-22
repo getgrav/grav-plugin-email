@@ -2,6 +2,9 @@ en:
   PLUGIN_EMAIL:
     MAIL_ENGINE: "Mail Engine"
     MAIL_ENGINE_DISABLED: "Disabled"
+    MARKETING_ENGINE: "Newsletter Mail Engine"
+    MARKETING_ENGINE_SAME: "Same as the mail engine"
+    MARKETING_ENGINE_HELP: "Newsletters, automations and the other mail a newsletter add-on sends can go through a different provider from the rest of the site. Useful when the site's provider only allows transactional mail, as Cloudflare Email Service does. Leave it on the same engine to send everything one way."
     MAIL_ENGINE_DESC: "NOTE: If you select an engine provided by another plugin, you should configure options in that plugin."
     CONTENT_TYPE: "Content type"
     CONTENT_TYPE_PLAIN_TEXT: "Plain text"

@@ -1,7 +1,7 @@
 name: Email
 slug: email
 type: plugin
-version: 5.3.2
+version: 5.3.3
 testing: false
 description: Enables the emailing system for Grav
 icon: envelope
@@ -41,6 +41,14 @@ form:
       size: medium
       description: PLUGIN_EMAIL.MAIL_ENGINE_DESC
       data-options@: '\Grav\Plugin\EmailPlugin::getEngines'
+
+    mailer.marketing_engine:
+      type: select
+      label: PLUGIN_EMAIL.MARKETING_ENGINE
+      size: medium
+      default: ''
+      help: PLUGIN_EMAIL.MARKETING_ENGINE_HELP
+      data-options@: '\Grav\Plugin\EmailPlugin::getMarketingEngines'
 
     smtp_config:
       type: section

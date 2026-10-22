@@ -67,6 +67,8 @@ new Capabilities(
 
 A store sets `List-Unsubscribe`, an API transport turns the message into a JSON body and drops every header it does not recognise, the mail goes out looking perfectly fine, and a year later Gmail is filing it as spam because a bulk sender with no unsubscribe button is what a spammer looks like. Nothing on any screen would say so. Answering `unsubscribeHeaders: false` honestly is what lets a screen say so.
 
+`transactionalOnly` is optional too. Set it when the provider's terms allow transactional mail (receipts, password resets, notifications) and not newsletters or other bulk mail, as Cloudflare Email Service's do. A newsletter add-on reads it and refuses to send a campaign through your transport. It arrived in Email 5.3.3, and a named argument an older `Capabilities` does not know is a fatal error, so pass it only after `property_exists(Capabilities::class, 'transactionalOnly')`.
+
 `signsWebhooks` is optional and almost always left out: a screen works out whether you sign from `verificationKeys()`, and only a provider that signs with a published certificate and asks the merchant for no key, like SES, needs to say `signsWebhooks: true` itself. `echoNote` is where you say what a merchant has to do for `echoesHeaders` to be true — register the header in a dashboard, or press your setup button — in plain words, because "configure header passthrough" is not instructions.
 
 ### `reports()`
@@ -397,3 +399,19 @@ Against the provider's own documented sample payloads, saved as fixtures, parsed
 For signatures, compute them in the test rather than pasting one, then break them: change a byte of the body, replace the signature, replay an old timestamp, point a certificate URL at a host that merely ends with the provider's domain. Every one of those is a real attack and every one is three lines of test.
 
 `WebhookRequest` is built directly in a test — a method, a path, a headers array, a body string — so none of this needs Grav, a route, or a running site.
+
+## Newsletter mail through its own engine
+
+A site can send its own mail (order confirmations, password resets, form notifications) through one provider and its newsletters through another. The Email plugin's `mailer.engine` is the site's engine and `mailer.marketing_engine` the newsletters'; when the second is empty, newsletters use the first.
+
+A newsletter add-on marks what it sends:
+
+```php
+$message = $grav['Email']->message($subject, $html, 'text/html')->to($address);
+if (method_exists($message, 'marketing')) {
+    $message->marketing();   // Email 5.3.3 and later
+}
+$grav['Email']->send($message);
+```
+
+and asks `Email::marketingEngine()` (or `Email::marketingEngineIn($mailerConfig)`) which engine that is, for its own health checks and provider screens. A transport plugin needs to do nothing: its engine is asked for by name either way.

@@ -3,6 +3,7 @@ from:
 to:
 mailer:
   engine: sendmail
+  marketing_engine: ''
   smtp:
     server: localhost
     port: 25

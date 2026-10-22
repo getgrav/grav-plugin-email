@@ -31,6 +31,14 @@ namespace Grav\Plugin\Email\Providers;
  *   never echoes a header at all and hands back metadata instead. `echoNote`
  *   is where that is said, in plain words, for a screen to show beside the
  *   answer.
+ * - **`transactionalOnly`** — optional. The provider's terms allow
+ *   transactional mail (receipts, password resets, notifications) and not
+ *   newsletters or other bulk mail, as Cloudflare Email Service's do. A
+ *   newsletter add-on reads it and refuses to send a campaign through such a
+ *   transport, rather than putting the merchant's account at risk. A transport
+ *   plugin that sets it has to check `property_exists()` first, because a named
+ *   argument this class does not know is a fatal error on an older Email
+ *   plugin.
  * - **`signsWebhooks`** — optional, for the one case where "has a verification
  *   key" and "signs" disagree: SES signs every notification with a published
  *   certificate and asks the merchant for nothing, so its answer is true with
@@ -54,6 +62,8 @@ final class Capabilities
          * a certificate it publishes and needs no key from the merchant.
          */
         public readonly ?bool $signsWebhooks = null,
+        /** The provider allows transactional mail only, never newsletters or other bulk mail. */
+        public readonly bool $transactionalOnly = false,
     ) {
     }
 }
