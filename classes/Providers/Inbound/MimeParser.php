@@ -43,6 +43,9 @@ final class MimeParser
     /** More parts than any real message has. */
     private const MAX_PARTS = 500;
 
+    /** Longest Date header value the date parsers are given. */
+    private const DATE_MAX_LENGTH = 256;
+
     /** Charset labels that mean something else in practice. */
     private const CHARSET_ALIASES = [
         'latin1' => 'windows-1252',
@@ -752,6 +755,11 @@ final class MimeParser
     private static function date(?string $value): ?int
     {
         if ($value === null || trim($value) === '') {
+            return null;
+        }
+
+        // A real Date header is a few dozen bytes; do not hand a long one to the date parsers.
+        if (\strlen($value) > self::DATE_MAX_LENGTH) {
             return null;
         }
 

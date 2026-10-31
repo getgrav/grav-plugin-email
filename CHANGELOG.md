@@ -1,3 +1,12 @@
+# v5.3.4
+## 10/31/2026
+
+1. [](#bugfix)
+    * [security] The security fixes below were found by Anthropic's OSS Scanner
+    * [security] A form value longer than 64 KiB is now cut to that length before an email body is converted with `process_markdown`
+    * [security] The Date header of an inbound email is now ignored when it is longer than 256 bytes, and the message is read as having no date
+    * [security] Addresses that plugins pass to the email plugin are used as plain text, while the addresses in a form's `email` action and in the plugin settings can still use Twig such as `{{ config.plugins.email.to }}`
+
 # v5.3.3
 ## 10/21/2026
 

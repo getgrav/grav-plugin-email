@@ -337,6 +337,23 @@ final class MimeParserTest extends TestCase
         $this->assertSame('déjà', MimeParser::toUtf8("d\xE9j\xE0", 'utf-8'), 'mislabelled Latin-1 is repaired');
     }
 
+    public function testOverlongDateHeaderIsIgnored(): void
+    {
+        $normal = (new MimeParser())->parse($this->withDate('Tue, 22 Sep 2026 22:00:00 +0000'));
+        $this->assertSame(gmmktime(22, 0, 0, 9, 22, 2026), $normal->date);
+
+        // A valid date padded with a long comment is no longer given to the date parsers.
+        $long = (new MimeParser())->parse($this->withDate('Tue, 22 Sep 2026 22:00:00 +0000 (' . str_repeat('x', 300) . ')'));
+        $this->assertNull($long->date);
+        $this->assertSame('Hello', $long->subject);
+    }
+
+    private function withDate(string $date): string
+    {
+        return "From: anna@example.net\r\nTo: support@example.com\r\nSubject: Hello\r\nDate: " . $date
+            . "\r\nMessage-ID: <a1@example.net>\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nBody\r\n";
+    }
+
     private function fixture(string $name): InboundMessage
     {
         $raw = file_get_contents($this->path($name));
