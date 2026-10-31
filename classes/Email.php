@@ -49,6 +49,12 @@ class Email
     private const PARAM_EXTRA_FILTERS = ['raw'];
 
     /**
+     * Longest form value, in bytes, that goes into a body converted with
+     * `process_markdown`. Longer values are cut to this length first.
+     */
+    public const MARKDOWN_VALUE_MAX_BYTES = 65536;
+
+    /**
      * Optional `buildMessage()` parameters that go on the message as headers
      * rather than as addresses, a subject or a body.
      *
@@ -494,6 +500,10 @@ class Email
             'email' => $params,
         ];
 
+        if (!empty($params['process_markdown'])) {
+            $vars = $this->limitFormValues($vars);
+        }
+
         $params = $this->processParams($params, $vars);
 
         // Process parameters.
@@ -900,6 +910,63 @@ class Email
         $this->log = new Logger('email');
         /** @var UniformResourceLocator $locator */
         $this->log->pushHandler(new StreamHandler($log_file, Logger::DEBUG));
+    }
+
+    /**
+     * Cut every long value of the submitted form, so that a body converted with
+     * `process_markdown` never gets a value over {@see MARKDOWN_VALUE_MAX_BYTES}.
+     *
+     * The form handed to the templates is a copy carrying the shortened values;
+     * the submitted form keeps its own, so the other form actions still see
+     * what was posted.
+     *
+     * @param array $vars
+     * @return array
+     */
+    protected function limitFormValues(array $vars): array
+    {
+        $form = $vars['form'] ?? null;
+        if (!is_object($form) || !method_exists($form, 'value') || !method_exists($form, 'setAllData')) {
+            return $vars;
+        }
+
+        $data = $form->value();
+        if (!is_array($data)) {
+            return $vars;
+        }
+
+        $limited = static::limitValues($data, self::MARKDOWN_VALUE_MAX_BYTES);
+        if ($limited !== $data) {
+            $copy = clone $form;
+            $copy->setAllData($limited);
+            $vars['form'] = $copy;
+        }
+
+        return $vars;
+    }
+
+    /**
+     * Cut every string in a value, however deeply nested, to at most $max bytes, without splitting a character.
+     *
+     * @param mixed $value
+     * @param int $max
+     * @return mixed
+     */
+    public static function limitValues($value, int $max)
+    {
+        if (is_array($value)) {
+            foreach ($value as $key => $item) {
+                $value[$key] = static::limitValues($item, $max);
+            }
+
+            return $value;
+        }
+
+        if (is_string($value) && strlen($value) > $max) {
+            return mb_strcut($value, 0, $max, 'UTF-8');
+        }
+
+        return $value;
     }
 
     /**
