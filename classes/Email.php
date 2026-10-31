@@ -430,11 +430,20 @@ class Email
      * add the headers the API transports read, and `headers` writes arbitrary
      * headers by name; see {@see applyHeaders()}.
      *
+     * Address parameters (`to`, `from`, `cc`, `bcc`, `reply_to` and their `_name`
+     * companions) that the caller passes in are used as they are. Only the form
+     * `email` action, which passes `$templatedAddresses`, renders them as Twig, so a
+     * form's `to: "{{ config.plugins.email.to }}"` or `reply_to: "{{ form.value.email|e }}"`
+     * keeps working while an address a plugin took from an account or a submission is
+     * never read as a template. Addresses that fall back to this plugin's configuration
+     * are still rendered.
+     *
      * @param array $params
      * @param array $vars
+     * @param bool $templatedAddresses
      * @return Message
      */
-    public function buildMessage(array $params, array $vars = []): Message
+    public function buildMessage(array $params, array $vars = [], bool $templatedAddresses = false): Message
     {
         /** @var Twig $twig */
         $twig = Grav::instance()['twig'];
@@ -450,6 +459,8 @@ class Email
         $message = new Message();
         $headers = $message->getEmail()->getHeaders();
         $email = $message->getEmail();
+
+        $literal = static::literalAddressKeys($params, $templatedAddresses);
 
         // Extend parameters with defaults.
         $defaults = [
@@ -504,7 +515,7 @@ class Email
             $vars = $this->limitFormValues($vars);
         }
 
-        $params = $this->processParams($params, $vars);
+        $params = $this->processParams($params, $vars, $literal);
 
         // Process parameters.
         foreach ($params as $key => $value) {
@@ -980,9 +991,10 @@ class Email
      *
      * @param array $params
      * @param array $vars
+     * @param string[] $literal  Top-level parameters to leave as they are (see buildMessage()).
      * @return array
      */
-    protected function processParams(array $params, array $vars = []): array
+    protected function processParams(array $params, array $vars = [], array $literal = []): array
     {
         $twig = Grav::instance()['twig'];
         $twig->init();
@@ -1005,11 +1017,57 @@ class Email
             $vars = $this->filterParamVars($vars);
         }
 
-        array_walk_recursive($params, function(&$value) use ($twig, $vars) {
-            if (is_string($value)) {
-                $value = $this->processTwigString($twig, $value, $vars);
+        return $this->renderParamStrings($params, function (string $value) use ($twig, $vars): string {
+            return $this->processTwigString($twig, $value, $vars);
+        }, $literal);
+    }
+
+    /**
+     * The address parameters a caller supplied, which buildMessage() uses as they are
+     * unless the caller asked for templated addresses.
+     *
+     * @param array $params  Parameters as the caller passed them, before defaults.
+     * @param bool $templatedAddresses
+     * @return string[]
+     */
+    public static function literalAddressKeys(array $params, bool $templatedAddresses): array
+    {
+        if ($templatedAddresses) {
+            return [];
+        }
+
+        $keys = ['to', 'to_name', 'from', 'from_name', 'cc', 'cc_name', 'bcc', 'bcc_name', 'reply_to', 'reply_to_name'];
+
+        return array_values(array_filter($keys, static fn ($key) => array_key_exists($key, $params)));
+    }
+
+    /**
+     * Run every string in the parameters through `$render`, except the top-level
+     * parameters named in `$literal`.
+     *
+     * @param array $params
+     * @param callable $render
+     * @param string[] $literal
+     * @return array
+     */
+    protected function renderParamStrings(array $params, callable $render, array $literal = []): array
+    {
+        foreach ($params as $key => &$param) {
+            if (in_array($key, $literal, true)) {
+                continue;
             }
-        });
+            if (is_string($param)) {
+                $param = $render($param);
+            } elseif (is_array($param)) {
+                array_walk_recursive($param, static function (&$value) use ($render) {
+                    if (is_string($value)) {
+                        $value = $render($value);
+                    }
+                });
+            }
+        }
+        unset($param);
+
         return $params;
     }
 

@@ -137,7 +137,8 @@ class EmailPlugin extends Plugin
     protected function sendFormEmail($form, $params, $vars, $event)
     {
         // Build message
-        $message = $this->email->buildMessage($params, $vars);
+        // Form `email` actions are page-authored and use Twig in their addresses.
+        $message = $this->email->buildMessage($params, $vars, true);
         $locator = $this->grav['locator'];
 
         if (isset($params['attachments'])) {
