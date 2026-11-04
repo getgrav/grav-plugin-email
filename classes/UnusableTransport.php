@@ -31,8 +31,17 @@ use Symfony\Component\Mime\RawMessage;
  */
 final class UnusableTransport implements TransportInterface
 {
-    public function __construct(private readonly string $reason)
+    /**
+     * Not a promoted readonly property: this class loads on the PHP 7.3 that
+     * Grav 1.7 allows, which has neither.
+     *
+     * @var string
+     */
+    private $reason;
+
+    public function __construct(string $reason)
     {
+        $this->reason = $reason;
     }
 
     public function send(RawMessage $message, ?Envelope $envelope = null): ?SentMessage
