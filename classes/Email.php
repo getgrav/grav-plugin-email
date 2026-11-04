@@ -1038,7 +1038,11 @@ class Email
 
         $keys = ['to', 'to_name', 'from', 'from_name', 'cc', 'cc_name', 'bcc', 'bcc_name', 'reply_to', 'reply_to_name'];
 
-        return array_values(array_filter($keys, static fn ($key) => array_key_exists($key, $params)));
+        // A closure, not `fn`: this class loads on every request, on the PHP
+        // 7.3 that Grav 1.7 allows too (getgrav/grav-plugin-email#197).
+        return array_values(array_filter($keys, static function ($key) use ($params) {
+            return array_key_exists($key, $params);
+        }));
     }
 
     /**
