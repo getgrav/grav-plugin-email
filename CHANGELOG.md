@@ -1,3 +1,9 @@
+# v5.3.6
+## 11/20/2026
+
+1. [](#improved)
+    * Added PHP 8.6 compatibility (while keeping PHP 7.3+ support): a form email attachment whose path contains a NUL byte is now skipped and logged, like any other unusable attachment, instead of stopping the send with an uncaught `ValueError` (PHP 8.6 makes `is_file()` throw on NUL bytes, and Symfony Mime runs it on every attachment). The rest of the plugin code and the test suite already ran clean on PHP 8.6, and a new regression test covers the attachment fix
+
 # v5.3.5
 ## 11/04/2026
 

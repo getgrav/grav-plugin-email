@@ -153,6 +153,14 @@ class EmailPlugin extends Plugin
                         $filename = $fileValues['path'];
                     }
 
+                    // A NUL byte in the path makes Symfony Mime's is_file()/fopen() throw
+                    // a ValueError at send time (PHP 8.6 for is_file), which no catch
+                    // here would stop. Skip and log it like any other unusable attachment.
+                    if (is_string($filename) && strpos($filename, "\0") !== false) {
+                        $this->grav['log']->error('plugin-email: skipped a form attachment whose path contains a NUL byte');
+                        continue;
+                    }
+
                     $filename = $locator->findResource($filename, true, true);
 
                     try {
